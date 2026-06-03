@@ -1,19 +1,6 @@
-"use client";
-
-import { ReactLenis } from "@studio-freight/react-lenis";
 import { ReactNode } from "react";
 
+// Lenis removed — native scroll is more stable across devices
 export default function LenisProvider({ children }: { children: ReactNode }) {
-  return (
-    <ReactLenis
-      root
-      options={{
-        lerp: 0.08,
-        duration: 1.4,
-        smoothWheel: true,
-      }}
-    >
-      {children}
-    </ReactLenis>
-  );
+  return <>{children}</>;
 }

@@ -70,7 +70,7 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 bg-noir-gold" />
           <span className="font-playfair text-lg text-noir-text tracking-wide">
-            ליאור כהן
+            ליאור קלואי ארז
           </span>
           <span className="hidden md:inline text-noir-muted text-xs font-heebo mr-1">
             עורך דין

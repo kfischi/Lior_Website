@@ -27,7 +27,7 @@ export default function Footer() {
           {/* Right — Logo */}
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-noir-gold" />
-            <span className="font-playfair text-base text-noir-text">ליאור כהן</span>
+            <span className="font-playfair text-base text-noir-text">ליאור קלואי ארז</span>
             <span className="text-noir-muted text-xs font-heebo mr-1">עורך דין</span>
           </div>
 
@@ -61,7 +61,7 @@ export default function Footer() {
           className="mt-8 pt-6 flex flex-col md:flex-row items-center justify-between gap-2 text-noir-muted font-heebo text-xs"
           style={{ borderTop: "1px solid rgba(42,42,42,0.8)" }}
         >
-          <p>כל הזכויות שמורות © {year} — משרד עורכי דין ליאור כהן</p>
+          <p>כל הזכויות שמורות © {year} — משרד עורכי דין ליאור קלואי ארז</p>
           <p className="text-noir-muted/50">
             האתר אינו מהווה ייעוץ משפטי | אין יחסי עו&quot;ד–לקוח ללא הסכם בכתב
           </p>
