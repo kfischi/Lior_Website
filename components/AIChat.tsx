@@ -235,33 +235,41 @@ export default function AIChat() {
       {/* Trigger button */}
       <motion.button
         id="ai-chat-trigger"
-        className="fixed bottom-6 left-6 z-50 flex items-center gap-2.5 px-5 py-3 font-heebo text-sm"
+        className="fixed bottom-6 left-6 z-50 flex items-center gap-3 pl-4 pr-2 py-2 font-heebo text-sm"
         style={{
           background: "#0d0d0d",
-          border: "1px solid rgba(212,175,55,0.3)",
+          border: "1px solid rgba(212,175,55,0.35)",
           color: "#d4af37",
         }}
         onClick={() => dispatch({ type: state.isOpen ? "CLOSE" : "OPEN" })}
-        whileHover={{ borderColor: "rgba(212,175,55,0.6)" }}
+        whileHover={{ borderColor: "rgba(212,175,55,0.7)" }}
         transition={{ duration: 0.2 }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        dir="rtl"
       >
-        {/* Pulsing red dot */}
-        <div className="relative">
-          <Lock size={14} />
-          <motion.div
-            className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-noir-accent"
-            animate={{
-              boxShadow: [
-                "0 0 0 0 rgba(139,0,0,0.8)",
-                "0 0 0 4px rgba(139,0,0,0)",
-              ],
-            }}
-            transition={{ duration: 1.5, repeat: Infinity }}
+        {/* Avatar */}
+        <div className="relative flex-shrink-0">
+          <div
+            className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center"
+            style={{ border: "1.5px solid rgba(212,175,55,0.5)", background: "#1a1a1a" }}
+          >
+            {/* Placeholder silhouette — replace src with real photo */}
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(212,175,55,0.5)">
+              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+            </svg>
+          </div>
+          <motion.span
+            className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-green-500"
+            style={{ border: "1.5px solid #0d0d0d" }}
+            animate={{ scale: [1, 1.25, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
           />
         </div>
-        <span>שוחח עם המערכת שלנו</span>
+        <div className="flex flex-col items-start">
+          <span className="text-noir-text text-xs font-medium leading-tight">ליאור קלואי ארז</span>
+          <span className="text-noir-gold/70 text-[10px] leading-tight">שיחה עם ליאור</span>
+        </div>
       </motion.button>
 
       {/* Chat panel */}
@@ -300,18 +308,27 @@ export default function AIChat() {
                 <X size={16} />
               </button>
 
-              <div className="flex flex-col items-end gap-0.5">
-                <div className="flex items-center gap-2">
-                  <span className="font-playfair text-sm font-semibold text-noir-text">
-                    מערכת קבלה משפטית
-                  </span>
-                  <ShieldCheck size={16} className="text-noir-gold" />
-                </div>
-                <p
-                  className="font-heebo text-[10px] text-noir-gold/50 tracking-[0.2em] uppercase"
+              <div className="flex items-center gap-3" dir="rtl">
+                {/* Avatar in header */}
+                <div
+                  className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
+                  style={{ border: "1.5px solid rgba(212,175,55,0.4)", background: "#1a1a1a" }}
                 >
-                  מוצפן | חסוי | מאובטח
-                </p>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(212,175,55,0.5)">
+                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                  </svg>
+                </div>
+                <div className="flex flex-col items-end gap-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="font-playfair text-sm font-semibold text-noir-text">
+                      ליאור קלואי ארז
+                    </span>
+                    <ShieldCheck size={14} className="text-noir-gold" />
+                  </div>
+                  <p className="font-heebo text-[10px] text-noir-gold/50 tracking-[0.15em]">
+                    עורכת דין פלילית · מוצפן
+                  </p>
+                </div>
               </div>
             </div>
 
