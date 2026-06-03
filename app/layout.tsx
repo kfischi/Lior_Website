@@ -190,6 +190,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="format-detection" content="telephone=yes" />
       </head>
       <body className="font-heebo bg-noir-bg text-noir-text antialiased">
+        {/* Global cinematic video background — all pages */}
+        <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden="true">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="none"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ opacity: 0.08 }}
+          >
+            <source
+              src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dptyfvwyo"}/video/upload/q_auto:eco,w_1280,vc_auto,f_auto/${process.env.NEXT_PUBLIC_CLOUDINARY_VIDEO_PUBLIC_ID || "HERO_u4uu8h"}.mp4`}
+              type="video/mp4"
+            />
+          </video>
+        </div>
         <div className="grain-overlay" aria-hidden="true" />
         <LenisProvider>
           {children}

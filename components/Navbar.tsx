@@ -84,11 +84,11 @@ export default function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden text-noir-text/80 hover:text-noir-gold transition-colors bg-transparent border-none"
+          className="md:hidden text-noir-text/80 hover:text-noir-gold transition-colors bg-transparent border-none p-2"
           onClick={() => setMobileOpen(true)}
           aria-label="פתח תפריט"
         >
-          <Menu size={22} />
+          <Menu size={28} />
         </button>
       </motion.nav>
 

@@ -158,7 +158,7 @@ export default function TestimonialsPage() {
     <>
       {/* ── Page Hero ──────────────────────────────────────────────────────── */}
       <div
-        className="relative bg-noir-bg pt-32 pb-20 px-6 md:px-12 overflow-hidden"
+        className="relative bg-noir-bg/90 pt-32 pb-20 px-6 md:px-12 overflow-hidden"
         style={{ borderBottom: "1px solid rgba(212,175,55,0.1)" }}
       >
         <div
@@ -250,7 +250,7 @@ export default function TestimonialsPage() {
       </div>
 
       {/* ── Testimonials Grid ──────────────────────────────────────────────── */}
-      <section className="bg-noir-bg py-20 px-6 md:px-12" dir="rtl">
+      <section className="bg-noir-bg/90 py-20 px-6 md:px-12" dir="rtl">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {testimonials.map((t, i) => (
             <TestimonialCard key={i} t={t} index={i} />

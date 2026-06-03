@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="bg-noir-bg min-h-screen">
+    <main className="relative z-10 min-h-screen">
       <Navbar />
       <PracticeAreasPage />
       <Footer />
