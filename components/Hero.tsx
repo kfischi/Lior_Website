@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, Phone } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dptyfvwyo";
 const VIDEO_ID   = process.env.NEXT_PUBLIC_CLOUDINARY_VIDEO_PUBLIC_ID || "HERO_u4uu8h";
@@ -98,11 +98,11 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.9, ease: "easeOut" }}
         >
-          <div className="w-16 h-px bg-noir-gold/70" />
-          <p className="font-heebo text-noir-gold text-sm md:text-base uppercase tracking-[0.35em] font-semibold" style={{ textShadow: "0 0 20px rgba(212,175,55,0.5)" }}>
+          <div className="w-20 h-px bg-noir-gold/80" />
+          <p className="font-heebo text-noir-gold text-lg md:text-2xl uppercase tracking-[0.3em] font-bold" style={{ textShadow: "0 0 30px rgba(212,175,55,0.7), 0 0 60px rgba(212,175,55,0.3)" }}>
             עורכת דין פלילית בכירה
           </p>
-          <div className="w-16 h-px bg-noir-gold/70" />
+          <div className="w-20 h-px bg-noir-gold/80" />
         </motion.div>
 
         {/* Headline line 1 */}
@@ -165,30 +165,6 @@ export default function Hero() {
           ייעוץ משפטי חסוי&emsp;|&emsp;ניסיון של עשרות שנים
         </motion.p>
 
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.6, duration: 0.7, ease }}
-        >
-          <motion.a
-            href={`tel:${phone}`}
-            className="group relative inline-flex items-center gap-3 font-heebo font-medium text-noir-gold px-10 py-4 text-xs md:text-sm tracking-[0.3em] uppercase overflow-hidden"
-            style={{ border: "1px solid rgba(212,175,55,0.6)" }}
-            whileHover="hover"
-            initial="rest"
-          >
-            <motion.span
-              className="absolute inset-0 bg-noir-accent"
-              variants={{ rest: { scaleX: 0, originX: "100%" }, hover: { scaleX: 1, originX: "100%" } }}
-              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            />
-            <span className="relative z-10 flex items-center gap-3">
-              <Phone size={14} />
-              צור קשר עכשיו
-            </span>
-          </motion.a>
-        </motion.div>
       </div>
 
       {/* ── Emergency badge ───────────────────────────────────────────────── */}
