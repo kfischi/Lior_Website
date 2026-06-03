@@ -29,7 +29,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative w-full overflow-hidden flex items-center justify-center"
+      className="relative w-full overflow-hidden flex items-end justify-center"
       style={{ height: "100svh", minHeight: 600 }}
     >
       {/* ── Layer 0: Video ────────────────────────────────────────────────── */}
@@ -53,7 +53,7 @@ export default function Hero() {
         style={{
           zIndex: 10,
           background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.50) 0%, rgba(0,0,0,0.28) 35%, rgba(0,0,0,0.50) 70%, rgba(0,0,0,0.85) 100%)",
+            "linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.92) 100%)",
         }}
         aria-hidden="true"
       />
@@ -87,7 +87,7 @@ export default function Hero() {
 
       {/* ── Layer 5: Content ──────────────────────────────────────────────── */}
       <div
-        className="relative flex flex-col items-center text-center px-6 max-w-4xl mx-auto w-full"
+        className="relative flex flex-col items-center text-center px-6 max-w-4xl mx-auto w-full pb-28 md:pb-36"
         style={{ zIndex: 40 }}
         dir="rtl"
       >
