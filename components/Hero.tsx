@@ -98,11 +98,11 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.9, ease: "easeOut" }}
         >
-          <div className="w-10 h-px bg-noir-gold/60" />
-          <p className="font-heebo text-noir-gold text-[11px] md:text-xs uppercase tracking-[0.45em] font-medium">
+          <div className="w-16 h-px bg-noir-gold/70" />
+          <p className="font-heebo text-noir-gold text-sm md:text-base uppercase tracking-[0.35em] font-semibold" style={{ textShadow: "0 0 20px rgba(212,175,55,0.5)" }}>
             עורכת דין פלילית בכירה
           </p>
-          <div className="w-10 h-px bg-noir-gold/60" />
+          <div className="w-16 h-px bg-noir-gold/70" />
         </motion.div>
 
         {/* Headline line 1 */}
@@ -156,8 +156,8 @@ export default function Hero() {
 
         {/* Subheadline */}
         <motion.p
-          className="font-heebo text-white/55 text-xs md:text-sm mb-12"
-          style={{ letterSpacing: "0.22em" }}
+          className="font-heebo text-white/75 text-sm md:text-lg mb-12 font-light"
+          style={{ letterSpacing: "0.18em" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.35, duration: 0.8 }}
