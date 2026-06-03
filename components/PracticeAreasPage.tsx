@@ -221,7 +221,7 @@ export default function PracticeAreasPage() {
       {/* ── Page Hero ──────────────────────────────────────────────────────── */}
       <div
         ref={heroRef}
-        className="relative bg-noir-bg/90 pt-32 pb-20 px-6 md:px-12 overflow-hidden"
+        className="relative bg-noir-bg/70 pt-32 pb-20 px-6 md:px-12 overflow-hidden"
         style={{ borderBottom: "1px solid rgba(212,175,55,0.1)" }}
       >
         {/* BG glow */}
@@ -288,7 +288,7 @@ export default function PracticeAreasPage() {
 
       {/* ── Areas Grid ─────────────────────────────────────────────────────── */}
       <section
-        className="bg-noir-bg/90 py-20 px-6 md:px-12"
+        className="bg-noir-bg/70 py-20 px-6 md:px-12"
         dir="rtl"
       >
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -300,7 +300,7 @@ export default function PracticeAreasPage() {
 
       {/* ── Bottom CTA ─────────────────────────────────────────────────────── */}
       <section
-        className="bg-noir-surface py-20 px-6 text-center"
+        className="bg-noir-surface/70 py-20 px-6 text-center"
         dir="rtl"
         style={{ borderTop: "1px solid rgba(212,175,55,0.1)" }}
       >

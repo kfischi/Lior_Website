@@ -197,15 +197,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             loop
             muted
             playsInline
-            preload="none"
+            preload="auto"
             className="absolute inset-0 w-full h-full object-cover"
-            style={{ opacity: 0.08 }}
+            style={{ opacity: 0.22 }}
           >
             <source
-              src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dptyfvwyo"}/video/upload/q_auto:eco,w_1280,vc_auto,f_auto/${process.env.NEXT_PUBLIC_CLOUDINARY_VIDEO_PUBLIC_ID || "HERO_u4uu8h"}.mp4`}
+              src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dptyfvwyo"}/video/upload/q_auto:good,w_1280,vc_auto,f_auto/${process.env.NEXT_PUBLIC_CLOUDINARY_VIDEO_PUBLIC_ID || "HERO_u4uu8h"}.mp4`}
               type="video/mp4"
             />
           </video>
+          {/* Dark overlay to keep content readable */}
+          <div className="absolute inset-0" style={{ background: "rgba(10,10,10,0.55)" }} />
         </div>
         <div className="grain-overlay" aria-hidden="true" />
         <LenisProvider>

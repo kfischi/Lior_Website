@@ -13,7 +13,7 @@ export default function ContactSection() {
     <section
       id="contact"
       ref={ref}
-      className="relative bg-noir-surface py-28 md:py-44 px-6 text-center overflow-hidden"
+      className="relative bg-noir-surface/70 py-28 md:py-44 px-6 text-center overflow-hidden"
       dir="rtl"
       style={{ borderTop: "1px solid rgba(212,175,55,0.1)" }}
     >

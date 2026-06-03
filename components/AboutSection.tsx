@@ -63,7 +63,7 @@ export default function AboutSection() {
     <section
       id="about"
       ref={ref}
-      className="relative bg-noir-bg py-24 md:py-36 px-6 md:px-12 overflow-hidden"
+      className="relative bg-noir-bg/70 py-24 md:py-36 px-6 md:px-12 overflow-hidden"
       dir="rtl"
     >
       {/* Subtle background accent */}

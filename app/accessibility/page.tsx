@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="relative z-10 min-h-screen">
+    <main className="relative z-10 min-h-screen bg-noir-bg/70">
       <Navbar />
       <div className="max-w-3xl mx-auto px-6 pt-32 pb-20" dir="rtl">
         <h1 className="font-playfair text-4xl font-bold text-noir-text mb-3">הצהרת נגישות</h1>
