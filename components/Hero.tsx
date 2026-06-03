@@ -16,7 +16,7 @@ const ease = [0.25, 0.46, 0.45, 0.94] as const;
 export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const phone = process.env.NEXT_PUBLIC_LAWYER_PHONE || "+972-50-0000000";
+  const phone = process.env.NEXT_PUBLIC_LAWYER_PHONE || "+972-52-4694158";
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -162,7 +162,7 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.35, duration: 0.8 }}
         >
-          ייעוץ משפטי חסוי&emsp;|&emsp;זמין 24/7&emsp;|&emsp;ניסיון של עשרות שנים
+          ייעוץ משפטי חסוי&emsp;|&emsp;ניסיון של עשרות שנים
         </motion.p>
 
         {/* CTA */}
@@ -211,7 +211,7 @@ export default function Hero() {
           }}
           transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
         />
-        <span>זמין 24/7 — חירום</span>
+        <span>זמינה לחירום</span>
       </motion.div>
 
       {/* ── Scroll indicator ──────────────────────────────────────────────── */}

@@ -200,7 +200,7 @@ function AreaCard({ area, index }: { area: typeof areas[0]; index: number }) {
           style={{ borderTop: "1px solid rgba(212,175,55,0.1)" }}
         >
           <a
-            href={`tel:${process.env.NEXT_PUBLIC_LAWYER_PHONE || "+972-50-0000000"}`}
+            href={`tel:${process.env.NEXT_PUBLIC_LAWYER_PHONE || "+972-52-4694158"}`}
             className="flex items-center gap-2 font-heebo text-xs text-noir-gold hover:text-white transition-colors tracking-wider"
           >
             <Phone size={13} />
@@ -314,10 +314,10 @@ export default function PracticeAreasPage() {
             <span className="text-noir-gold">דברו איתנו עכשיו.</span>
           </h2>
           <p className="font-heebo text-noir-text/50 text-sm mb-10">
-            שיחה ראשונה ללא עלות. חסוי לחלוטין. זמין 24/7.
+            שיחה ראשונה ללא עלות. חסוי לחלוטין.
           </p>
           <motion.a
-            href={`tel:${process.env.NEXT_PUBLIC_LAWYER_PHONE || "+972-50-0000000"}`}
+            href={`tel:${process.env.NEXT_PUBLIC_LAWYER_PHONE || "+972-52-4694158"}`}
             className="inline-flex items-center gap-3 font-heebo font-medium text-noir-gold px-10 py-4 text-sm tracking-[0.25em] uppercase"
             style={{ border: "1px solid rgba(212,175,55,0.5)" }}
             whileHover={{ backgroundColor: "#8b0000", borderColor: "#8b0000" }}

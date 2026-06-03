@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 
-const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "972500000000";
+const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "972524694158";
 
 export default function WhatsAppButton() {
   const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("שלום, אני מעוניין/ת בייעוץ משפטי ראשוני.")}`;
@@ -12,7 +12,7 @@ export default function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="שלח הודעת WhatsApp"
-      className="fixed top-4 left-20 z-50 flex items-center gap-2 px-3 py-2 font-heebo text-xs font-medium text-white"
+      className="fixed bottom-24 right-6 z-50 flex items-center gap-2 px-3 py-2 font-heebo text-xs font-medium text-white"
       style={{ background: "#25D366", borderRadius: 0 }}
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}

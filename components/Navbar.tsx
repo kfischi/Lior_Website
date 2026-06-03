@@ -17,7 +17,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const phone = process.env.NEXT_PUBLIC_LAWYER_PHONE || "+972-50-0000000";
+  const phone = process.env.NEXT_PUBLIC_LAWYER_PHONE || "+972-52-4694158";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -43,12 +43,12 @@ export default function Navbar() {
         {/* Left — CTA */}
         <motion.a
           href={`tel:${phone}`}
-          className="flex items-center gap-2 bg-noir-accent text-noir-text px-5 py-2.5 text-sm font-heebo font-medium tracking-wide"
+          className="flex items-center justify-center bg-noir-accent text-noir-text w-10 h-10"
+          aria-label="חייגי עכשיו"
           whileHover={{ backgroundColor: "#a00000" }}
           transition={{ duration: 0.2 }}
         >
-          <Phone size={14} />
-          <span>חייגי עכשיו</span>
+          <Phone size={16} />
         </motion.a>
 
         {/* Center — nav links (desktop) */}

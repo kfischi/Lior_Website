@@ -110,9 +110,9 @@ export async function POST(req: NextRequest) {
           status: string;
         };
         await triggerWebhook(intakeData, sessionId);
+        const summaryMessage = `תודה, ${intakeData.name}. הפרטים שלך התקבלו בהצלחה.\n\n📋 סיכום הפנייה:\n• שם: ${intakeData.name}\n• טלפון: ${intakeData.phone}\n• עניין: ${intakeData.incident}\n• דחיפות: ${intakeData.urgency}\n\nעורכת הדין ליאור קלואי ארז תחזור אליך בהקדם האפשרי.`;
         return NextResponse.json({
-          message:
-            "תודה רבה. הפרטים שלך התקבלו בהצלחה.\nאחד מעורכי הדין שלנו ייצור איתך קשר בהקדם האפשרי.\n\nאם מדובר בדחיפות — אנא התקשר ישירות לקו החירום.",
+          message: summaryMessage,
           complete: true,
         });
       } catch {

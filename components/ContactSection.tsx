@@ -7,7 +7,7 @@ import { Phone, MessageSquare } from "lucide-react";
 export default function ContactSection() {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-20% 0px" });
-  const phone = process.env.NEXT_PUBLIC_LAWYER_PHONE || "+972-50-0000000";
+  const phone = process.env.NEXT_PUBLIC_LAWYER_PHONE || "+972-52-4694158";
 
   return (
     <section

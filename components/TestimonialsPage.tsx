@@ -84,7 +84,7 @@ const stats = [
   { value: "500+", label: "תיקים טופלו" },
   { value: "95%", label: "תוצאות חיוביות" },
   { value: "20+", label: "שנות ניסיון" },
-  { value: "24/7", label: "זמינות מלאה" },
+  { value: "100%", label: "מחויבות מלאה" },
 ];
 
 const ease = [0.25, 0.46, 0.45, 0.94] as const;

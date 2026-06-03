@@ -24,7 +24,7 @@ export default function Page() {
           ["5. עוגיות", "האתר עשוי להשתמש בעוגיות לצרכי ניתוח תנועה ושיפור חוויית הגלישה. ראו מדיניות עוגיות להרחבה."],
           ["6. זכויות המשתמש", "על-פי חוק הגנת הפרטיות, תשמ\"א-1981, יש לכם זכות לעיין במידע האצור אודותיכם, לתקנו ולבקש מחיקתו. לפנייה: office@lior-kloay-erez.co.il"],
           ["7. שינויים במדיניות", "אנו שומרים את הזכות לעדכן מדיניות זו בכל עת. שינויים מהותיים יפורסמו באתר."],
-          ["8. יצירת קשר", `לכל שאלה בנושא פרטיות: office@lior-kloay-erez.co.il | ${process.env.NEXT_PUBLIC_LAWYER_PHONE || "+972-50-0000000"}`],
+          ["8. יצירת קשר", `לכל שאלה בנושא פרטיות: office@lior-kloay-erez.co.il | ${process.env.NEXT_PUBLIC_LAWYER_PHONE || "+972-52-4694158"}`],
         ].map(([title, body]) => (
           <section key={title} className="mb-8">
             <h2 className="font-playfair text-xl font-semibold text-noir-gold mb-3">{title}</h2>
