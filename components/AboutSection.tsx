@@ -2,27 +2,44 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import Image from "next/image";
+
+const PHOTO_URL =
+  "https://res.cloudinary.com/dptyfvwyo/image/upload/v1781356099/%D7%A8%D7%A9%D7%9E%D7%99_ta7dag.jpg";
+
+const ease = [0.25, 0.46, 0.45, 0.94] as const;
 
 const stats = [
-  { value: 500, suffix: "+", label: "תיקים" },
-  { value: 95, suffix: "%", label: "הצלחה" },
-  { value: 24, suffix: "/7", label: "זמינות" },
+  { value: 21, suffix: "+", label: "שנות ניסיון" },
+  { value: 1000, suffix: "+", label: "תיקים טופלו", formatted: "1,000+" },
+  { value: 3, suffix: "", label: "ערכאות שיפוט" },
+];
+
+const tags = ["פלילי", "רשלנות רפואית", "דיני משפחה", "נזיקין", "תעבורה"];
+
+const bioLines = [
+  "עו״ד ליאור-קלואי ארז היא עורכת דין בעלת ניסיון של למעלה מ-21 שנה, המתמחה במשפט הפלילי, רשלנות רפואית, דיני משפחה ונזיקין.",
+  "לאורך הקריירה שלה ייצגה מאות לקוחות בתיקים מורכבים ורגישים — החל מחקירות משטרתיות ועד לעתירות בבית המשפט העליון.",
+  "בין תחומי התמחותה הבולטים: ייצוג נפגעי רשלנות רפואית, לרבות משפחות נפגעים, ייצוג פלילי מלא בכל הערכאות, וליווי משפטי בדיני משפחה ונזיקין.",
+  "המשרד ממוקם בחריש ומעניק שירות גם בזום, לנוחות מרבית של הלקוח.",
 ];
 
 function AnimatedCounter({
   target,
   suffix,
+  formatted,
   active,
 }: {
   target: number;
   suffix: string;
+  formatted?: string;
   active: boolean;
 }) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!active) return;
-    const duration = 1800;
+    const duration = 1600;
     const steps = 60;
     const increment = target / steps;
     let current = 0;
@@ -38,26 +55,24 @@ function AnimatedCounter({
     return () => clearInterval(timer);
   }, [active, target]);
 
+  const display = formatted && count >= target ? formatted : `${count.toLocaleString()}${suffix}`;
+
   return (
     <span className="font-playfair text-4xl md:text-5xl font-bold text-noir-gold">
-      {count}
-      {suffix}
+      {display}
     </span>
   );
 }
 
-const sectionVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
-
 export default function AboutSection() {
   const ref = useRef<HTMLElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-20% 0px" });
+  const inView = useInView(ref, { once: true, amount: 0.2 });
+
+  const stagger = (i: number) => ({
+    initial: { opacity: 0, y: 30 },
+    animate: inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 },
+    transition: { delay: i * 0.15, duration: 0.7, ease },
+  });
 
   return (
     <section
@@ -66,136 +81,170 @@ export default function AboutSection() {
       className="relative bg-noir-bg/70 py-24 md:py-36 px-6 md:px-12 overflow-hidden"
       dir="rtl"
     >
-      {/* Subtle background accent */}
+      {/* Subtle gold glow top-right */}
       <div
-        className="absolute top-0 right-0 w-64 h-64 opacity-5 pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, #d4af37 0%, transparent 70%)",
-        }}
+        className="absolute top-0 right-0 w-96 h-96 opacity-[0.04] pointer-events-none"
+        style={{ background: "radial-gradient(circle, #d4af37 0%, transparent 70%)" }}
         aria-hidden="true"
       />
 
       <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-16 md:gap-24 items-center">
-          {/* Right — Portrait (in RTL, this appears on the right) */}
-          <motion.div
-            variants={sectionVariants}
-            initial="hidden"
-            animate={inView ? "visible" : "hidden"}
-            className="relative"
-          >
-            {/* Portrait placeholder */}
-            <div
-              className="relative w-full aspect-[3/4] bg-noir-surface overflow-hidden"
-              style={{ border: "1px solid rgba(212,175,55,0.15)" }}
-            >
-              {/* Cinematic portrait placeholder */}
-              <div className="absolute inset-0 flex flex-col items-center justify-end p-8 bg-gradient-to-t from-noir-bg via-transparent to-transparent">
-                <div className="w-full h-full absolute inset-0 flex items-center justify-center">
-                  <div className="text-center opacity-20">
-                    <div className="w-32 h-32 rounded-full bg-noir-elevated mx-auto mb-4" />
-                    <div className="w-48 h-2 bg-noir-elevated mx-auto mb-2" />
-                    <div className="w-32 h-2 bg-noir-elevated mx-auto" />
-                  </div>
-                </div>
-              </div>
+        <div className="grid md:grid-cols-2 gap-0 md:gap-20 items-start">
 
-              {/* Corner decoration */}
-              <div
-                className="absolute top-0 right-0 w-16 h-16"
+          {/* ── Right column: Photo ───────────────────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={inView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.9, ease }}
+            className="relative mb-16 md:mb-0"
+          >
+            <div
+              className="relative overflow-hidden"
+              style={{
+                borderRight: "3px solid #d4af37",
+                maxWidth: 480,
+              }}
+            >
+              <Image
+                src={PHOTO_URL}
+                alt='עו״ד ליאור-קלואי ארז'
+                width={480}
+                height={600}
+                className="w-full object-cover object-top"
                 style={{
-                  borderTop: "2px solid #d4af37",
-                  borderRight: "2px solid #d4af37",
+                  filter: "saturate(0.85) contrast(1.05)",
+                  display: "block",
                 }}
-                aria-hidden="true"
+                priority
               />
+              {/* Bottom gradient overlay */}
               <div
-                className="absolute bottom-0 left-0 w-16 h-16"
+                className="absolute inset-0 pointer-events-none"
                 style={{
-                  borderBottom: "2px solid #d4af37",
-                  borderLeft: "2px solid #d4af37",
+                  background:
+                    "linear-gradient(to top, rgba(10,10,10,0.7) 0%, transparent 50%)",
                 }}
-                aria-hidden="true"
               />
             </div>
-
-            {/* Floating experience badge */}
-            <motion.div
-              className="absolute -bottom-6 -left-6 bg-noir-accent px-6 py-4"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={inView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ delay: 0.5, duration: 0.5 }}
-            >
-              <p className="font-playfair text-2xl font-bold text-white">20+</p>
-              <p className="font-heebo text-xs text-white/80 tracking-wide">שנות ניסיון</p>
-            </motion.div>
           </motion.div>
 
-          {/* Left — Bio text (in RTL, left column) */}
-          <motion.div
-            variants={sectionVariants}
-            initial="hidden"
-            animate={inView ? "visible" : "hidden"}
-            transition={{ delay: 0.2 }}
-            className="relative"
-          >
-            {/* Gold vertical line */}
+          {/* ── Left column: Bio text ─────────────────────────────────────── */}
+          <div className="relative">
+            {/* Vertical gold separator */}
             <div
-              className="hidden md:block absolute -right-12 top-0 bottom-0 w-px"
-              style={{ background: "rgba(212,175,55,0.2)" }}
+              className="hidden md:block absolute -right-10 top-0 bottom-0 w-px"
+              style={{ background: "rgba(212,175,55,0.6)" }}
               aria-hidden="true"
             />
 
-            {/* Section label */}
-            <p className="font-heebo text-noir-gold text-xs uppercase tracking-[0.3em] mb-4">
-              אודות המשרד
-            </p>
+            {/* Label */}
+            <motion.p
+              {...stagger(0)}
+              className="font-heebo text-noir-gold uppercase mb-5"
+              style={{ letterSpacing: "0.2em", fontSize: 11 }}
+            >
+              פרופיל מקצועי
+            </motion.p>
 
             {/* Headline */}
-            <h2 className="font-playfair text-3xl md:text-5xl font-bold text-noir-text leading-tight mb-8">
-              20 שנות ניסיון.
-              <br />
-              <span className="text-noir-gold">אלפי תיקים. תוצאות.</span>
-            </h2>
+            <motion.h2
+              {...stagger(1)}
+              className="font-playfair text-3xl md:text-5xl font-bold text-noir-text leading-tight mb-2"
+            >
+              21 שנה של ניסיון.
+            </motion.h2>
+            <motion.h2
+              {...stagger(2)}
+              className="font-playfair text-3xl md:text-5xl font-bold text-noir-gold leading-tight mb-6"
+            >
+              תוצאות אמיתיות.
+            </motion.h2>
+
+            {/* Gold rule */}
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={inView ? { width: 60, opacity: 1 } : {}}
+              transition={{ delay: 0.45, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="h-px bg-noir-gold mb-8"
+            />
 
             {/* Bio paragraphs */}
-            <div className="space-y-5 text-noir-text/70 font-heebo text-base leading-relaxed mb-12">
-              <p>
-                עם ניסיון של מעל עשרים שנה בדיני פלילים, משרדנו ייצג אלפי לקוחות מול
-                מערכת האכיפה הישראלית — ממעצרים ראשוניים ועד דיונים בבית המשפט העליון.
-              </p>
-              <p>
-                אנו מאמינים שכל אדם ראוי להגנה מקצועית ובלתי מתפשרת, ללא קשר לאישום
-                המיוחס לו. הגישה שלנו: מהיר, אגרסיבי, ודיסקרטי לחלוטין.
-              </p>
-              <p>
-                השירות שלנו זמין 24 שעות ביממה, שבעה ימים בשבוע — כי המציאות הפלילית
-                לא מחכה לשעות פנאי.
-              </p>
+            <div className="space-y-4 mb-10">
+              {bioLines.map((line, i) => (
+                <motion.p
+                  key={i}
+                  {...stagger(3 + i)}
+                  className="font-heebo leading-[1.9] text-[#c8c8c8]"
+                  style={{ fontSize: 16 }}
+                >
+                  {line}
+                </motion.p>
+              ))}
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 pt-8" style={{ borderTop: "1px solid rgba(212,175,55,0.15)" }}>
+            <motion.div
+              {...stagger(7)}
+              className="grid grid-cols-3 gap-4 py-8 mb-8"
+              style={{ borderTop: "1px solid rgba(212,175,55,0.2)", borderBottom: "1px solid rgba(212,175,55,0.2)" }}
+            >
               {stats.map((stat, i) => (
                 <motion.div
                   key={stat.label}
                   className="text-center"
                   initial={{ opacity: 0, y: 20 }}
                   animate={inView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.4 + i * 0.1, duration: 0.6 }}
+                  transition={{ delay: 0.8 + i * 0.12, duration: 0.6, ease }}
                 >
                   <AnimatedCounter
                     target={stat.value}
                     suffix={stat.suffix}
+                    formatted={stat.formatted}
                     active={inView}
                   />
-                  <p className="font-heebo text-xs text-noir-muted tracking-wide mt-1">
+                  <p className="font-heebo text-xs text-white/60 tracking-wide mt-2">
                     {stat.label}
                   </p>
                 </motion.div>
               ))}
-            </div>
-          </motion.div>
+            </motion.div>
+
+            {/* Tags */}
+            <motion.div {...stagger(8)} className="flex flex-wrap gap-2 mb-10">
+              {tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="font-heebo text-xs text-noir-muted px-3 py-1.5"
+                  style={{ border: "1px solid #2a2a2a" }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </motion.div>
+
+            {/* CTA */}
+            <motion.a
+              {...stagger(9)}
+              href="#contact"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="group inline-flex items-center gap-2 font-heebo text-sm text-noir-text/70 hover:text-noir-gold transition-colors duration-200"
+            >
+              <span
+                className="inline-block transition-transform duration-200 group-hover:-translate-x-1"
+              >
+                ←
+              </span>
+              <span className="relative">
+                לתיאום פגישת ייעוץ
+                <span
+                  className="absolute bottom-0 right-0 h-px bg-noir-gold transition-all duration-300 w-0 group-hover:w-full"
+                />
+              </span>
+            </motion.a>
+          </div>
         </div>
       </div>
     </section>
