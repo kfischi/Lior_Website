@@ -99,8 +99,11 @@ export default function Hero() {
           transition={{ delay: 0.3, duration: 0.9, ease: "easeOut" }}
         >
           <div className="w-20 h-px bg-noir-gold/80" />
-          <p className="font-heebo text-noir-gold text-lg md:text-2xl uppercase tracking-[0.3em] font-bold" style={{ textShadow: "0 0 30px rgba(212,175,55,0.7), 0 0 60px rgba(212,175,55,0.3)" }}>
-            עורכת דין פלילית בכירה
+          <p
+            className="font-heebo text-noir-gold text-sm md:text-base uppercase font-semibold"
+            style={{ letterSpacing: "0.25em", fontSize: 11 }}
+          >
+            עורכת דין | חריש
           </p>
           <div className="w-20 h-px bg-noir-gold/80" />
         </motion.div>
@@ -162,33 +165,27 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.35, duration: 0.8 }}
         >
-          ייעוץ משפטי חסוי&emsp;|&emsp;ניסיון של עשרות שנים
+          ייעוץ משפטי חסוי&emsp;|&emsp;21 שנות ניסיון&emsp;|&emsp;חריש והסביבה
         </motion.p>
 
-      </div>
-
-      {/* ── Emergency badge ───────────────────────────────────────────────── */}
-      <motion.div
-        className="absolute bottom-[5vh] right-6 md:right-10 flex items-center gap-3 font-heebo text-[11px] tracking-widest text-white/65 uppercase"
-        style={{ zIndex: 40 }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2.0, duration: 0.7 }}
-        dir="rtl"
-      >
-        <motion.span
-          className="w-2 h-2 rounded-full bg-noir-accent flex-shrink-0"
-          animate={{
-            boxShadow: [
-              "0 0 0px 0px rgba(139,0,0,0)",
-              "0 0 6px 4px rgba(139,0,0,0.8)",
-              "0 0 0px 0px rgba(139,0,0,0)",
-            ],
+        {/* CTA */}
+        <motion.a
+          href="#contact"
+          onClick={(e) => {
+            e.preventDefault();
+            document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
           }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <span>זמינה לחירום</span>
-      </motion.div>
+          className="inline-flex items-center font-heebo font-medium text-noir-gold px-8 py-4 text-sm tracking-[0.2em] uppercase transition-colors duration-300"
+          style={{ border: "1px solid #d4af37" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4, duration: 0.7, ease }}
+          whileHover={{ backgroundColor: "#8b0000", borderColor: "#8b0000", color: "#fff" }}
+          whileTap={{ scale: 0.98 }}
+        >
+          לתיאום פגישת ייעוץ
+        </motion.a>
+      </div>
 
       {/* ── Scroll indicator ──────────────────────────────────────────────── */}
       <motion.button

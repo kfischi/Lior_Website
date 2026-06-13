@@ -2,142 +2,110 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import {
-  Pill,
-  Swords,
-  ShieldAlert,
-  BarChart2,
-  Car,
-  Users,
-} from "lucide-react";
+import { Shield, Activity, Users, Briefcase, Scale, MapPin } from "lucide-react";
+
+const ease = [0.25, 0.46, 0.45, 0.94] as const;
 
 const areas = [
   {
-    icon: Pill,
-    title: "עבירות סמים",
-    description: "החזקה, סחר ויבוא — הגנה מקצועית בכל שלבי ההליך",
+    icon: Shield,
+    title: "פלילי ותעבורה",
+    body: "ייצוג לפני חקירה, מעצרי ימים, מעצרי תום הליכים, כל הערכאות, עתירות אסירים וחנינות.",
   },
   {
-    icon: Swords,
-    title: "עבירות אלימות",
-    description: "תקיפה, אלימות במשפחה ואיומים — ייצוג אגרסיבי ויעיל",
-  },
-  {
-    icon: ShieldAlert,
-    title: "עבירות מין",
-    description: "טיפול בדיסקרטיות מוחלטת, עם דגש על הגנת המתלונן ועל זכויות הנאשם",
-  },
-  {
-    icon: BarChart2,
-    title: "עבירות כלכליות",
-    description: "הונאה, מרמה, שוחד ועבירות צווארון לבן — ניסיון מוכח",
-  },
-  {
-    icon: Car,
-    title: "תעבורה",
-    description: "שלילת רישיון, נהיגה בשכרות ותאונות קטלניות",
+    icon: Activity,
+    title: "רשלנות רפואית",
+    body: "ייצוג נפגעי תרופות וזריקות, לרבות משפחות נפגעים — 21 שנות ניסיון מוכח.",
   },
   {
     icon: Users,
-    title: "עבירות נוער",
-    description: "גישה ייעודית לקטינים — הגנה שמשמרת עתיד",
+    title: "דיני משפחה",
+    body: "צוואות וירושה, אפוטרופסות, הצהרות מוות, יפוי כוח מתמשך, צווי הרחקה.",
+  },
+  {
+    icon: Briefcase,
+    title: "דיני עבודה ונזיקין",
+    body: "אפליה והתעמרות בעבודה, הטרדה מינית, נזיקין ללא הוכחת נזק, ביטוח לאומי, לשון הרע.",
+  },
+  {
+    icon: Scale,
+    title: "משפט אזרחי",
+    body: "תביעות נזיקין, ליטיגציה אזרחית, ייצוג בכל הערכאות.",
+  },
+  {
+    icon: MapPin,
+    title: "זמינות ונגישות",
+    body: "משרד בחריש | פגישות בזום בתיאום מראש.",
   },
 ];
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.1,
-      duration: 0.7,
-      ease: [0.25, 0.46, 0.45, 0.94],
-    },
-  }),
-};
+function AreaCard({ area, index }: { area: typeof areas[0]; index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-10% 0px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ delay: index * 0.1, duration: 0.7, ease }}
+      className="group relative p-8 bg-noir-surface transition-all duration-300"
+      style={{ border: "1px solid #2a2a2a" }}
+      whileHover={{ y: -4, borderColor: "rgba(212,175,55,0.5)" }}
+    >
+      <div className="flex items-start gap-4 mb-4" dir="rtl">
+        <area.icon size={22} className="text-noir-gold flex-shrink-0 mt-0.5" />
+        <h3 className="font-playfair text-xl font-bold text-noir-text">{area.title}</h3>
+      </div>
+      <p className="font-heebo text-sm text-noir-muted leading-relaxed" dir="rtl">
+        {area.body}
+      </p>
+    </motion.div>
+  );
+}
 
 export default function PracticeAreas() {
-  const ref = useRef<HTMLElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-20% 0px" });
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.1 });
 
   return (
     <section
       id="practice-areas"
-      ref={ref}
-      className="relative bg-noir-surface py-24 md:py-36 px-6 md:px-12"
+      className="relative bg-noir-bg/70 py-24 md:py-36 px-6 md:px-12"
       dir="rtl"
-      style={{ borderTop: "1px solid rgba(212,175,55,0.1)" }}
     >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-        >
-          <p className="font-heebo text-noir-gold text-xs uppercase tracking-[0.3em] mb-4">
-            תחומי עיסוק
-          </p>
-          <h2 className="font-playfair text-3xl md:text-5xl font-bold text-noir-text">
-            ההתמחויות שלנו
-          </h2>
-          <div
-            className="w-16 h-px bg-noir-gold mx-auto mt-6"
-            aria-hidden="true"
+        <div className="text-center mb-16">
+          <motion.p
+            ref={ref}
+            className="font-heebo text-noir-gold text-[11px] uppercase tracking-[0.35em] mb-4"
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6 }}
+          >
+            תחומי התמחות
+          </motion.p>
+          <motion.h2
+            className="font-playfair text-3xl md:text-5xl font-bold text-noir-text"
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.1, duration: 0.7, ease }}
+          >
+            שירותים משפטיים
+          </motion.h2>
+          <motion.div
+            className="h-px bg-noir-gold mx-auto mt-6"
+            initial={{ width: 0 }}
+            animate={inView ? { width: 60 } : {}}
+            transition={{ delay: 0.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           />
-        </motion.div>
+        </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {areas.map((area, i) => (
-            <motion.div
-              key={area.title}
-              custom={i}
-              variants={cardVariants}
-              initial="hidden"
-              animate={inView ? "visible" : "hidden"}
-              whileHover={{ y: -4 }}
-              transition={{ duration: 0.25 }}
-              className="group relative bg-noir-bg p-8"
-              style={{
-                border: "1px solid rgba(212,175,55,0.1)",
-                transition: "border-color 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.borderColor =
-                  "rgba(212,175,55,0.5)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLDivElement).style.borderColor =
-                  "rgba(212,175,55,0.1)";
-              }}
-            >
-              {/* Icon */}
-              <div className="mb-5">
-                <area.icon
-                  size={28}
-                  className="text-noir-gold group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-
-              {/* Title */}
-              <h3 className="font-playfair text-xl font-semibold text-noir-text mb-3">
-                {area.title}
-              </h3>
-
-              {/* Description */}
-              <p className="font-heebo text-sm text-noir-muted leading-relaxed">
-                {area.description}
-              </p>
-
-              {/* Bottom accent line — appears on hover */}
-              <div
-                className="absolute bottom-0 right-0 left-0 h-0.5 bg-noir-accent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-right"
-                aria-hidden="true"
-              />
-            </motion.div>
+            <AreaCard key={area.title} area={area} index={i} />
           ))}
         </div>
       </div>

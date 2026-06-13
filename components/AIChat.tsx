@@ -64,7 +64,7 @@ const OPENING_MESSAGE: Message = {
   id: "init-0",
   role: "assistant",
   content:
-    "שלום. אני מערכת הקבלה של משרד עורכי הדין.\nאני כאן כדי לסייע לך בצורה חסויה ומהירה.\nכל מידע שתשתף איתי מוצפן ומועבר ישירות לצוות המשפטי.\n\nכדי שנוכל לסייע לך בצורה הטובה ביותר, אשאל אותך מספר שאלות קצרות.\n\nראשית — מה שמך המלא?",
+    "שלום. אני מערכת הקבלה של משרד עורכת הדין ליאור-קלואי ארז.\nאני כאן כדי לסייע לך בצורה חסויה ומהירה.\nכל מידע שתשתף מועבר ישירות לצוות המשפטי.\n\nכדי שנוכל לסייע לך בצורה הטובה ביותר,\nאשאל אותך מספר שאלות קצרות.\n\nראשית — מה שמך המלא?",
   timestamp: new Date(),
 };
 
@@ -205,7 +205,7 @@ export default function AIChat() {
 
       dispatch({ type: "ADD_MESSAGE", payload: assistantMsg });
 
-      if (data.complete) {
+      if (data.collected || data.complete) {
         dispatch({ type: "SET_COMPLETE" });
       }
     } catch {

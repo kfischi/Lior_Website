@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import CredentialsBar from "@/components/CredentialsBar";
 import AboutSection from "@/components/AboutSection";
 import PracticeAreas from "@/components/PracticeAreas";
 import Testimonials from "@/components/Testimonials";
@@ -9,9 +10,10 @@ import AIChat from "@/components/AIChat";
 
 export default function Home() {
   return (
-    <main className="bg-noir-bg min-h-screen">
+    <main className="relative z-10 min-h-screen">
       <Navbar />
       <Hero />
+      <CredentialsBar />
       <AboutSection />
       <PracticeAreas />
       <Testimonials />
