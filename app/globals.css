@@ -35,8 +35,11 @@ body {
 }
 
 /* ─── Native cursor ─── */
-* {
-  cursor: auto;
+*, *::before, *::after {
+  cursor: auto !important;
+}
+a, button, [role="button"], label[for], select {
+  cursor: pointer !important;
 }
 
 /* ─── Custom Scrollbar ─── */
