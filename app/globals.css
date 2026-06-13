@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Custom Properties ─── */
+:root {
+  --noir-bg: #0a0a0a;
+  --noir-surface: #111111;
+  --noir-elevated: #1a1a1a;
+  --noir-border: #2a2a2a;
+  --noir-muted: #555555;
+  --noir-text: #e8e8e8;
+  --noir-accent: #8b0000;
+  --noir-gold: #d4af37;
+}
+
+/* ─── Base Reset ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: var(--noir-bg);
+  color: var(--noir-text);
+  direction: rtl;
+}
+
+body {
+  background-color: var(--noir-bg);
+  color: var(--noir-text);
+  font-family: var(--font-heebo), 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ─── Native cursor ─── */
+*, *::before, *::after {
+  cursor: auto !important;
+}
+a, button, [role="button"], label[for], select {
+  cursor: pointer !important;
+}
+
+/* ─── Custom Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--noir-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.4);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 55, 0.7);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 175, 55, 0.4) var(--noir-bg);
+}
+
+/* ─── Typography ─── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-playfair), 'Georgia', serif;
+}
+
+/* ─── Noise Grain Texture ─── */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  width: 110%;
+  height: 110%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  animation: grain 8s steps(10) infinite;
+}
+
+@keyframes grain {
+  0%  { transform: translate(0, 0); }
+  10% { transform: translate(-2%, -3%); }
+  20% { transform: translate(3%, 2%); }
+  30% { transform: translate(-1%, 4%); }
+  40% { transform: translate(2%, -2%); }
+  50% { transform: translate(-3%, 1%); }
+  60% { transform: translate(1%, 3%); }
+  70% { transform: translate(3%, -1%); }
+  80% { transform: translate(-2%, 2%); }
+  90% { transform: translate(1%, -3%); }
+  100%{ transform: translate(0, 0); }
+}
+
+/* ─── Gold Border Utility ─── */
+.border-gold-subtle {
+  border-color: rgba(212, 175, 55, 0.15);
+}
+
+.border-gold-medium {
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+/* ─── Gold Underline Hover (RTL) ─── */
+.nav-link {
+  position: relative;
+  text-decoration: none;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: 0;
+  width: 0;
+  height: 1px;
+  background: var(--noir-gold);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* ─── Section Base ─── */
+section {
+  position: relative;
+}
+
+/* ─── Chat Scrollbar ─── */
+.chat-scroll::-webkit-scrollbar {
+  width: 2px;
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background: var(--noir-surface);
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.5);
+}
+
+/* ─── Textarea Auto Resize ─── */
+textarea {
+  resize: none;
+  field-sizing: content;
+}
+
+/* ─── Selection ─── */
+::selection {
+  background: rgba(139, 0, 0, 0.4);
+  color: var(--noir-text);
+}
