@@ -9,23 +9,23 @@ const ease = [0.25, 0.46, 0.45, 0.94] as const;
 
 const CLOUD = "dptyfvwyo";
 
-// ← הכנס כאן את לינקי YouTube האמיתיים
+// ← לינקי YouTube של המלצות הלקוחות
 const videos = [
   {
-    youtubeUrl: "https://www.youtube.com/watch?v=REPLACE_1",
-    thumb: `https://res.cloudinary.com/dptyfvwyo/video/upload/f_auto,q_auto,w_640,so_0/1_mslyru.jpg`,
+    youtubeUrl: "https://www.youtube.com/shorts/y84XQuiUilE",
+    thumb: "https://img.youtube.com/vi/y84XQuiUilE/hqdefault.jpg",
     initials: "ל.מ",
     caseType: "משפט פלילי",
   },
   {
-    youtubeUrl: "https://www.youtube.com/watch?v=REPLACE_2",
-    thumb: `https://res.cloudinary.com/dptyfvwyo/video/upload/f_auto,q_auto,w_640,so_0/2_ctkwoq.jpg`,
+    youtubeUrl: "https://youtu.be/WgO6rikPJDQ",
+    thumb: "https://img.youtube.com/vi/WgO6rikPJDQ/hqdefault.jpg",
     initials: "מ.כ",
     caseType: "דיני עבודה",
   },
   {
-    youtubeUrl: "https://www.youtube.com/watch?v=REPLACE_3",
-    thumb: `https://res.cloudinary.com/dptyfvwyo/video/upload/f_auto,q_auto,w_640,so_0/3_t0bcwk.jpg`,
+    youtubeUrl: "https://youtube.com/shorts/AfU8MaoeqUA",
+    thumb: "https://img.youtube.com/vi/AfU8MaoeqUA/hqdefault.jpg",
     initials: "ר.א",
     caseType: "רשלנות רפואית",
   },
@@ -63,22 +63,25 @@ function VideoCard({ v, index }: { v: typeof videos[0]; index: number }) {
         className="relative flex items-center justify-center bg-noir-elevated overflow-hidden"
         style={{ aspectRatio: "9/16", maxHeight: 380 }}
       >
-        {/* Background shimmer / placeholder */}
-        <div className="absolute inset-0 bg-gradient-to-b from-noir-elevated to-noir-bg" />
+        {/* YouTube thumbnail */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={v.thumb}
+          alt={v.caseType}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ filter: "saturate(0.8) brightness(0.55)" }}
+        />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-noir-bg/80 via-transparent to-transparent" />
 
-        {/* Gold YouTube icon */}
-        <div className="relative z-10 flex flex-col items-center gap-4">
+        {/* Play overlay */}
+        <div className="relative z-10 flex flex-col items-center gap-4 transition-transform duration-300 group-hover:scale-110">
           <div
-            className="w-16 h-16 flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-            style={{ border: "1.5px solid rgba(212,175,55,0.5)" }}
+            className="w-16 h-16 flex items-center justify-center"
+            style={{ border: "1.5px solid rgba(212,175,55,0.7)", background: "rgba(0,0,0,0.5)" }}
           >
             <Youtube size={28} className="text-noir-gold" />
           </div>
-          <p
-            className="font-heebo text-[11px] text-noir-muted/70 uppercase tracking-[0.2em]"
-          >
-            {v.caseType}
-          </p>
         </div>
       </div>
 
