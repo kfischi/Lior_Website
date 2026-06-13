@@ -42,13 +42,14 @@ export default function Navbar() {
       >
         {/* Left — CTA */}
         <motion.a
-          href={`tel:${phone}`}
-          className="flex items-center justify-center bg-noir-accent text-noir-text w-10 h-10"
+          href="tel:0524694158"
+          className="flex items-center gap-2 bg-noir-accent text-white px-4 py-2.5 text-xs font-heebo font-medium tracking-wide"
           aria-label="חייגי עכשיו"
           whileHover={{ backgroundColor: "#a00000" }}
           transition={{ duration: 0.2 }}
         >
-          <Phone size={16} />
+          <Phone size={13} />
+          <span className="hidden sm:inline">052-469-4158</span>
         </motion.a>
 
         {/* Center — nav links (desktop) */}

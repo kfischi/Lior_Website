@@ -24,26 +24,33 @@ export default function Footer() {
       style={{ borderTop: "1px solid rgba(212,175,55,0.15)" }}
     >
       <div className="max-w-7xl mx-auto">
+        {/* Main row */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Right — Logo */}
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-noir-gold" />
-            <span className="font-playfair text-base text-noir-text">ליאור קלואי ארז</span>
-            <span className="text-noir-muted text-xs font-heebo mr-1">עו&quot;ד</span>
+            <span className="font-playfair text-base text-noir-text">עו״ד ליאור-קלואי ארז</span>
           </div>
 
-          {/* Center — Nav */}
-          <nav className="flex items-center gap-6 flex-wrap justify-center">
-            {navLinks.map((link) => (
-              <button
-                key={link.href}
-                onClick={() => handleAnchor(link.href)}
-                className="font-heebo text-xs text-noir-muted hover:text-noir-gold transition-colors duration-200 bg-transparent border-none tracking-wide"
-              >
-                {link.label}
-              </button>
-            ))}
-          </nav>
+          {/* Center — Contact details */}
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 font-heebo text-xs text-noir-muted">
+            <a href="tel:0524694158" className="hover:text-noir-gold transition-colors">
+              052-469-4158
+            </a>
+            <span className="text-noir-border hidden md:inline">|</span>
+            <a href="mailto:Lioraere@gmail.com" className="hover:text-noir-gold transition-colors">
+              Lioraere@gmail.com
+            </a>
+            <span className="text-noir-border hidden md:inline">|</span>
+            <a
+              href="https://maps.google.com/?q=רימון+5+חריש"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-noir-gold transition-colors"
+            >
+              חריש
+            </a>
+          </div>
 
           {/* Left — Bar Association Badge */}
           <div
@@ -57,9 +64,24 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Nav links */}
+        <div className="mt-6 flex justify-center">
+          <nav className="flex items-center gap-6 flex-wrap justify-center">
+            {navLinks.map((link) => (
+              <button
+                key={link.href}
+                onClick={() => handleAnchor(link.href)}
+                className="font-heebo text-xs text-noir-muted hover:text-noir-gold transition-colors duration-200 bg-transparent border-none tracking-wide"
+              >
+                {link.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+
         {/* Legal links */}
         <div
-          className="mt-8 pt-5 flex flex-wrap items-center justify-center gap-4 text-noir-muted/60 font-heebo text-[11px]"
+          className="mt-6 pt-5 flex flex-wrap items-center justify-center gap-4 text-noir-muted/60 font-heebo text-[11px]"
           style={{ borderTop: "1px solid rgba(42,42,42,0.8)" }}
         >
           {[
@@ -74,11 +96,9 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div
-          className="mt-4 flex flex-col md:flex-row items-center justify-between gap-2 text-noir-muted/50 font-heebo text-[11px]"
-        >
-          <p>כל הזכויות שמורות © {year} — משרד עורכת הדין ליאור קלואי ארז</p>
-          <p>האתר אינו מהווה ייעוץ משפטי | אין יחסי עו&quot;ד–לקוח ללא הסכם בכתב</p>
+        <div className="mt-4 flex flex-col md:flex-row items-center justify-between gap-2 text-noir-muted/50 font-heebo text-[11px]">
+          <p>© {year} כל הזכויות שמורות — עו״ד ליאור-קלואי ארז</p>
+          <p>האתר אינו מהווה ייעוץ משפטי | אין יחסי עו״ד–לקוח ללא הסכם בכתב</p>
         </div>
       </div>
     </footer>
