@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Default design tokens. The four --brand-* hex variables and the key shadcn
+ * HSL tokens (--background, --primary, --accent, --ring, ...) are RE-INJECTED at
+ * runtime from src/lib/brand.ts in src/app/layout.tsx, so editing brand.ts
+ * re-themes everything. The values here are sensible fallbacks that match the
+ * default navy / cream / bronze palette.
+ */
+@layer base {
+  :root {
+    /* Brand hex tokens (mirrored from brand.ts). */
+    --brand-navy: #0f2741;
+    --brand-cream: #f7f4ed;
+    --brand-bronze: #a9743b;
+    --brand-ink: #1a1a1a;
+
+    /* Shadcn semantic tokens (H S L triplets). */
+    --background: 42 33% 95%; /* cream */
+    --foreground: 0 0% 10%; /* ink */
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --primary: 209 62% 16%; /* navy */
+    --primary-foreground: 42 33% 95%;
+
+    --secondary: 42 25% 90%;
+    --secondary-foreground: 209 62% 16%;
+
+    --muted: 42 20% 90%;
+    --muted-foreground: 215 16% 40%;
+
+    --accent: 30 49% 45%; /* bronze */
+    --accent-foreground: 42 33% 97%;
+
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 42 18% 85%;
+    --input: 42 18% 85%;
+    --ring: 30 49% 45%; /* bronze */
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading;
+    text-wrap: balance;
+  }
+
+  /* Visible focus ring for keyboard users (accessibility). */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Respect reduced-motion preference. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .container-section {
+    @apply container py-16 md:py-24;
+  }
+
+  /* Skip-to-content link for screen-reader / keyboard users. */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[100]
+      focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground;
+  }
+}
