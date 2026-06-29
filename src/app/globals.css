@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Design system — "Trust & Authority" for a luxury law office
+   Palette: deep authority navy + warm trust gold on a soft ivory canvas.
+   Type:    Frank Ruhl Libre (display, Hebrew serif) / Heebo (body, Hebrew sans)
+   ========================================================================== */
+
+@theme {
+  /* Brand — navy (authority) */
+  --color-navy-50: #eef2f8;
+  --color-navy-100: #d6e0ee;
+  --color-navy-200: #aebfd8;
+  --color-navy-300: #7e96ba;
+  --color-navy-400: #4f6c97;
+  --color-navy-500: #2f4d77;
+  --color-navy-600: #1f3a60;
+  --color-navy-700: #16294a;
+  --color-navy-800: #0f1e3a;
+  --color-navy-900: #0a1428;
+
+  /* Brand — gold (trust / luxury) */
+  --color-gold-50: #fbf6ea;
+  --color-gold-100: #f5e9c8;
+  --color-gold-200: #ecd596;
+  --color-gold-300: #e0bd62;
+  --color-gold-400: #d2a64a;
+  --color-gold-500: #c2a14d;
+  --color-gold-600: #a4842f;
+  --color-gold-700: #836524;
+
+  /* Semantic */
+  --color-background: #faf8f3;
+  --color-surface: #ffffff;
+  --color-ink: #1e293b;
+  --color-muted: #5b6472;
+  --color-line: #e7e2d6;
+
+  /* Type */
+  --font-display: var(--font-display), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-body), system-ui, -apple-system, sans-serif;
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-background);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: var(--color-gold-200);
+    color: var(--color-navy-900);
+  }
+
+  /* Visible focus for keyboard navigation */
+  :focus-visible {
+    outline: 2px solid var(--color-gold-500);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@layer utilities {
+  .container-page {
+    width: 100%;
+    max-width: 75rem; /* 1200px */
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Subtle gold underline flourish for section eyebrows */
+  .eyebrow-rule::after {
+    content: "";
+    display: inline-block;
+    inline-size: 2.25rem;
+    block-size: 2px;
+    margin-inline-start: 0.75rem;
+    vertical-align: middle;
+    background: linear-gradient(
+      to left,
+      var(--color-gold-500),
+      transparent
+    );
+  }
+
+  .gold-divider {
+    background: linear-gradient(
+      to left,
+      transparent,
+      var(--color-gold-400),
+      transparent
+    );
+  }
+}
+
+/* Entrance animation — used by the reveal-on-scroll wrapper */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Progressive enhancement: only hide pre-reveal when JS is active, so
+   no-JS users (and crawlers) always see the content. */
+html.js .reveal {
+  opacity: 0;
+}
+
+html.js .reveal.is-visible {
+  animation: reveal-up 0.7s var(--ease-out-soft) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  html.js .reveal,
+  html.js .reveal.is-visible {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
