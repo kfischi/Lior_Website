@@ -91,10 +91,9 @@ export function Header() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="וואטסאפ: שליחת הודעה למשרד (נפתח בחלון חדש)"
-          className="ms-auto flex h-11 shrink-0 animate-ring-green items-center gap-2 rounded-full bg-[#0f7a45] px-3 text-sm font-semibold text-white shadow-md ring-1 ring-white/70 transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light sm:px-4 lg:ms-0"
+          className="ms-auto flex h-12 w-12 shrink-0 animate-ring-green items-center justify-center rounded-full bg-[#0f7a45] text-white shadow-md ring-1 ring-white/70 transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light lg:ms-0"
         >
-          <WhatsAppIcon className="h-6 w-6" />
-          <span className="max-[400px]:hidden">וואטסאפ</span>
+          <WhatsAppIcon className="h-7 w-7" />
         </a>
 
         <div className="hidden items-center gap-3 lg:flex">
