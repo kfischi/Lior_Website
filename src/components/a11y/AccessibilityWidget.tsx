@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Accessibility, RotateCcw, X } from 'lucide-react';
+import { RotateCcw, X } from 'lucide-react';
 import { useConsentPending } from '@/components/legal/CookieConsent';
 import { cn } from '@/lib/utils';
 
@@ -88,6 +88,28 @@ function applyToDocument(p: Prefs) {
   set('data-a11y-cursor', p.bigCursor, 'big');
 }
 
+/** The familiar accessibility figure: head, outstretched arms, body and legs. */
+function AccessibilityFigure({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <circle cx="12" cy="5" r="1.9" fill="currentColor" stroke="none" />
+      <path d="M5 9.2c4.6 1.6 9.4 1.6 14 0" />
+      <path d="M12 10.6v4.2" />
+      <path d="M12 14.8 8.8 20" />
+      <path d="M12 14.8 15.2 20" />
+    </svg>
+  );
+}
+
 type ToggleKey = Exclude<keyof Prefs, 'size'>;
 
 const TOGGLES: { key: ToggleKey; label: string }[] = [
@@ -140,11 +162,11 @@ export function AccessibilityWidget() {
         aria-controls="a11y-menu"
         aria-label="תפריט נגישות"
         className={cn(
-          'fixed start-5 z-[58] flex h-14 w-14 items-center justify-center rounded-full bg-navy text-cream shadow-xl ring-2 ring-cream transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light',
+          'fixed start-5 z-[58] flex h-14 w-14 items-center justify-center rounded-full bg-[#1d3f93] text-white shadow-xl ring-2 ring-white transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light',
           bottom,
         )}
       >
-        <Accessibility className="h-8 w-8" aria-hidden="true" />
+        <AccessibilityFigure className="h-9 w-9" />
       </button>
 
       {open && (
