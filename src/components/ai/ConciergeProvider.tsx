@@ -54,6 +54,23 @@ const YES = '__yes';
 const RESTART = '__restart';
 
 const INTAKE_PREFIX = 'intake-';
+const STORAGE_KEY = 'concierge-chat-v1';
+const BOOK_LABEL = 'קביעת ייעוץ';
+
+/** The AI part of the conversation survives a refresh (this tab only). */
+function loadSaved(): UIMessage[] {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return (parsed as UIMessage[]).filter(
+      (m) => m && typeof m.id === 'string' && Array.isArray(m.parts),
+    );
+  } catch {
+    return [];
+  }
+}
 
 const greeting: UIMessage = {
   id: 'greeting',
@@ -109,6 +126,7 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
         prepareSendMessagesRequest: ({ messages }) => ({
           body: {
             sessionId,
+            page: window.location.pathname,
             messages: messages.filter((m) => !m.id.startsWith(INTAKE_PREFIX)),
           },
         }),
@@ -118,6 +136,26 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
 
   const chat = useChat({ transport, messages: [greeting] });
   const { setMessages } = chat;
+
+  // Restore the previous AI conversation after a refresh. Intake messages hold
+  // personal details and are never stored.
+  const restored = React.useRef(false);
+  React.useEffect(() => {
+    if (restored.current) return;
+    restored.current = true;
+    const saved = loadSaved();
+    if (saved.length > 0) setMessages([greeting, ...saved]);
+  }, [setMessages]);
+
+  React.useEffect(() => {
+    if (!restored.current || chat.status !== 'ready') return;
+    const keep = chat.messages.filter((m) => m.id !== greeting.id && !m.id.startsWith(INTAKE_PREFIX));
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(keep.slice(-30)));
+    } catch {
+      /* storage unavailable: the chat still works */
+    }
+  }, [chat.messages, chat.status]);
 
   const say = React.useCallback(
     (role: 'user' | 'assistant', text: string, ex?: Extras) => {
@@ -329,9 +367,10 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
     (chip: Chip) => {
       if (busy) return;
       if (intake) answer(chip.value, chip.label);
+      else if (chip.label === BOOK_LABEL) startIntake();
       else send(chip.label);
     },
-    [busy, intake, answer, send],
+    [busy, intake, answer, send, startIntake],
   );
 
   const value = React.useMemo<Concierge>(

@@ -36,8 +36,11 @@ npm run dev                  # http://localhost:3000
 | --- | --- | --- |
 | `SITE_URL` | כן | כתובת האתר (SEO/sitemap) |
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | כן | שם ה-Cloud לתמונות |
-| `ANTHROPIC_API_KEY` | לצ'אט | מפתח Claude (צד שרת) |
+| `ANTHROPIC_API_KEY` | לצ'אט (או Gemini) | מפתח Claude (צד שרת) |
 | `CHAT_MODEL` | לא | דגם Claude (ברירת מחדל `claude-sonnet-5-5`) |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | לצ'אט (או Claude) | מפתח Gemini מ-Google AI Studio (צד שרת) |
+| `GEMINI_MODEL` | לא | דגם Gemini (ברירת מחדל `gemini-2.5-flash`) |
+| `CHAT_PROVIDER` | לא | `anthropic` או `google`, כשיש שני מפתחות |
 | `WHATSAPP_ACCESS_TOKEN` / `WHATSAPP_PHONE_NUMBER_ID` | לשליחה ישירה | WhatsApp Cloud API של Meta (צד שרת) |
 | `WHATSAPP_NOTIFY_TO` / `WHATSAPP_LEAD_TEMPLATE` | לשליחה ישירה | מספר המשרד ושם התבנית המאושרת |
 | `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | ל-RAG/היסטוריה | Supabase (צד שרת) |

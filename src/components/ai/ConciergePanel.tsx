@@ -1,11 +1,14 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
 import { MessageCircle, Phone, Send, Shield, Square, X } from 'lucide-react';
 import type { UIMessage } from 'ai';
 import { brand, telHref, whatsappHref } from '@/lib/brand';
 import { cn } from '@/lib/utils';
+import { splitSuggestions } from '@/lib/ai/suggestions';
 import { INTAKE_STEPS, useConcierge, type IntakeStep } from './ConciergeProvider';
 
 const PLACEHOLDER: Record<IntakeStep, string> = {
@@ -16,6 +19,19 @@ const PLACEHOLDER: Record<IntakeStep, string> = {
   note: 'משפט אחד על העניין (לא חובה)',
   confirm: 'לחצו על אחת האפשרויות',
 };
+
+/** The assistant's round photo. It is a brand image, so it carries no alt text. */
+export function Avatar({ className }: { className?: string }) {
+  return (
+    <Image
+      src={brand.chat.avatar}
+      alt=""
+      width={96}
+      height={96}
+      className={cn('shrink-0 rounded-full object-cover ring-2 ring-accent-light/70', className)}
+    />
+  );
+}
 
 function Chip({
   children,
@@ -63,112 +79,135 @@ function ActionLink({
 }
 
 function Bubble({ message, isLast }: { message: UIMessage; isLast: boolean }) {
-  const { extras, choose, startIntake } = useConcierge();
+  const { extras, choose, startIntake, busy } = useConcierge();
   const ex = extras[message.id];
   const isUser = message.role === 'user';
 
+  // Follow-up suggestions arrive as a marker at the end of the assistant's text.
+  const suggestions = isUser
+    ? []
+    : message.parts
+        .flatMap((part) => (part.type === 'text' ? splitSuggestions(part.text).options : []))
+        .slice(0, 3);
+
+  const content = message.parts.map((part, i) => {
+    if (part.type === 'text') {
+      if (isUser) return <span key={i}>{part.text}</span>;
+      const { text } = splitSuggestions(part.text);
+      return text ? <span key={i}>{text}</span> : null;
+    }
+
+    if (part.type === 'tool-getContactOptions' && 'output' in part && part.output) {
+      const o = part.output as { phone: string; telHref: string; whatsapp: string };
+      return (
+        <span key={i} className="mt-2 block space-y-1 rounded-lg bg-cream p-3 text-sm">
+          <a href={o.telHref} className="flex items-center gap-2 text-navy hover:text-accent">
+            <Phone className="h-4 w-4 text-accent" aria-hidden="true" /> {o.phone}
+          </a>
+          <a
+            href={o.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-navy hover:text-accent"
+          >
+            <MessageCircle className="h-4 w-4 text-accent" aria-hidden="true" /> וואטסאפ
+          </a>
+        </span>
+      );
+    }
+
+    if (part.type === 'tool-whatsappHandoff' && 'output' in part && part.output) {
+      return (
+        <ActionLink key={i} href={(part.output as { href: string }).href} external>
+          <MessageCircle className="h-4 w-4" aria-hidden="true" />
+          שליחת ההודעה למשרד בוואטסאפ
+        </ActionLink>
+      );
+    }
+
+    if (part.type === 'tool-startIntake' && 'output' in part && part.output) {
+      return (
+        <button
+          key={i}
+          type="button"
+          onClick={startIntake}
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-3 py-2.5 text-sm font-medium text-cream transition-colors hover:bg-accent/90"
+        >
+          <MessageCircle className="h-4 w-4" aria-hidden="true" />
+          להשארת פרטים לקביעת ייעוץ
+        </button>
+      );
+    }
+    return null;
+  });
+
+  const hasContent = content.some((c) => c !== null);
+  const chips = [
+    ...(ex?.chips ?? []),
+    ...suggestions.map((label) => ({ label, value: label })),
+  ];
+
   return (
-    <div className={cn('flex flex-col', isUser ? 'items-end' : 'items-start')}>
-      <div
-        className={cn(
-          'max-w-[88%] whitespace-pre-line rounded-2xl px-4 py-2.5 text-[0.9375rem] leading-relaxed',
-          isUser
-            ? 'rounded-ee-sm bg-navy text-cream'
-            : 'rounded-es-sm bg-navy/[0.06] text-ink',
+    <div className={cn('flex items-start gap-2', isUser && 'justify-end')}>
+      {!isUser && <Avatar className="h-8 w-8" />}
+      <div className={cn('flex min-w-0 max-w-[88%] flex-col', isUser ? 'items-end' : 'items-start')}>
+        {hasContent && (
+          <div
+            className={cn(
+              'whitespace-pre-line rounded-2xl px-4 py-2.5 text-[0.9375rem] leading-relaxed',
+              isUser
+                ? 'rounded-ee-sm bg-navy text-cream'
+                : 'rounded-es-sm bg-navy/[0.06] text-ink',
+            )}
+          >
+            {content}
+          </div>
         )}
-      >
-        {message.parts.map((part, i) => {
-          if (part.type === 'text') return <span key={i}>{part.text}</span>;
 
-          if (part.type === 'tool-getContactOptions' && 'output' in part && part.output) {
-            const o = part.output as { phone: string; telHref: string; whatsapp: string };
-            return (
-              <span key={i} className="mt-2 block space-y-1 rounded-lg bg-cream p-3 text-sm">
-                <a href={o.telHref} className="flex items-center gap-2 text-navy hover:text-accent">
-                  <Phone className="h-4 w-4 text-accent" aria-hidden="true" /> {o.phone}
-                </a>
-                <a
-                  href={o.whatsapp}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-navy hover:text-accent"
-                >
-                  <MessageCircle className="h-4 w-4 text-accent" aria-hidden="true" /> וואטסאפ
-                </a>
-              </span>
-            );
-          }
-
-          if (part.type === 'tool-whatsappHandoff' && 'output' in part && part.output) {
-            return (
-              <ActionLink key={i} href={(part.output as { href: string }).href} external>
-                <MessageCircle className="h-4 w-4" aria-hidden="true" />
-                שליחת ההודעה למשרד בוואטסאפ
-              </ActionLink>
-            );
-          }
-
-          if (part.type === 'tool-startIntake' && 'output' in part && part.output) {
-            return (
-              <button
-                key={i}
-                type="button"
-                onClick={startIntake}
-                className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-3 py-2.5 text-sm font-medium text-cream transition-colors hover:bg-accent/90"
-              >
-                <MessageCircle className="h-4 w-4" aria-hidden="true" />
-                להשארת פרטים לקביעת ייעוץ
-              </button>
-            );
-          }
-          return null;
-        })}
+        {ex?.whatsapp && (
+          <div className="w-full">
+            <ActionLink href={ex.whatsapp} external>
+              <MessageCircle className="h-4 w-4" aria-hidden="true" />
+              המשך בוואטסאפ
+            </ActionLink>
+          </div>
+        )}
+        {ex?.call && (
+          <div className="w-full">
+            <ActionLink href={telHref}>
+              <Phone className="h-4 w-4" aria-hidden="true" />
+              התקשרו עכשיו: {brand.phone}
+            </ActionLink>
+          </div>
+        )}
+        {isLast && !busy && chips.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {chips.map((c) => (
+              <Chip key={c.value} onClick={() => choose(c)}>
+                {c.label}
+              </Chip>
+            ))}
+          </div>
+        )}
       </div>
-
-      {ex?.whatsapp && (
-        <div className="w-full max-w-[88%]">
-          <ActionLink href={ex.whatsapp} external>
-            <MessageCircle className="h-4 w-4" aria-hidden="true" />
-            המשך בוואטסאפ
-          </ActionLink>
-        </div>
-      )}
-      {ex?.call && (
-        <div className="w-full max-w-[88%]">
-          <ActionLink href={telHref}>
-            <Phone className="h-4 w-4" aria-hidden="true" />
-            התקשרו עכשיו: {brand.phone}
-          </ActionLink>
-        </div>
-      )}
-      {ex?.chips && isLast && (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {ex.chips.map((c) => (
-            <Chip key={c.value} onClick={() => choose(c)}>
-              {c.label}
-            </Chip>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
 
 function Typing() {
   return (
-    <div
-      className="flex w-fit items-center gap-1 rounded-2xl rounded-es-sm bg-navy/[0.06] px-4 py-3"
-      role="status"
-      aria-label="העוזר מקליד"
-    >
-      {[0, 1, 2].map((i) => (
-        <motion.span
-          key={i}
-          className="h-1.5 w-1.5 rounded-full bg-navy/50"
-          animate={{ opacity: [0.3, 1, 0.3] }}
-          transition={{ duration: 1, repeat: Infinity, delay: i * 0.15 }}
-        />
-      ))}
+    <div className="flex items-end gap-2" role="status" aria-label="העוזר מקליד">
+      <Avatar className="mb-0.5 h-8 w-8" />
+      <div className="flex w-fit items-center gap-1 rounded-2xl rounded-es-sm bg-navy/[0.06] px-4 py-3">
+        {[0, 1, 2].map((i) => (
+          <motion.span
+            key={i}
+            className="h-1.5 w-1.5 rounded-full bg-navy/50"
+            animate={{ opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 1, repeat: Infinity, delay: i * 0.15 }}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -200,6 +239,10 @@ export function ConciergePanel({
     stop,
   } = useConcierge();
   const [input, setInput] = React.useState('');
+  const pathname = usePathname();
+  const area = brand.practiceAreas.find((a) => pathname === `/practice-areas/${a.slug}`);
+  // On a practice-area page, offer that page's own questions first.
+  const starters = area ? area.page.faq.map((f) => f.question) : brand.chat.suggestedPrompts;
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -228,12 +271,10 @@ export function ConciergePanel({
     >
       <header className="bg-navy text-cream">
         <div className="flex items-center gap-3 px-4 py-3.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-light text-navy">
-            <MessageCircle className="h-5 w-5" aria-hidden="true" />
-          </span>
+          <Avatar className="h-11 w-11" />
           <div className="min-w-0 flex-1 leading-tight">
             <p className="font-heading text-base font-semibold">{brand.chat.assistantName}</p>
-            <p className="truncate text-xs text-cream/70">{brand.firmName}</p>
+            <p className="truncate text-xs text-cream/70">עוזר דיגיטלי מבוסס בינה מלאכותית</p>
           </div>
           {onClose && (
             <button
@@ -304,7 +345,7 @@ export function ConciergePanel({
               קביעת ייעוץ
             </Chip>
             {firstOnly &&
-              brand.chat.suggestedPrompts.map((p) => (
+              starters.map((p) => (
                 <Chip key={p} onClick={() => choose({ label: p, value: p })}>
                   {p}
                 </Chip>

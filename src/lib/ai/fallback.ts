@@ -1,5 +1,6 @@
 import { knowledge, type KnowledgeEntry } from '@/lib/knowledge';
 import { brand } from '@/lib/brand';
+import { withSuggestions } from '@/lib/ai/suggestions';
 
 /**
  * Keyword fallback used when no AI key is configured (or the model call fails
@@ -34,7 +35,10 @@ export function fallbackReply(question: string): string {
 
   const words = text.split(' ');
   if (words.length <= 3 && GREETINGS.has(words[0])) {
-    return 'שלום, שמחים שפניתם. אפשר לספר לי במה מדובר, או לשאול על תחומי העיסוק, על פגישת ייעוץ או על שעות הפעילות.';
+    return withSuggestions(
+      'שלום, שמחים שפניתם. אפשר לספר לי במה מדובר, או לשאול על תחומי העיסוק, על פגישת ייעוץ או על שעות הפעילות.',
+      ['באילו תחומים אתם מטפלים?', 'קביעת ייעוץ', 'כמה עולה ייעוץ ראשוני?'],
+    );
   }
 
   let best: KnowledgeEntry | null = null;
@@ -48,12 +52,14 @@ export function fallbackReply(question: string): string {
   }
 
   if (!best) {
-    return (
+    return withSuggestions(
       'אני רוצה לוודא שאענה לכם נכון, ולכן כדאי שתדברו ישירות עם המשרד. ' +
-      `אפשר להתקשר ל-${brand.phone} או לכתוב בוואטסאפ. ` +
-      'ואם תרצו, ספרו לי בקצרה במה מדובר ואנסה לכוון אתכם.'
+        `אפשר להתקשר ל-${brand.phone} או לכתוב בוואטסאפ. ` +
+        'ואם תרצו, ספרו לי בקצרה במה מדובר ואנסה לכוון אתכם.',
+      ['קביעת ייעוץ', 'באילו תחומים אתם מטפלים?'],
     );
   }
 
-  return best.followUp ? `${best.answer}\n\n${best.followUp}` : best.answer;
+  const reply = best.followUp ? `${best.answer}\n\n${best.followUp}` : best.answer;
+  return withSuggestions(reply, best.suggestions ?? ['קביעת ייעוץ', 'מה להביא לפגישה?', 'כמה עולה ייעוץ ראשוני?']);
 }

@@ -2,11 +2,11 @@
 
 import * as React from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { MessageCircle, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useConsentPending } from '@/components/legal/CookieConsent';
 import { cn } from '@/lib/utils';
-import { ConciergePanel } from './ConciergePanel';
+import { Avatar, ConciergePanel } from './ConciergePanel';
 import { useConcierge } from './ConciergeProvider';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -97,11 +97,13 @@ function Floating() {
             bottom,
           )}
         >
-          <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-light opacity-75" />
-            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent-light" />
+          <span className="relative flex" aria-hidden="true">
+            <Avatar className="h-9 w-9" />
+            <span className="absolute -bottom-0.5 -end-0.5 flex h-3 w-3">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-light opacity-75" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-accent-light ring-2 ring-accent" />
+            </span>
           </span>
-          <MessageCircle className="h-5 w-5" aria-hidden="true" />
           <span className="text-sm font-medium">שיחה עם המשרד</span>
         </button>
       )}

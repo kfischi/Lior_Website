@@ -146,9 +146,12 @@ export const brand = {
 
   // --- AI chatbot ---
   chat: {
-    assistantName: 'עוזר המשרד',
+    /** Shown in the chat header and used by the model as its name. */
+    assistantName: 'העוזר הדיגיטלי של ליאור',
+    /** Round avatar in the chat (a local /public path or a Cloudinary ID). */
+    avatar: '/images/lior-avatar.webp',
     greeting:
-      'שלום, אני העוזר הדיגיטלי של המשרד. אפשר לספר לי במה מדובר, ואכוון אתכם ' +
+      'שלום, אני העוזר הדיגיטלי של המשרד של ליאור. אפשר לספר לי במה מדובר, ואכוון אתכם ' +
       'לתחום הנכון, אענה על שאלות כלליות ואעזור לקבוע פגישת ייעוץ.',
     /** Quick-start suggestions shown as chips. */
     suggestedPrompts: [

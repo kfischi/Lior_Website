@@ -6,18 +6,18 @@ import {
   stepCountIs,
   type UIMessage,
 } from 'ai';
-import { anthropic } from '@ai-sdk/anthropic';
+import { getChatModel } from '@/lib/ai/model';
 import { buildSystemPrompt } from '@/lib/ai/system';
 import { retrieveContext } from '@/lib/ai/rag';
 import { chatTools } from '@/lib/ai/tools';
 import { fallbackReply } from '@/lib/ai/fallback';
+import { splitSuggestions } from '@/lib/ai/suggestions';
+import { brand } from '@/lib/brand';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
-
-const MODEL = process.env.CHAT_MODEL || 'claude-sonnet-5-5';
 
 /** Join the text parts of a UIMessage into a plain string. */
 function messageText(message: UIMessage | undefined): string {
@@ -71,14 +71,14 @@ export async function POST(req: Request) {
     return Response.json({ error: 'יותר מדי הודעות. נסו שוב בעוד כמה דקות.' }, { status: 429 });
   }
 
-  let body: { messages: UIMessage[]; sessionId?: string };
+  let body: { messages: UIMessage[]; sessionId?: string; page?: string };
   try {
     body = await req.json();
   } catch {
     return Response.json({ error: 'בקשה לא תקינה' }, { status: 400 });
   }
 
-  const { messages, sessionId } = body;
+  const { messages, sessionId, page } = body;
   if (!Array.isArray(messages) || messages.length === 0) {
     return Response.json({ error: 'אין הודעות' }, { status: 400 });
   }
@@ -87,10 +87,17 @@ export async function POST(req: Request) {
   const trimmed = messages.slice(-12);
   const lastUserText = messageText([...trimmed].reverse().find((m) => m.role === 'user'));
 
-  // No AI key configured: answer from the knowledge base instead of failing.
-  if (!process.env.ANTHROPIC_API_KEY) {
+  // No AI provider configured: answer from the knowledge base instead of failing.
+  const model = getChatModel();
+  if (!model) {
     return streamStaticReply(fallbackReply(lastUserText));
   }
+
+  // Which practice-area page the visitor is on (matched against known routes only).
+  const area =
+    typeof page === 'string'
+      ? brand.practiceAreas.find((a) => page === `/practice-areas/${a.slug}`)
+      : undefined;
 
   // RAG (optional) — only active when Supabase + embeddings are configured.
   const context = await retrieveContext(lastUserText);
@@ -98,14 +105,14 @@ export async function POST(req: Request) {
   const modelMessages = await convertToModelMessages(trimmed);
 
   const result = streamText({
-    model: anthropic(MODEL),
-    system: buildSystemPrompt(context),
+    model,
+    system: buildSystemPrompt(context, area),
     messages: modelMessages,
     tools: chatTools,
     stopWhen: stepCountIs(4),
     temperature: 0.5,
     onFinish: ({ text }) => {
-      void persistExchange(sessionId, lastUserText, text);
+      void persistExchange(sessionId, lastUserText, splitSuggestions(text).text);
     },
     onError: (err) => {
       console.error('streamText error:', err);
