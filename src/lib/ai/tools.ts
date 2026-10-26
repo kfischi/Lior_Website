@@ -2,6 +2,7 @@ import { tool } from 'ai';
 import { z } from 'zod';
 import { brand, telHref, whatsappHref, mailHref } from '@/lib/brand';
 import { buildWhatsAppHref } from '@/lib/lead';
+import { logUnknown } from '@/lib/learning/store';
 
 /**
  * Tools the chatbot can call. Read-only and safe: they surface firm information
@@ -29,6 +30,30 @@ export const chatTools = {
     inputSchema: z.object({}),
     execute: async () =>
       brand.practiceAreas.map((a) => ({ title: a.title, description: a.description })),
+  }),
+
+  flagUnknownQuestion: tool({
+    description:
+      'תעד שאלה כללית שאין לך עליה תשובה מבוססת בבסיס הידע, כדי שעורכת הדין תלמד אותך תשובה. ' +
+      'נסח את השאלה מחדש בצורה כללית, בלי שם, טלפון או פרטים מזהים על המקרה.',
+    inputSchema: z.object({
+      question: z.string().min(3).max(200).describe('השאלה בניסוח כללי וללא פרטים מזהים'),
+    }),
+    execute: async ({ question }) => {
+      // Defence in depth: strip anything that looks like a phone, ID or email.
+      const clean = question
+        .replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, '')
+        .replace(/\d[\d\s-]{4,}\d/g, '')
+        .trim();
+      if (clean.length >= 3) {
+        try {
+          await logUnknown(clean);
+        } catch (err) {
+          console.error('Logging unknown question failed (non-fatal):', err);
+        }
+      }
+      return { logged: true };
+    },
   }),
 
   startIntake: tool({

@@ -335,6 +335,20 @@ export function ConciergePanel({
         )}
       </div>
 
+      {intakeStep === 'confirm' && (
+        <p className="border-t border-navy/10 px-4 pt-3 text-xs leading-relaxed text-ink/70">
+          בלחיצה על &quot;כן, שלחו&quot; אני מאשר/ת את{' '}
+          <a href="/legal/terms" target="_blank" rel="noopener noreferrer" className="text-accent underline">
+            תנאי השימוש
+          </a>{' '}
+          ואת{' '}
+          <a href="/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-accent underline">
+            מדיניות הפרטיות
+          </a>
+          . הפרטים ישמשו רק לחזרה אליי בנוגע לפנייה, ללא דיוור שיווקי.
+        </p>
+      )}
+
       {/* Quick actions */}
       <div className="flex flex-wrap items-center gap-2 border-t border-navy/10 px-4 pb-1 pt-3">
         {intakeStep ? (
@@ -391,7 +405,7 @@ export function ConciergePanel({
         )}
       </form>
 
-      <p className="flex items-center justify-center gap-1.5 px-4 pb-3 text-center text-[11px] text-ink/55">
+      <p className="flex items-center justify-center gap-1.5 px-4 pb-3 text-center text-[11px] text-ink/75">
         <Shield className="h-3 w-3 shrink-0" aria-hidden="true" />
         {brand.chat.disclaimer} הפרטים נשלחים רק באישורך.
       </p>

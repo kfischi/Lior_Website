@@ -109,3 +109,22 @@ npm run ingest     # הטמעת ידע ל-RAG (דורש Supabase + OpenAI)
 
 > הפונטים (Frank Ruhl Libre, Heebo) נטענים דרך `next/font` ומתארחים עצמית ב-build —
 > ללא קריאות runtime ל-Google.
+
+
+## הצ'אט הלומד (/admin)
+
+עורכת הדין מלמדת את העוזר בעצמה, בלי קוד: נכנסים ל-`/admin` עם הסיסמה שהוגדרה ב-`ADMIN_PASSWORD`, כותבים שאלה ותשובה
+(או הנחיה כללית), והעוזר משתמש בזה כבר בשיחה הבאה. שאלות שהעוזר לא ידע לענות עליהן מופיעות שם לתשובה בלחיצה.
+האחסון הוא Netlify Blobs (ללא הגדרה נוספת ב-Netlify); מקומית נשמר קובץ ב-`.data/` (לא נכנס ל-git).
+
+| משתנה | תפקיד |
+| --- | --- |
+| `ADMIN_PASSWORD` | סיסמת עמוד הניהול. ללא הגדרה העמוד כבוי |
+| `ADMIN_SESSION_SECRET` | אופציונלי, סוד לחתימת העוגייה |
+| `GOOGLE_SITE_VERIFICATION` / `BING_SITE_VERIFICATION` | קודי אימות בעלות ל-Search Console ול-Bing |
+
+## SEO ו-GEO
+
+מדריכים ב-`src/lib/articles.ts` (עמודי `/articles`), שאלות ותשובות ב-`/faq`, `llms.txt`, `llms-full.txt`, `feed.xml`, sitemap,
+robots שמאפשר זחלני חיפוש ובינה מלאכותית, ו-JSON-LD (Article, FAQPage, LegalService, Attorney, WebSite).
+כל טקסט משפטי חייב אישור של עורכת הדין לפני הסתמכות עליו.

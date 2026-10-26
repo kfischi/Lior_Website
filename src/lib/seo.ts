@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { brand, type PracticeArea } from './brand';
+import type { Article } from './articles';
 import { siteUrl } from './utils';
 
 /**
@@ -22,9 +23,24 @@ interface PageMetaInput {
   /** Absolute URL or path to the social preview image. */
   ogImage?: string;
   noindex?: boolean;
+  /** Set for article pages: emits og:type=article with dates. */
+  article?: { published: string; modified: string };
 }
 
 const DEFAULT_OG_IMAGE = '/opengraph-image.png';
+
+/** Search Console / Bing Webmaster ownership tags, from env (server-only values). */
+function verificationTags(): Pick<Metadata, 'verification'> {
+  const google = process.env.GOOGLE_SITE_VERIFICATION;
+  const bing = process.env.BING_SITE_VERIFICATION;
+  if (!google && !bing) return {};
+  return {
+    verification: {
+      ...(google ? { google } : {}),
+      ...(bing ? { other: { 'msvalidate.01': bing } } : {}),
+    },
+  };
+}
 
 export function buildMetadata({
   title,
@@ -33,6 +49,7 @@ export function buildMetadata({
   path = '/',
   ogImage = DEFAULT_OG_IMAGE,
   noindex = false,
+  article,
 }: PageMetaInput = {}): Metadata {
   const base = siteUrl();
   const fullTitle =
@@ -49,8 +66,11 @@ export function buildMetadata({
     authors: [{ name: brand.attorneyName }],
     alternates: { canonical: path },
     robots: noindex ? { index: false, follow: false } : { index: true, follow: true },
+    ...verificationTags(),
     openGraph: {
-      type: 'website',
+      ...(article
+        ? { type: 'article' as const, publishedTime: article.published, modifiedTime: article.modified }
+        : { type: 'website' as const }),
       locale: 'he_IL',
       siteName: brand.firmName,
       title: fullTitle,
@@ -90,6 +110,24 @@ export function legalServiceJsonLd() {
     },
     knowsLanguage: 'he',
     serviceType: brand.practiceAreas.map((a) => a.title),
+    knowsAbout: brand.seo.knowsAbout,
+    hasMap: brand.mapUrl,
+    founder: { '@id': `${base}/#attorney` },
+    sameAs: Object.values(brand.social).filter(Boolean),
+  };
+}
+
+/** The site itself, linked to the firm as publisher (helps entity resolution). */
+export function websiteJsonLd() {
+  const base = siteUrl();
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${base}/#website`,
+    url: base,
+    name: brand.firmName,
+    inLanguage: 'he-IL',
+    publisher: { '@id': `${base}/#firm` },
   };
 }
 
@@ -99,7 +137,10 @@ export function attorneyJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Attorney',
+    '@id': `${base}/#attorney`,
     name: brand.attorneyName,
+    knowsAbout: brand.seo.knowsAbout,
+    image: `${base}${brand.about.portraitId}`,
     jobTitle: 'עורכת דין',
     worksFor: { '@id': `${base}/#firm` },
     url: base,
@@ -153,5 +194,33 @@ export function breadcrumbJsonLd(crumbs: { name: string; path: string }[]) {
       name: c.name,
       item: `${base}${c.path === '/' ? '' : c.path}`,
     })),
+  };
+}
+
+/** A guide as schema.org Article. Author and publisher are the firm's attorney and firm. */
+export function articleJsonLd(article: Article) {
+  const base = siteUrl();
+  const url = `${base}/articles/${article.slug}`;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    '@id': `${url}#article`,
+    mainEntityOfPage: url,
+    url,
+    headline: article.title,
+    description: article.seoDescription,
+    abstract: article.tldr,
+    inLanguage: 'he-IL',
+    datePublished: article.published,
+    dateModified: article.updated,
+    image: `${base}/opengraph-image.png`,
+    author: { '@id': `${base}/#attorney` },
+    publisher: { '@id': `${base}/#firm` },
+    isPartOf: { '@id': `${base}/#website` },
+    about: brand.practiceAreas.find((a) => a.slug === article.areaSlug)?.title,
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['[data-speakable]'],
+    },
   };
 }

@@ -455,6 +455,46 @@ export const brand = {
         'אנו משתדלים לחזור לכל פנייה בהקדם. בפניות דחופות ניתן ליצור קשר טלפוני ' +
         'או בוואטסאפ לקבלת מענה מהיר יותר.',
     },
+    {
+      question: 'באילו תחומים עוסק המשרד?',
+      answer:
+        'המשרד מתמקד בשלושה תחומים: אפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי. ' +
+        'אם העניין שלכם בתחום אחר, אפשר לפנות ולברר, ונאמר בכנות אם הוא מחוץ להתמחות המשרד.',
+    },
+    {
+      question: 'האם אפשר לפנות בלי לפרט את האירוע?',
+      answer:
+        'כן. בפנייה הראשונה מספיק לציין את התחום ואיך אפשר ליצור קשר. את הפרטים אפשר למסור בשיחה ישירה ודיסקרטית, ' +
+        'כשתרגישו מוכנים.',
+    },
+    {
+      question: 'מה ההבדל בין ייעוץ לייצוג?',
+      answer:
+        'ייעוץ הוא פגישה שבה מבינים את התמונה ואת האפשרויות. ייצוג הוא ליווי מלא בהליך, כמו מו״מ, תלונה או משפט. ' +
+        'אפשר להתחיל בייעוץ בלי להתחייב לשום המשך.',
+    },
+    {
+      question: 'האם הצ׳אט באתר נותן ייעוץ משפטי?',
+      answer:
+        'לא. הצ׳אט הוא עוזר דיגיטלי מבוסס בינה מלאכותית שנותן מידע כללי, עונה על שאלות נפוצות ומסדר פנייה למשרד. ' +
+        'ייעוץ משפטי אישי ניתן רק בפגישה עם עורכת הדין.',
+    },
+    {
+      question: 'מה לעשות אם קיבלתי הזמנה לחקירה במשטרה?',
+      answer:
+        'כדאי להתייעץ עם עורכת דין לפני החקירה. לחשוד יש זכות להיוועץ בעורך דין וזכות שתיקה, ' +
+        'ומומלץ לא לחתום על שום דבר שלא הבנתם. יש על כך מדריך באתר.',
+    },
+    {
+      question: 'הוזמנתי לשימוע לפני פיטורים. מה עושים?',
+      answer:
+        'שימוע הוא הזדמנות להשמיע טענות לפני ההחלטה. כדאי לקרוא את הטענות, להתכונן, להתייעץ מראש, ' +
+        'ולא לחתום על מכתב התפטרות או הסכם סיום בלי להבין אותם.',
+    },
+    {
+      question: 'איפה נמצא המשרד?',
+      answer: 'המשרד נמצא ברחוב רימון 5 בחריש. מומלץ לתאם פגישה מראש בטלפון, בוואטסאפ או דרך הצ׳אט.',
+    },
   ] satisfies FaqItem[],
 
   // --- SEO ---
@@ -467,14 +507,41 @@ export const brand = {
     titleSuffix: 'ליאור-קלואי ארז',
     /** Update when public content changes; feeds sitemap lastmod. */
     lastModified: '2026-10-26',
+    /** What the firm is an authority on; feeds JSON-LD `knowsAbout` (confirmed topics only). */
+    knowsAbout: [
+      'אפליה בעבודה',
+      'התעמרות בעבודה',
+      'שימוע לפני פיטורים',
+      'הטרדה מינית',
+      'משפט פלילי',
+      'חקירה במשטרה',
+    ],
   },
 
   // --- Legal pages ---
   legal: {
     /** Date the privacy/terms/accessibility statements were last updated. */
     lastUpdated: '2026-10-26',
-    /** Accessibility coordinator contact (Israeli standard 5568 requirement). */
+    /** Accessibility coordinator (Israeli standard 5568 / accessibility regulations). */
+    accessibilityCoordinator: 'עו״ד ליאור-קלואי ארז',
     accessibilityContact: 'Lioraere@gmail.com',
+    /** Date of the last accessibility review of the site. */
+    accessibilityReviewed: '2026-10-26',
+    /**
+     * Court area that hears disputes about the site's terms of use.
+     * OWNER TO CONFIRM with the attorney.
+     */
+    jurisdiction: 'חדרה',
+    /** Business identification shown in the footer. Leave '' to hide. OWNER TO PROVIDE. */
+    licenseNumber: '',
+    businessId: '',
+    /** Third parties that may process visitor data; listed in the privacy policy. */
+    processors: [
+      'Netlify (אחסון האתר)',
+      'Cloudinary (שירות תמונות וסרטונים)',
+      'Google או Anthropic (עיבוד שיחות בצ׳אט באמצעות בינה מלאכותית, לפי ההגדרות)',
+      'Meta WhatsApp Business (העברת פנייה בוואטסאפ, כשהאפשרות מופעלת)',
+    ],
   },
 } as const;
 

@@ -4,7 +4,7 @@ import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 
 function Stars({ rating }: { rating: number }) {
   return (
-    <div className="flex gap-0.5" aria-label={`דירוג ${rating} מתוך 5`}>
+    <div className="flex gap-0.5" role="img" aria-label={`דירוג ${rating} מתוך 5`}>
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}
@@ -30,7 +30,7 @@ export function Reviews() {
             המלצות
           </h2>
           {brand.testimonialsSource && (
-            <p className="mt-3 text-sm text-ink/60">{brand.testimonialsSource}</p>
+            <p className="mt-3 text-sm text-ink/75">{brand.testimonialsSource}</p>
           )}
         </Reveal>
 
@@ -48,7 +48,7 @@ export function Reviews() {
                 </blockquote>
                 <figcaption className="border-t border-navy/10 pt-4">
                   <span className="block font-semibold text-navy">{t.name}</span>
-                  {t.role && <span className="text-sm text-ink/55">{t.role}</span>}
+                  {t.role && <span className="text-sm text-ink/75">{t.role}</span>}
                 </figcaption>
               </figure>
             </StaggerItem>

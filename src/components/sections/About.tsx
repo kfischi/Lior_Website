@@ -83,7 +83,7 @@ export function About() {
                       <span className="block font-heading text-4xl font-bold text-navy">
                         {stat.value}
                       </span>
-                      <span className="mt-1 block text-xs text-ink/55">{stat.label}</span>
+                      <span className="mt-1 block text-xs text-ink/75">{stat.label}</span>
                     </dd>
                   </div>
                 ))}

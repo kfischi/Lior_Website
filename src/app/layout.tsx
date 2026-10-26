@@ -3,10 +3,12 @@ import { Frank_Ruhl_Libre, Heebo } from 'next/font/google';
 import './globals.css';
 
 import { brand } from '@/lib/brand';
-import { buildMetadata, legalServiceJsonLd, attorneyJsonLd } from '@/lib/seo';
+import { buildMetadata, legalServiceJsonLd, attorneyJsonLd, websiteJsonLd } from '@/lib/seo';
 import { CookieConsent } from '@/components/legal/CookieConsent';
 import { ChatBot } from '@/components/ai/ChatBot';
 import { ConciergeProvider } from '@/components/ai/ConciergeProvider';
+import { AccessibilityWidget } from '@/components/a11y/AccessibilityWidget';
+import { WhatsAppButton } from '@/components/ai/WhatsAppButton';
 import { ScrollProgress } from '@/components/motion/ScrollProgress';
 
 /*
@@ -43,11 +45,12 @@ function brandVars(): string {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const jsonLd = [legalServiceJsonLd(), attorneyJsonLd()];
+  const jsonLd = [legalServiceJsonLd(), attorneyJsonLd(), websiteJsonLd()];
 
   return (
     <html lang="he" dir="rtl" className={`${frank.variable} ${heebo.variable}`}>
       <head>
+        <link rel="alternate" type="application/rss+xml" title="מדריכים" href="/feed.xml" />
         <style dangerouslySetInnerHTML={{ __html: brandVars() }} />
         <script
           type="application/ld+json"
@@ -62,6 +65,8 @@ export default function RootLayout({
         <ConciergeProvider>
           {children}
           <ChatBot />
+          <WhatsAppButton />
+          <AccessibilityWidget />
         </ConciergeProvider>
         <CookieConsent />
       </body>

@@ -27,6 +27,8 @@ function Instagram({ className }: { className?: string }) {
 }
 
 const LEGAL_LINKS = [
+  { href: '/articles', label: 'מדריכים' },
+  { href: '/faq', label: 'שאלות ותשובות' },
   { href: '/legal/privacy', label: 'מדיניות פרטיות' },
   { href: '/legal/accessibility', label: 'הצהרת נגישות' },
   { href: '/legal/terms', label: 'תנאי שימוש' },
@@ -124,6 +126,8 @@ export function Footer() {
         <div className="shell flex flex-col items-center justify-between gap-2 py-5 text-xs text-cream/55 md:flex-row">
           <p>
             © {year} {brand.firmName}. כל הזכויות שמורות.
+            {brand.legal.licenseNumber && <> מס׳ רישיון עו״ד: {brand.legal.licenseNumber}.</>}
+            {brand.legal.businessId && <> עוסק מורשה / ח.פ: {brand.legal.businessId}.</>}
           </p>
           <p>האמור באתר אינו מהווה ייעוץ משפטי ואין להסתמך עליו ללא קבלת ייעוץ פרטני.</p>
         </div>

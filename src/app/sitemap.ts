@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { brand } from '@/lib/brand';
+import { articles } from '@/lib/articles';
 import { siteUrl } from '@/lib/utils';
 
 /**
@@ -18,6 +19,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: 0.8,
     })),
+    { url: `${base}/articles`, lastModified: new Date(Math.max(...articles.map((a) => +new Date(a.updated)))), changeFrequency: 'weekly', priority: 0.8 },
+    ...articles.map((a) => ({
+      url: `${base}/articles/${a.slug}`,
+      lastModified: new Date(a.updated),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
+    { url: `${base}/faq`, lastModified, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${base}/legal/privacy`, lastModified, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${base}/legal/accessibility`, lastModified, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${base}/legal/terms`, lastModified, changeFrequency: 'yearly', priority: 0.3 },

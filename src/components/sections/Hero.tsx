@@ -23,7 +23,7 @@ function ChatInvite() {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.9, ease: EASE, delay: 1.1 }}
-      className="absolute bottom-24 end-6 z-10 hidden w-[21rem] rounded-2xl border border-cream/20 bg-navy/40 p-5 text-cream shadow-2xl backdrop-blur-xl md:block lg:end-12"
+      className="absolute bottom-40 end-6 z-10 hidden w-[21rem] rounded-2xl border border-cream/20 bg-navy/40 p-5 text-cream shadow-2xl backdrop-blur-xl md:block lg:end-12"
     >
       <div className="flex items-center gap-3">
         <Avatar className="h-12 w-12" />
@@ -129,7 +129,7 @@ export function Hero() {
             {brand.firmName}
           </motion.p>
 
-          <h1 className="display-2xl font-bold text-cream [text-shadow:0_2px_32px_rgb(0_0_0/0.35)]">
+          <h1 className="display-2xl font-bold text-cream">
             {words.map((w, i) => (
               <React.Fragment key={`${w}-${i}`}>
                 <span className="inline-block overflow-hidden pb-[0.14em] align-bottom">

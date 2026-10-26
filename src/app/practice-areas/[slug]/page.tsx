@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ChevronLeft, MessageCircle, MessagesSquare } from 'lucide-react';
 import { brand, whatsappHref } from '@/lib/brand';
+import { articlesForArea } from '@/lib/articles';
+import { ArticleCard } from '@/components/sections/ArticleCard';
 import { breadcrumbJsonLd, buildMetadata, faqJsonLd, serviceJsonLd } from '@/lib/seo';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
@@ -56,6 +58,7 @@ export default async function PracticeAreaPage({ params }: { params: Promise<Par
   const { page } = area;
   const others = brand.practiceAreas.filter((a) => a.slug !== area.slug);
   const path = `/practice-areas/${area.slug}`;
+  const guides = articlesForArea(area.slug);
 
   return (
     <>
@@ -152,7 +155,7 @@ export default async function PracticeAreaPage({ params }: { params: Promise<Par
                   </li>
                 ))}
               </ol>
-              <p className="mt-6 text-sm text-ink/60">{brand.chat.disclaimer}</p>
+              <p className="mt-6 text-sm text-ink/75">{brand.chat.disclaimer}</p>
             </section>
 
             <section aria-labelledby="faq-title">
@@ -194,6 +197,23 @@ export default async function PracticeAreaPage({ params }: { params: Promise<Par
             </div>
           </div>
         </section>
+
+        {guides.length > 0 && (
+          <section aria-labelledby="guides-title" className="section bg-white">
+            <div className="shell max-w-5xl">
+              <h2 id="guides-title" className="text-2xl text-navy md:text-3xl">
+                מדריכים בנושא
+              </h2>
+              <ul className="mt-6 grid gap-5 md:grid-cols-2">
+                {guides.map((g) => (
+                  <li key={g.slug}>
+                    <ArticleCard article={g} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
 
         {/* Internal links to the other areas */}
         <nav aria-labelledby="more-title" className="section bg-cream">

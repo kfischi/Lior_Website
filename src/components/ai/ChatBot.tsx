@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { X } from 'lucide-react';
+import { ArrowDown, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useConsentPending } from '@/components/legal/CookieConsent';
 import { cn } from '@/lib/utils';
@@ -29,6 +29,7 @@ function Floating() {
   const { panelOpen, openPanel, closePanel } = useConcierge();
   const cookiePending = useConsentPending();
   const [nudge, setNudge] = React.useState(false);
+  const [opened, setOpened] = React.useState(false);
 
   React.useEffect(() => {
     if (readSeen()) return;
@@ -59,7 +60,7 @@ function Floating() {
             transition={{ duration: 0.3, ease: EASE }}
             className={cn(
               'fixed end-5 z-[60] max-w-[16rem] rounded-2xl rounded-ee-sm bg-navy px-4 py-3 text-sm text-cream shadow-xl',
-              cookiePending ? 'bottom-72 sm:bottom-40' : 'bottom-24',
+              cookiePending ? 'bottom-80 sm:bottom-52' : 'bottom-40',
             )}
           >
             <button
@@ -85,27 +86,34 @@ function Floating() {
       </AnimatePresence>
 
       {!panelOpen && (
-        <button
-          type="button"
-          onClick={() => {
-            dismissNudge();
-            openPanel();
-          }}
-          aria-label="פתיחת שיחה עם העוזר הדיגיטלי של המשרד"
-          className={cn(
-            'fixed end-5 z-[60] flex h-14 items-center gap-2.5 rounded-full bg-accent px-5 text-cream shadow-xl ring-2 ring-cream/70 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2',
-            bottom,
+        <div className={cn('fixed end-5 z-[60] flex flex-col items-center gap-1.5', bottom)}>
+          {!opened && (
+            <ArrowDown
+              aria-hidden="true"
+              strokeWidth={3}
+              className="h-9 w-9 animate-arrow text-accent drop-shadow-[0_1px_2px_rgb(255_255_255/0.9)]"
+            />
           )}
-        >
-          <span className="relative flex" aria-hidden="true">
-            <Avatar className="h-9 w-9" />
-            <span className="absolute -bottom-0.5 -end-0.5 flex h-3 w-3">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-light opacity-75" />
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-accent-light ring-2 ring-accent" />
+          <button
+            type="button"
+            onClick={() => {
+              dismissNudge();
+              setOpened(true);
+              openPanel();
+            }}
+            aria-label="שיחה עם המשרד, פתיחת העוזר הדיגיטלי"
+            className="flex h-14 animate-ring items-center gap-2.5 rounded-full bg-accent px-5 text-cream shadow-xl ring-2 ring-cream/70 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy"
+          >
+            <span className="relative flex" aria-hidden="true">
+              <Avatar className="h-9 w-9" />
+              <span className="absolute -bottom-0.5 -end-0.5 flex h-3 w-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-light opacity-75" />
+                <span className="relative inline-flex h-3 w-3 animate-blink rounded-full bg-accent-light ring-2 ring-accent" />
+              </span>
             </span>
-          </span>
-          <span className="text-sm font-medium">שיחה עם המשרד</span>
-        </button>
+            <span className="text-sm font-medium">שיחה עם המשרד</span>
+          </button>
+        </div>
       )}
 
       <AnimatePresence>

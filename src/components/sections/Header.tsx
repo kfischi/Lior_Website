@@ -15,6 +15,7 @@ const NAV = [
   { href: '/#about', label: 'אודות' },
   { href: '/#why', label: 'למה אנחנו' },
   ...(brand.testimonials.length > 0 ? [{ href: '/#reviews', label: 'המלצות' }] : []),
+  { href: '/articles', label: 'מדריכים' },
   { href: '/#faq', label: 'שאלות' },
   { href: '/#contact', label: 'צור קשר' },
 ];
@@ -98,12 +99,18 @@ export function Header() {
 
         <button
           type="button"
-          className={cn('lg:hidden', scrolled ? 'text-navy' : 'text-cream')}
+          className={cn(
+            'flex flex-col items-center gap-0.5 rounded-md px-2 py-1 lg:hidden',
+            scrolled ? 'text-navy' : 'text-cream',
+          )}
           aria-label={open ? 'סגירת תפריט' : 'פתיחת תפריט'}
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
         >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {open ? <X className="h-9 w-9" aria-hidden="true" /> : <Menu className="h-9 w-9" aria-hidden="true" />}
+          <span aria-hidden="true" className="text-xs font-semibold leading-none">
+            {open ? 'סגירה' : 'תפריט'}
+          </span>
         </button>
       </nav>
 

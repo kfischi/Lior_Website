@@ -13,6 +13,7 @@ import { chatTools } from '@/lib/ai/tools';
 import { fallbackReply } from '@/lib/ai/fallback';
 import { splitSuggestions } from '@/lib/ai/suggestions';
 import { brand } from '@/lib/brand';
+import { findLearnedAnswer, getLearnedPrompt } from '@/lib/learning/store';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
@@ -90,7 +91,8 @@ export async function POST(req: Request) {
   // No AI provider configured: answer from the knowledge base instead of failing.
   const model = getChatModel();
   if (!model) {
-    return streamStaticReply(fallbackReply(lastUserText));
+    const taught = await findLearnedAnswer(lastUserText);
+    return streamStaticReply(taught ?? fallbackReply(lastUserText));
   }
 
   // Which practice-area page the visitor is on (matched against known routes only).
@@ -106,7 +108,7 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model,
-    system: buildSystemPrompt(context, area),
+    system: buildSystemPrompt(context, area, await getLearnedPrompt()),
     messages: modelMessages,
     tools: chatTools,
     stopWhen: stepCountIs(4),

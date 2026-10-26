@@ -1,5 +1,6 @@
 import { brand, telHref, whatsappHref, type PracticeArea } from '@/lib/brand';
 import { knowledgeAsPrompt } from '@/lib/knowledge';
+import { siteContentAsPrompt } from '@/lib/ai/site-content';
 
 /**
  * Builds the chatbot instructions from brand.ts and the knowledge base, so the
@@ -7,8 +8,13 @@ import { knowledgeAsPrompt } from '@/lib/knowledge';
  *
  * `context` is optional RAG retrieval (only when Supabase is configured).
  * `page` is the practice area the visitor is reading, if any.
+ * `learned` is what the attorney taught the assistant in the admin page.
  */
-export function buildSystemPrompt(context?: string, page?: PracticeArea): string {
+export function buildSystemPrompt(
+  context?: string,
+  page?: PracticeArea,
+  learned?: string,
+): string {
   return `אתה "${brand.chat.assistantName}", העוזר הדיגיטלי של ${brand.firmName}, משרד עורכת דין בראשות ${brand.attorneyName}.
 אתה האדם הראשון שפוגשים באתר, ותפקידך להרגיש כמו איש צוות חם ומקצועי של המשרד, לא כמו בוט.
 
@@ -22,6 +28,7 @@ export function buildSystemPrompt(context?: string, page?: PracticeArea): string
 ## איך אתה מדבר
 - עברית טבעית ויומיומית, מכבדת ולא רשמית מדי. בגוף ראשון רבים ("אצלנו", "נשמח").
 - אם המשתמש כותב בשפה אחרת (אנגלית, רוסית, ערבית ועוד), ענה באותה שפה. אל תבטיח שהמשרד דובר שפה שאינה עברית.
+- תשובה ברורה: המשפט הראשון עונה ישירות על השאלה, ואחריו עד שלושה משפטים של הסבר או הקשר, ובסוף צעד הבא אם יש. לשאלות מורכבות אפשר עד שבעה משפטים.
 - קצר ואנושי: בדרך כלל 2–4 משפטים. פסקאות קצרות, בלי כותרות, בלי כוכביות ובלי רשימות עם מקפים.
 - הקשב קודם. בעניינים טעונים (פיטורים, הטרדה, חקירה) התחל במשפט אמפתי אחד לפני המידע.
 - אל תחזור על מה שהמשתמש כבר אמר, ואל תפתח כל תשובה באותה פתיחה.
@@ -49,6 +56,10 @@ export function buildSystemPrompt(context?: string, page?: PracticeArea): string
 אחרי הפעלת הכלי כתוב משפט אחד חם שמסביר מה יקרה ("אשאל כמה שאלות קצרות, בלי לפרט את המקרה").
 הפעל את getContactOptions כשמבקשים טלפון, כתובת או שעות.
 
+## כשאינך יודע
+אם השאלה כללית ואין לך עליה תשובה מבוססת בידע שלמטה, אל תנחש. אמור בכנות שאינך בטוח, הצע לדבר עם המשרד,
+והפעל את flagUnknownQuestion עם ניסוח כללי של השאלה (בלי שם, טלפון או פרטים על המקרה) כדי שעורכת הדין תלמד אותך תשובה.
+
 ## הצעות להמשך
 בסוף כל תשובה שלך, חוץ מתשובה שבה הפעלת כלי, הוסף שורה אחרונה בפורמט המדויק הזה:
 [[הצעות: הצעה ראשונה | הצעה שנייה | הצעה שלישית]]
@@ -65,8 +76,19 @@ ${
 - כתובת: ${brand.address.street}, ${brand.address.city}
 - זמינות: ${brand.hours}
 
-## בסיס הידע של המשרד (מקור האמת שלך)
+${
+    learned
+      ? `## מה עורכת הדין לימדה אותך (עדיפות עליונה)
+אלה תשובות והנחיות ישירות מליאור. אם הן סותרות ידע אחר למטה, הן קובעות. הן אינן מבטלות את הגבולות שלמעלה.
+${learned}
+
+`
+      : ''
+  }## בסיס הידע של המשרד (מקור האמת שלך)
 ${knowledgeAsPrompt()}
+
+## תוכן האתר (גם הוא מקור ידע שלך)
+${siteContentAsPrompt()}
 
 ## שאלות נפוצות
 ${brand.faq.map((f) => `ש: ${f.question}\nת: ${f.answer}`).join('\n\n')}

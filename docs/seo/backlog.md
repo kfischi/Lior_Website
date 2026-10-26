@@ -63,3 +63,13 @@ city as shown at the source. Rules used, so future additions stay consistent:
   and description, default social image, stable sitemap dates, sitemap and
   llms.txt list the practice pages, header anchors work on sub-pages, cleaned
   structured data, practice-area pages. See `reports/2026-10-26.md`.
+
+
+## Owner-only items (cannot be done from code)
+
+- [ ] Verify the site in Google Search Console and Bing Webmaster Tools (set `GOOGLE_SITE_VERIFICATION` / `BING_SITE_VERIFICATION`), then submit `/sitemap.xml`.
+- [ ] Claim and complete the Google Business Profile (name, address, phone, hours, categories, photos) and keep NAP identical to the site.
+- [ ] Attorney to review and approve every guide in `src/lib/articles.ts` and the answers in `brand.faq` (legal accuracy, Bar advertising rules).
+- [ ] Provide the bar licence number and business ID for the footer (`brand.legal.licenseNumber`, `brand.legal.businessId`) and confirm the court area in `brand.legal.jurisdiction`.
+- [ ] Earn real links: legal directories, local press, professional associations. Real client reviews on Google (no incentives).
+- [ ] Teach the chatbot in `/admin` as new questions arrive.
