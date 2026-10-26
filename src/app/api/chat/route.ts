@@ -11,6 +11,7 @@ import { buildSystemPrompt } from '@/lib/ai/system';
 import { retrieveContext } from '@/lib/ai/rag';
 import { chatTools } from '@/lib/ai/tools';
 import { fallbackReply } from '@/lib/ai/fallback';
+import { clientIp, rateLimit } from '@/lib/rate-limit';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
@@ -65,6 +66,11 @@ function streamStaticReply(text: string): Response {
 }
 
 export async function POST(req: Request) {
+  // The endpoint is public and every call costs money: cap it per address.
+  if (!rateLimit(`chat:${clientIp(req.headers)}`, 40, 10 * 60 * 1000)) {
+    return Response.json({ error: 'יותר מדי הודעות. נסו שוב בעוד כמה דקות.' }, { status: 429 });
+  }
+
   let body: { messages: UIMessage[]; sessionId?: string };
   try {
     body = await req.json();

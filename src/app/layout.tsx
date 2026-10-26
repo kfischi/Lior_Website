@@ -6,6 +6,7 @@ import { brand } from '@/lib/brand';
 import { buildMetadata, legalServiceJsonLd, attorneyJsonLd } from '@/lib/seo';
 import { CookieConsent } from '@/components/legal/CookieConsent';
 import { ChatBot } from '@/components/ai/ChatBot';
+import { ConciergeProvider } from '@/components/ai/ConciergeProvider';
 
 /*
  * Fonts self-host at build time via next/font — no runtime requests to Google.
@@ -56,8 +57,10 @@ export default function RootLayout({
         <a href="#main" className="skip-link">
           דלג לתוכן הראשי
         </a>
-        {children}
-        <ChatBot />
+        <ConciergeProvider>
+          {children}
+          <ChatBot />
+        </ConciergeProvider>
         <CookieConsent />
       </body>
     </html>

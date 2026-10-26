@@ -1,12 +1,16 @@
 'use server';
 
+import { headers } from 'next/headers';
 import { LeadSchema, buildLeadMessage, buildWhatsAppHref } from '@/lib/lead';
+import { clientIp, rateLimit } from '@/lib/rate-limit';
+import { brand } from '@/lib/brand';
 import { isMetaWhatsAppConfigured, sendLeadViaMeta } from '@/lib/whatsapp';
 
 /**
  * Lead capture Server Action.
  *
- *  - Validates on the server (Zod) and drops honeypot hits silently.
+ *  - Called by the chat's guided intake (src/components/ai/ConciergeProvider.tsx).
+ *  - Validates on the server (Zod) and rate-limits per IP.
  *  - If the Meta WhatsApp Cloud API is configured, sends the lead to the
  *    office's WhatsApp directly -> status "sent".
  *  - Otherwise (not configured, or Meta rejected it) returns status "handoff"
@@ -22,8 +26,14 @@ export interface LeadState {
 }
 
 export async function submitLead(_prev: LeadState, formData: FormData): Promise<LeadState> {
-  // Honeypot — real users never fill this field.
-  if (String(formData.get('company') ?? '').length > 0) return { status: 'sent' };
+  // Slow down spam: a handful of inquiries per hour per address is plenty.
+  const ip = clientIp(await headers());
+  if (!rateLimit(`lead:${ip}`, 5, 60 * 60 * 1000)) {
+    return {
+      status: 'error',
+      message: `נשלחו הרבה פניות ממכשיר זה. אפשר להתקשר ישירות: ${brand.phone}`,
+    };
+  }
 
   const parsed = LeadSchema.safeParse({
     name: formData.get('name') ?? '',

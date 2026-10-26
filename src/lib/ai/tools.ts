@@ -31,6 +31,14 @@ export const chatTools = {
       brand.practiceAreas.map((a) => ({ title: a.title, description: a.description })),
   }),
 
+  startIntake: tool({
+    description:
+      'הצע למשתמש להשאיר פרטים לקביעת ייעוץ בתהליך קצר ומסודר בתוך הצ׳אט (שם, תחום, דחיפות, טלפון). ' +
+      'השתמש כשהמשתמש רוצה לקבוע פגישה, לדבר עם עורכת הדין או שיחזרו אליו. זו הדרך המועדפת.',
+    inputSchema: z.object({}),
+    execute: async () => ({ ready: true }),
+  }),
+
   whatsappHandoff: tool({
     description:
       'הכן הודעה מוכנה לוואטסאפ של המשרד, עם סיכום קצר של הפנייה, כדי שהמשתמש ילחץ וישלח. ' +

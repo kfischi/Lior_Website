@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ChevronLeft, MessageCircle, Phone } from 'lucide-react';
+import { ChevronLeft, MessageCircle, MessagesSquare } from 'lucide-react';
 import { brand, whatsappHref } from '@/lib/brand';
 import { breadcrumbJsonLd, buildMetadata, faqJsonLd, serviceJsonLd } from '@/lib/seo';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
 import { Reveal } from '@/components/motion/Reveal';
 import { Button } from '@/components/ui/button';
+import { OpenChatButton } from '@/components/ai/OpenChatButton';
 import {
   Accordion,
   AccordionContent,
@@ -177,15 +178,13 @@ export default async function PracticeAreaPage({ params }: { params: Promise<Par
               רוצים לדבר על המקרה שלכם?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-cream/80">
-              אפשר להשאיר פרטים ונחזור אליכם, או לכתוב בוואטסאפ. בלי צורך לפרט את האירוע בפנייה הראשונה.
+              אפשר לשוחח עם העוזר הדיגיטלי ולהשאיר כמה פרטים קצרים, או לכתוב בוואטסאפ. בלי צורך לפרט את האירוע בפנייה הראשונה.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <Button asChild size="lg" variant="accentOnDark">
-                <Link href="/#contact">
-                  <Phone className="h-5 w-5" />
-                  {brand.hero.primaryCta}
-                </Link>
-              </Button>
+              <OpenChatButton size="lg" variant="accentOnDark">
+                <MessagesSquare className="h-5 w-5" />
+                {brand.hero.primaryCta}
+              </OpenChatButton>
               <Button asChild size="lg" variant="onDark">
                 <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="h-5 w-5" />

@@ -3,9 +3,10 @@
 import * as React from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'motion/react';
-import { Phone, MessageCircle, ChevronDown } from 'lucide-react';
+import { MessageCircle, MessagesSquare, ChevronDown } from 'lucide-react';
 import { brand, whatsappHref } from '@/lib/brand';
 import { Button } from '@/components/ui/button';
+import { OpenChatButton } from '@/components/ai/OpenChatButton';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -52,14 +53,19 @@ export function Hero() {
         </video>
       )}
 
-      {/* Legibility overlay */}
+      {/* Light scrims only where text sits, so the video keeps its colour.
+          The copy is on the start (right) side in RTL, so that side is darkest. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-t from-navy via-navy/80 to-navy/40"
+        className="absolute inset-0 bg-linear-to-l from-navy/65 via-navy/25 to-transparent"
       />
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-l from-navy/70 to-transparent"
+        className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-navy/50 to-transparent"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-28 bg-linear-to-b from-navy/45 to-transparent"
       />
 
       <motion.div
@@ -72,22 +78,20 @@ export function Hero() {
           <motion.p variants={item} className="eyebrow mb-5 text-accent-light">
             {brand.firmName}
           </motion.p>
-          <motion.h1 variants={item} className="display-xl font-bold text-cream">
+          <motion.h1 variants={item} className="display-xl font-bold text-cream [text-shadow:0_2px_28px_rgb(0_0_0/0.35)]">
             {brand.hero.title}
           </motion.h1>
           <motion.p
             variants={item}
-            className="mt-6 max-w-xl text-lg leading-relaxed text-cream/85 md:text-xl"
+            className="mt-6 max-w-xl text-lg leading-relaxed text-cream/90 [text-shadow:0_1px_16px_rgb(0_0_0/0.4)] md:text-xl"
           >
             {brand.hero.subtitle}
           </motion.p>
           <motion.div variants={item} className="mt-10 flex flex-wrap gap-4">
-            <Button asChild size="lg" variant="accentOnDark">
-              <a href="#contact">
-                <Phone className="h-5 w-5" />
-                {brand.hero.primaryCta}
-              </a>
-            </Button>
+            <OpenChatButton size="lg" variant="accentOnDark">
+              <MessagesSquare className="h-5 w-5" />
+              {brand.hero.primaryCta}
+            </OpenChatButton>
             <Button asChild size="lg" variant="onDark">
               <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="h-5 w-5" />

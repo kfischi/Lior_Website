@@ -78,6 +78,15 @@ export function CookieConsent() {
   );
 }
 
+/** True while the cookie banner is on screen, so other fixed UI can make room. */
+export function useConsentPending(): boolean {
+  return React.useSyncExternalStore(
+    subscribe,
+    () => readConsent() === null,
+    () => false,
+  );
+}
+
 export function hasConsent(): boolean {
   return readConsent() === 'accepted';
 }

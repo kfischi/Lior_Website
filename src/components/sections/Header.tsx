@@ -7,6 +7,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import { Menu, X, Phone } from 'lucide-react';
 import { brand, telHref } from '@/lib/brand';
 import { Button } from '@/components/ui/button';
+import { OpenChatButton } from '@/components/ai/OpenChatButton';
 import { cn } from '@/lib/utils';
 
 const NAV = [
@@ -83,8 +84,11 @@ export function Header() {
           ))}
         </ul>
 
-        <div className="hidden lg:block">
-          <Button asChild variant={scrolled ? 'primary' : 'onDark'} size="sm">
+        <div className="hidden items-center gap-3 lg:flex">
+          <OpenChatButton size="sm" variant={scrolled ? 'accent' : 'accentOnDark'}>
+            שיחה עם המשרד
+          </OpenChatButton>
+          <Button asChild variant={scrolled ? 'outline' : 'onDark'} size="sm">
             <a href={telHref}>
               <Phone className="h-4 w-4" />
               {brand.phone}
@@ -117,8 +121,15 @@ export function Header() {
                 </a>
               </li>
             ))}
-            <li className="pt-2">
-              <Button asChild variant="primary" className="w-full">
+            <li className="space-y-2 pt-2">
+              <OpenChatButton
+                variant="accent"
+                className="w-full"
+                onClick={() => setOpen(false)}
+              >
+                שיחה עם המשרד
+              </OpenChatButton>
+              <Button asChild variant="outline" className="w-full">
                 <a href={telHref}>
                   <Phone className="h-4 w-4" />
                   {brand.phone}
