@@ -146,8 +146,8 @@ export const brand = {
       'עורכת דין, חברה בלשכת עורכי הדין בישראל',
       'התמחות באפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי',
     ],
-    /** Cloudinary public ID for the attorney portrait. Leave empty for a monogram panel. */
-    portraitId: '',
+    /** Cloudinary public ID for the attorney portrait. Local /public path or Cloudinary ID. Leave empty for a monogram panel. */
+    portraitId: '/images/lior-portrait.webp',
   },
 
   // --- Why us ---

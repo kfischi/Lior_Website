@@ -16,7 +16,7 @@ export function About() {
                   alt={`תמונה של ${brand.attorneyName}`}
                   fill
                   sizes="(max-width: 1024px) 100vw, 28rem"
-                  className="object-cover"
+                  className="object-cover object-top"
                 />
               ) : (
                 <div className="flex h-full w-full flex-col items-center justify-center gap-5 bg-navy p-8 text-center text-cream">
