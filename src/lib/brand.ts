@@ -94,8 +94,33 @@ export const brand = {
       'משרד בוטיק המעניק ליווי משפטי אישי, מקצועי ודיסקרטי — מהפגישה הראשונה ועד להשגת התוצאה.',
     primaryCta: 'לקביעת ייעוץ',
     secondaryCta: 'וואטסאפ',
-    /** Cloudinary public ID for the hero background. */
+    /**
+     * Hero background video. Provide EITHER:
+     *  - videoUrl: a direct absolute URL to an .mp4/.webm (e.g. Cloudinary
+     *    delivery URL), or
+     *  - leave videoUrl empty to fall back to the poster image only.
+     * posterId is a Cloudinary public ID shown before/while the video loads and
+     * whenever motion is reduced or the video is unavailable.
+     */
+    videoUrl: '',
+    posterId: 'lawyer-os/hero-placeholder',
+    /** Fallback still background (Cloudinary public ID). */
     imageId: 'lawyer-os/hero-placeholder',
+  },
+
+  // --- AI chatbot ---
+  chat: {
+    assistantName: 'עוזר המשרד',
+    greeting:
+      'שלום 👋 אני העוזר הדיגיטלי של המשרד. אפשר לשאול אותי על תחומי העיסוק, ' +
+      'שעות הפעילות, או להשאיר פרטים לקביעת ייעוץ. איך אפשר לעזור?',
+    /** Quick-start suggestions shown as chips. */
+    suggestedPrompts: [
+      'באילו תחומים אתם מטפלים?',
+      'כמה עולה ייעוץ ראשוני?',
+      'איך קובעים פגישה?',
+    ],
+    disclaimer: 'המידע כללי ואינו מהווה ייעוץ משפטי.',
   },
 
   // --- Trust strip (E-E-A-T) ---

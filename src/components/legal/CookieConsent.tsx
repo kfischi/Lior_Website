@@ -5,25 +5,40 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 const STORAGE_KEY = 'cookie-consent-v1';
-
+const EVENT = 'cookie-consent';
 type Consent = 'accepted' | 'declined';
 
+/** Subscribe to consent changes (our custom event + cross-tab storage event). */
+function subscribe(onChange: () => void): () => void {
+  window.addEventListener(EVENT, onChange);
+  window.addEventListener('storage', onChange);
+  return () => {
+    window.removeEventListener(EVENT, onChange);
+    window.removeEventListener('storage', onChange);
+  };
+}
+
+function readConsent(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
 /**
- * Cookie consent banner. Non-essential scripts (analytics, marketing) must be
- * gated behind acceptance. Read the choice elsewhere with `hasConsent()`, or
- * listen for the `cookie-consent` CustomEvent to fire scripts after opt-in.
+ * Cookie consent banner. Reads the stored choice via useSyncExternalStore (the
+ * idiomatic way to read an external store), so there is no setState-in-effect.
+ * Non-essential scripts should gate on hasConsent() or the `cookie-consent` event.
  */
 export function CookieConsent() {
-  const [visible, setVisible] = React.useState(false);
+  const consent = React.useSyncExternalStore(
+    subscribe,
+    readConsent,
+    () => null, // server snapshot
+  );
 
-  React.useEffect(() => {
-    try {
-      if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
-    } catch {
-      /* storage blocked — show banner anyway */
-      setVisible(true);
-    }
-  }, []);
+  if (consent !== null) return null;
 
   function decide(choice: Consent) {
     try {
@@ -31,26 +46,21 @@ export function CookieConsent() {
     } catch {
       /* ignore */
     }
-    window.dispatchEvent(
-      new CustomEvent('cookie-consent', { detail: { choice } }),
-    );
-    setVisible(false);
+    window.dispatchEvent(new CustomEvent(EVENT, { detail: { choice } }));
   }
-
-  if (!visible) return null;
 
   return (
     <div
       role="dialog"
       aria-live="polite"
       aria-label="הודעת עוגיות"
-      className="fixed inset-x-0 bottom-0 z-[60] border-t border-border bg-card/95 backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-[55] border-t border-navy/10 bg-cream/95 backdrop-blur"
     >
-      <div className="container flex flex-col items-start gap-3 py-4 md:flex-row md:items-center md:justify-between">
-        <p className="text-sm leading-relaxed text-muted-foreground">
+      <div className="shell flex flex-col items-start gap-3 py-4 md:flex-row md:items-center md:justify-between">
+        <p className="text-sm leading-relaxed text-ink/70">
           אתר זה עושה שימוש בעוגיות חיוניות לתפעולו. בכפוף לאישורכם נשתמש גם
           בעוגיות לשיפור החוויה ולמדידה. למידע נוסף עיינו ב
-          <Link href="/legal/privacy" className="mx-1 text-accent underline underline-offset-2">
+          <Link href="/legal/privacy" className="mx-1 text-bronze underline underline-offset-2">
             מדיניות הפרטיות
           </Link>
           .
@@ -68,11 +78,6 @@ export function CookieConsent() {
   );
 }
 
-/** Helper for gating non-essential scripts elsewhere in the app. */
 export function hasConsent(): boolean {
-  try {
-    return localStorage.getItem(STORAGE_KEY) === 'accepted';
-  } catch {
-    return false;
-  }
+  return readConsent() === 'accepted';
 }

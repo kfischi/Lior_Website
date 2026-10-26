@@ -1,42 +1,32 @@
 import { brand } from '@/lib/brand';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 import { Icon } from './Icon';
 
 export function PracticeAreas() {
   return (
-    <section
-      id="practice-areas"
-      aria-labelledby="practice-title"
-      className="bg-secondary/40"
-    >
-      <div className="container-section">
-        <header className="mx-auto mb-12 max-w-2xl text-center">
-          <p className="font-medium text-accent">מה אנחנו עושים</p>
-          <h2 id="practice-title" className="mt-2 text-3xl font-bold text-navy md:text-4xl">
+    <section id="practice" aria-labelledby="practice-title" className="section bg-navy text-cream">
+      <div className="shell">
+        <Reveal className="mx-auto mb-14 max-w-2xl text-center">
+          <p className="eyebrow mb-3">מה אנחנו עושים</p>
+          <h2 id="practice-title" className="text-3xl text-cream md:text-4xl">
             תחומי עיסוק
           </h2>
-        </header>
+        </Reveal>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <Stagger className="grid gap-px overflow-hidden rounded-xl bg-cream/10 sm:grid-cols-2 lg:grid-cols-3">
           {brand.practiceAreas.map((area) => (
-            <Card
+            <StaggerItem
               key={area.slug}
-              className="group transition-all hover:-translate-y-1 hover:shadow-md"
+              className="group bg-navy p-8 transition-colors duration-300 hover:bg-navy/60"
             >
-              <CardHeader>
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-navy/5 text-navy transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
-                  <Icon name={area.icon} className="h-6 w-6" />
-                </div>
-                <CardTitle className="mt-4 text-navy">{area.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {area.description}
-                </p>
-              </CardContent>
-            </Card>
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-cream/5 text-bronze transition-colors duration-300 group-hover:bg-bronze group-hover:text-navy">
+                <Icon name={area.icon} className="h-6 w-6" />
+              </div>
+              <h3 className="mt-5 font-heading text-xl font-semibold text-cream">{area.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-cream/70">{area.description}</p>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </div>
     </section>
   );

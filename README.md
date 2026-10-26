@@ -1,77 +1,73 @@
-# Lawyer OS — תבנית אב לאתרי משרדי עורכי דין
+# Lawyer OS — תבנית אב לאתרי משרדי עורכי דין (Elite)
 
-תבנית **White-Label** לאתרי תדמית למשרדי עורכי דין בישראל. עברית-first, RTL מלא,
-מהירה ונגישה (יעד Lighthouse 95+). בנויה ב-Next.js (App Router) + TypeScript +
-Tailwind + Shadcn/UI.
+תבנית **White-Label** ברמת פרימיום לאתרי תדמית למשרדי עורכי דין בישראל.
+עברית-first, RTL מלא, עיצוב קולנועי/עריכתי, אנימציות מוקפדות וצ'אטבוט AI אמיתי.
+החלפת לקוח = עריכת קובץ אחד (`src/lib/brand.ts`).
 
-## עקרונות מפתח
+## סטאק (אוקטובר 2026)
 
-- **קובץ אחד למיתוג** — כל פרטי הלקוח (שם, צבעים, פונטים, תוכן) נמצאים ב-
-  [`src/lib/brand.ts`](src/lib/brand.ts). שינוי שם/צבע = עריכת קובץ אחד; כל האתר מתעדכן.
-- **אבטחה** — מפתחות ו-Webhook URLs נשמרים ב-env ונקראים **רק בצד השרת**
-  (`/api/lead`, `/api/chat`), ומעולם לא נחשפים ללקוח.
-- **מדיה** — כל התמונות עוברות דרך `next/image` עם Cloudinary custom loader.
-- **SEO + GEO** — Metadata דינמי, JSON-LD (LegalService / Attorney / FAQPage),
-  `sitemap.xml`, `robots.txt`, ו-`llms.txt` למנועי AI.
+- **Next.js 16** (App Router · RSC · Server Actions) · **React 19** · **TypeScript strict**
+- **Tailwind CSS v4** (CSS-first `@theme`) · **Framer Motion** (micro-interactions)
+- **Vercel AI SDK v7** + **Claude** — צ'אטבוט עם streaming, tool calling, ו-RAG
+- **Supabase** (pgvector) — RAG והיסטוריית שיחות (אופציונלי, עם fallback)
+
+## עקרונות
+
+- **קובץ מיתוג יחיד** — `src/lib/brand.ts` מזין צבעים, פונטים, תוכן, צ'אטבוט ו-SEO.
+  הצבעים מוזרקים כ-CSS variables, כך שעריכה אחת משנה את כל האתר.
+- **אבטחה** — מפתחות (Claude/Supabase) ו-Webhooks נקראים **רק בצד השרת**
+  (Server Actions / route handlers). שום סוד לא מגיע ל-client.
+- **עמיד בכשל** — האתר והצ'אט ממשיכים לעבוד גם ללא Supabase/RAG/מפתח (fallback מלא).
+- **נגישות (WCAG 2.1 AA)** · **Mobile-first אמיתי** · יעד Lighthouse 95+.
+
+ראו [`CLAUDE.md`](CLAUDE.md) לחוקי הקוד ו-[`DESIGN.md`](DESIGN.md) לכיוון העיצובי.
 
 ## הרצה מקומית
 
 ```bash
-cp .env.example .env.local   # מלאו ערכים אמיתיים
+cp .env.example .env.local   # מלאו ערכים
 npm install
 npm run dev                  # http://localhost:3000
 ```
 
-### משתני סביבה (`.env.local`)
+### משתני סביבה
 
-| משתנה | תיאור | צד |
+| משתנה | חובה? | תיאור |
 | --- | --- | --- |
-| `SITE_URL` | כתובת האתר (canonical, sitemap) | public |
-| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | שם ה-Cloud ב-Cloudinary | public |
-| `N8N_LEAD_WEBHOOK_URL` | Webhook לטופס לידים | **server-only** |
-| `N8N_CHAT_WEBHOOK_URL` | Webhook לצ׳אטבוט | **server-only** |
+| `SITE_URL` | כן | כתובת האתר (SEO/sitemap) |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | כן | שם ה-Cloud לתמונות |
+| `ANTHROPIC_API_KEY` | לצ'אט | מפתח Claude (צד שרת) |
+| `CHAT_MODEL` | לא | דגם Claude (ברירת מחדל `claude-sonnet-4-5`) |
+| `N8N_LEAD_WEBHOOK_URL` | ללידים | Webhook לטופס (צד שרת) |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | ל-RAG/היסטוריה | Supabase (צד שרת) |
+| `OPENAI_API_KEY` | ל-RAG | embeddings (צד שרת) |
 
-## מבנה הפרויקט
+> כל מה שאינו קריטי הוא אופציונלי: בלעדיו הפיצ'ר פשוט נכבה בחן.
 
-```
-src/
-  app/                 עמודים, route handlers, sitemap/robots/llms.txt
-    api/lead           טופס לידים → n8n (שרת)
-    api/chat           צ׳אטבוט → n8n (שרת)
-    legal/             privacy · accessibility (ת"י 5568) · terms
-  components/
-    ai/ChatBot.tsx
-    legal/CookieConsent.tsx
-    sections/          רכיבי עמוד הבית (Hero, About, ...)
-    ui/                Shadcn primitives
-  lib/
-    brand.ts           ⭐ קונפיגורציית המיתוג (White-Label)
-    cloudinary-loader.ts
-    seo-config.ts      Metadata + JSON-LD
-    color.ts · utils.ts
-```
+## צ'אטבוט + RAG
+
+1. הריצו את ההגירה [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql)
+   בפרויקט Supabase (pgvector + טבלאות שיחה + טבלת `documents`).
+2. הגדירו `SUPABASE_*` + `OPENAI_API_KEY`.
+3. הטמיעו את הידע: `npm run ingest` (ממלא embeddings מתוך `brand.ts` ומקבצי `content/`).
+
+בלי הצעדים האלה — הצ'אטבוט עדיין עונה על בסיס הידע המובנה שב-`brand.ts`.
 
 ## שכפול ללקוח חדש
 
-ברוב המקרים **לא מעצבים מחדש**:
-
 1. שכפלו את הריפו.
-2. ערכו את [`src/lib/brand.ts`](src/lib/brand.ts) — שם, צבעים, פרטי קשר, תכנים.
-3. החליפו את התמונות ב-Cloudinary ועדכנו את ה-public IDs ב-`brand.ts`.
-4. עדכנו את ה-System Prompt של הצ׳אטבוט ב-workflow של n8n.
+2. ערכו `src/lib/brand.ts` (שם, צבעים, תוכן, פרטי קשר, הגדרות צ'אט).
+3. החליפו תמונות/וידאו ב-Cloudinary ועדכנו `hero.videoUrl` / `hero.posterId` / public IDs.
+4. (אופציונלי) הריצו `npm run ingest` לעדכון מאגר הידע של הצ'אטבוט.
 5. דיפלוי (Vercel מומלץ).
-
-V0 נכנס לתמונה רק כשצריך רכיב חדש שעדיין לא קיים בתבנית.
 
 ## פקודות
 
 ```bash
-npm run dev        # פיתוח
-npm run build      # build לפרודקשן
-npm run start      # הרצת build
-npm run lint       # ESLint
-npm run typecheck  # בדיקת טיפוסים
+npm run dev · build · start
+npm run lint · typecheck
+npm run ingest     # הטמעת ידע ל-RAG (דורש Supabase + OpenAI)
 ```
 
-> הערה: הפונטים (Frank Ruhl Libre, Heebo) נטענים דרך `next/font` ומתארחים
-> עצמית ב-build — אין קריאות runtime ל-Google.
+> הפונטים (Frank Ruhl Libre, Heebo) נטענים דרך `next/font` ומתארחים עצמית ב-build —
+> ללא קריאות runtime ל-Google.

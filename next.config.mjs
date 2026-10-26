@@ -2,13 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    // Cloudinary via a custom loader (modern approach — no legacy `cloudinary` config block).
-    // Every <Image> in the app is served through src/lib/cloudinary-loader.ts.
+    // Cloudinary via a custom loader (modern approach — no legacy config block).
     loader: 'custom',
     loaderFile: './src/lib/cloudinary-loader.ts',
   },
   async headers() {
-    // Baseline hardening headers. Tighten CSP per-deployment if needed.
     return [
       {
         source: '/:path*',

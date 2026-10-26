@@ -1,67 +1,55 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Frank_Ruhl_Libre, Heebo } from 'next/font/google';
 import './globals.css';
 
 import { brand } from '@/lib/brand';
-import { hexToHslTriplet } from '@/lib/color';
-import { buildMetadata, legalServiceJsonLd, attorneyJsonLd } from '@/lib/seo-config';
+import { buildMetadata, legalServiceJsonLd, attorneyJsonLd } from '@/lib/seo';
 import { CookieConsent } from '@/components/legal/CookieConsent';
 import { ChatBot } from '@/components/ai/ChatBot';
 
 /*
- * Fonts are loaded with next/font, which self-hosts them at build time.
- * There are NO runtime requests to Google — the files are served from our own
- * origin, satisfying the privacy + performance requirements.
+ * Fonts self-host at build time via next/font — no runtime requests to Google.
  */
-const heading = Frank_Ruhl_Libre({
+const frank = Frank_Ruhl_Libre({
   subsets: ['hebrew', 'latin'],
   weight: ['400', '500', '700', '900'],
-  variable: '--font-heading',
+  variable: '--font-frank',
   display: 'swap',
 });
 
-const body = Heebo({
+const heebo = Heebo({
   subsets: ['hebrew', 'latin'],
-  weight: ['300', '400', '500', '700'],
-  variable: '--font-body',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-heebo',
   display: 'swap',
 });
 
 export const metadata: Metadata = buildMetadata();
 
-/** Inject brand.ts colors as CSS variables so editing brand.ts re-themes all. */
-function brandStyle(): string {
+export const viewport: Viewport = {
+  themeColor: brand.colors.navy,
+  width: 'device-width',
+  initialScale: 1,
+};
+
+/** Inject brand.ts colors as CSS variables so one file re-themes the whole site. */
+function brandVars(): string {
   const { navy, cream, bronze, ink } = brand.colors;
-  return `:root{
-    --brand-navy:${navy};
-    --brand-cream:${cream};
-    --brand-bronze:${bronze};
-    --brand-ink:${ink};
-    --background:${hexToHslTriplet(cream)};
-    --foreground:${hexToHslTriplet(ink)};
-    --primary:${hexToHslTriplet(navy)};
-    --primary-foreground:${hexToHslTriplet(cream)};
-    --accent:${hexToHslTriplet(bronze)};
-    --accent-foreground:${hexToHslTriplet(cream)};
-    --ring:${hexToHslTriplet(bronze)};
-    --secondary-foreground:${hexToHslTriplet(navy)};
-  }`;
+  return `:root{--brand-navy:${navy};--brand-cream:${cream};--brand-bronze:${bronze};--brand-ink:${ink};}`;
 }
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const ld = [legalServiceJsonLd(), attorneyJsonLd()];
+  const jsonLd = [legalServiceJsonLd(), attorneyJsonLd()];
 
   return (
-    <html lang="he" dir="rtl" className={`${heading.variable} ${body.variable}`}>
+    <html lang="he" dir="rtl" className={`${frank.variable} ${heebo.variable}`}>
       <head>
-        {/* Brand color tokens — single source of truth is src/lib/brand.ts */}
-        <style dangerouslySetInnerHTML={{ __html: brandStyle() }} />
-        {/* Organization + Attorney structured data on every page */}
+        <style dangerouslySetInnerHTML={{ __html: brandVars() }} />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body>

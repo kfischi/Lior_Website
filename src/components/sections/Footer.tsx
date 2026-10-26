@@ -1,6 +1,29 @@
 import Link from 'next/link';
+import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { brand, telHref, mailHref } from '@/lib/brand';
-import { Facebook, Linkedin, Instagram, MapPin, Phone, Mail, Clock } from 'lucide-react';
+
+/** Inline brand glyphs (lucide dropped brand logos in v1). */
+function Facebook({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12Z" />
+    </svg>
+  );
+}
+function Linkedin({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14ZM7.12 20.45H3.55V9h3.57v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.22.79 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z" />
+    </svg>
+  );
+}
+function Instagram({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.72 3.72 0 0 1-1.38-.9 3.72 3.72 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16Zm0 3.24A6.6 6.6 0 1 0 18.6 12 6.6 6.6 0 0 0 12 5.4Zm0 10.89A4.29 4.29 0 1 1 16.29 12 4.29 4.29 0 0 1 12 16.29Zm6.86-11.15a1.54 1.54 0 1 1-1.54-1.54 1.54 1.54 0 0 1 1.54 1.54Z" />
+    </svg>
+  );
+}
 
 const LEGAL_LINKS = [
   { href: '/legal/privacy', label: 'מדיניות פרטיות' },
@@ -10,30 +33,28 @@ const LEGAL_LINKS = [
 
 export function Footer() {
   const year = new Date().getFullYear();
+  const { facebook, linkedin, instagram } = brand.social;
 
   return (
-    <footer className="border-t border-border bg-navy text-cream/90">
-      <div className="container grid gap-10 py-14 md:grid-cols-3">
-        {/* Brand */}
+    <footer className="border-t border-cream/10 bg-navy text-cream/85">
+      <div className="shell grid gap-10 py-16 md:grid-cols-3">
         <div>
           <h2 className="font-heading text-xl font-bold text-cream">{brand.firmName}</h2>
-          <p className="mt-3 max-w-xs text-sm leading-relaxed text-cream/70">
-            {brand.tagline}
-          </p>
-          {(brand.social.facebook || brand.social.linkedin || brand.social.instagram) && (
+          <p className="mt-3 max-w-xs text-sm leading-relaxed text-cream/60">{brand.tagline}</p>
+          {(facebook || linkedin || instagram) && (
             <div className="mt-5 flex gap-3">
-              {brand.social.facebook && (
-                <a href={brand.social.facebook} aria-label="פייסבוק" className="hover:text-bronze">
+              {facebook && (
+                <a href={facebook} aria-label="פייסבוק" className="text-cream/70 hover:text-bronze">
                   <Facebook className="h-5 w-5" />
                 </a>
               )}
-              {brand.social.linkedin && (
-                <a href={brand.social.linkedin} aria-label="לינקדאין" className="hover:text-bronze">
+              {linkedin && (
+                <a href={linkedin} aria-label="לינקדאין" className="text-cream/70 hover:text-bronze">
                   <Linkedin className="h-5 w-5" />
                 </a>
               )}
-              {brand.social.instagram && (
-                <a href={brand.social.instagram} aria-label="אינסטגרם" className="hover:text-bronze">
+              {instagram && (
+                <a href={instagram} aria-label="אינסטגרם" className="text-cream/70 hover:text-bronze">
                   <Instagram className="h-5 w-5" />
                 </a>
               )}
@@ -41,7 +62,6 @@ export function Footer() {
           )}
         </div>
 
-        {/* Contact */}
         <div>
           <h3 className="font-semibold text-cream">יצירת קשר</h3>
           <ul className="mt-4 space-y-3 text-sm">
@@ -70,7 +90,6 @@ export function Footer() {
           </ul>
         </div>
 
-        {/* Legal links */}
         <nav aria-label="קישורים משפטיים">
           <h3 className="font-semibold text-cream">מידע</h3>
           <ul className="mt-4 space-y-2 text-sm">
@@ -86,13 +105,11 @@ export function Footer() {
       </div>
 
       <div className="border-t border-cream/10">
-        <div className="container flex flex-col items-center justify-between gap-2 py-5 text-xs text-cream/60 md:flex-row">
+        <div className="shell flex flex-col items-center justify-between gap-2 py-5 text-xs text-cream/55 md:flex-row">
           <p>
             © {year} {brand.firmName}. כל הזכויות שמורות.
           </p>
-          <p>
-            האמור באתר אינו מהווה ייעוץ משפטי ואין להסתמך עליו ללא קבלת ייעוץ פרטני.
-          </p>
+          <p>האמור באתר אינו מהווה ייעוץ משפטי ואין להסתמך עליו ללא קבלת ייעוץ פרטני.</p>
         </div>
       </div>
     </footer>

@@ -1,80 +1,76 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
 /*
- * Default design tokens. The four --brand-* hex variables and the key shadcn
- * HSL tokens (--background, --primary, --accent, --ring, ...) are RE-INJECTED at
- * runtime from src/lib/brand.ts in src/app/layout.tsx, so editing brand.ts
- * re-themes everything. The values here are sensible fallbacks that match the
- * default navy / cream / bronze palette.
+ * Tailwind CSS v4 — CSS-first theme.
+ * Brand tokens (--brand-*) are injected at runtime from src/lib/brand.ts in
+ * layout.tsx, so editing brand.ts re-themes the whole site. The @theme inline
+ * block maps those runtime vars to Tailwind color/font utilities (navy, cream,
+ * bronze, ink, bg-background, font-heading, ...). Opacity modifiers like
+ * `text-ink/70` and `border-navy/10` work because these are theme colors.
  */
+
+@theme inline {
+  --color-navy: var(--brand-navy);
+  --color-cream: var(--brand-cream);
+  --color-bronze: var(--brand-bronze);
+  --color-ink: var(--brand-ink);
+
+  --color-background: var(--brand-cream);
+  --color-foreground: var(--brand-ink);
+
+  --font-heading: var(--font-frank), Georgia, serif;
+  --font-sans: var(--font-heebo), system-ui, sans-serif;
+
+  --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --radius: 0.5rem;
+}
+
 @layer base {
   :root {
-    /* Brand hex tokens (mirrored from brand.ts). */
+    /* Default placeholder palette — overridden at runtime from brand.ts. */
     --brand-navy: #0f2741;
     --brand-cream: #f7f4ed;
     --brand-bronze: #a9743b;
     --brand-ink: #1a1a1a;
-
-    /* Shadcn semantic tokens (H S L triplets). */
-    --background: 42 33% 95%; /* cream */
-    --foreground: 0 0% 10%; /* ink */
-
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
-
-    --primary: 209 62% 16%; /* navy */
-    --primary-foreground: 42 33% 95%;
-
-    --secondary: 42 25% 90%;
-    --secondary-foreground: 209 62% 16%;
-
-    --muted: 42 20% 90%;
-    --muted-foreground: 215 16% 40%;
-
-    --accent: 30 49% 45%; /* bronze */
-    --accent-foreground: 42 33% 97%;
-
-    --destructive: 0 72% 45%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 42 18% 85%;
-    --input: 42 18% 85%;
-    --ring: 30 49% 45%; /* bronze */
-
-    --radius: 0.5rem;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
   }
 
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.7;
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
 
   h1,
   h2,
   h3,
   h4 {
-    @apply font-heading;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.1;
     text-wrap: balance;
   }
 
-  /* Visible focus ring for keyboard users (accessibility). */
-  :focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  ::selection {
+    background-color: color-mix(in srgb, var(--brand-bronze) 28%, transparent);
+    color: var(--brand-ink);
   }
 
-  /* Respect reduced-motion preference. */
+  :focus-visible {
+    outline: 2px solid var(--brand-bronze);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -88,13 +84,54 @@
 }
 
 @layer components {
-  .container-section {
-    @apply container py-16 md:py-24;
+  /* Centered content shell with fluid gutters. */
+  .shell {
+    width: 100%;
+    margin-inline: auto;
+    max-width: 75rem;
+    padding-inline: clamp(1.25rem, 4vw, 2.5rem);
   }
 
-  /* Skip-to-content link for screen-reader / keyboard users. */
-  .skip-link {
-    @apply sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[100]
-      focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground;
+  /* Standard vertical section rhythm. */
+  .section {
+    padding-block: clamp(5rem, 10vw, 9rem);
   }
+
+  /* Small-caps editorial eyebrow label. */
+  .eyebrow {
+    display: inline-block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--brand-bronze);
+  }
+
+  /* Hairline divider. */
+  .hairline {
+    border: 0;
+    border-top: 1px solid color-mix(in srgb, var(--brand-navy) 12%, transparent);
+  }
+
+  /* Accessibility: skip link. */
+  .skip-link {
+    position: absolute;
+    inset-inline-start: 1rem;
+    top: -4rem;
+    z-index: 100;
+    border-radius: 0.375rem;
+    background: var(--brand-navy);
+    color: var(--brand-cream);
+    padding: 0.5rem 1rem;
+    transition: top 0.2s var(--ease-lux);
+  }
+  .skip-link:focus {
+    top: 1rem;
+  }
+}
+
+/* Fluid display type for hero. */
+@utility display-xl {
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
 }
