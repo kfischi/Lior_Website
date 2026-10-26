@@ -30,7 +30,7 @@ export function Hero() {
     <section
       ref={ref}
       aria-label="כותרת ראשית"
-      className="grain relative flex min-h-[100svh] items-center overflow-hidden bg-navy"
+      className="relative flex min-h-[100svh] items-end overflow-hidden bg-navy"
     >
       {/* Background: poster image (also LCP + fallback), then the video on top */}
       <motion.div
@@ -63,24 +63,20 @@ export function Hero() {
           The copy is on the start (right) side in RTL, so that side is darkest. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-linear-to-l from-navy/70 via-navy/25 to-transparent"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-navy/60 to-transparent"
+        className="absolute inset-x-0 bottom-0 h-3/5 bg-linear-to-t from-navy/85 via-navy/45 to-transparent"
       />
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-0 h-28 bg-linear-to-b from-navy/45 to-transparent"
       />
 
-      <div className="shell relative z-10 py-32">
+      <div className="shell relative z-10 pb-64 pt-32 md:pb-28">
         <div className="max-w-4xl">
-          <motion.p {...fade(0.1)} className="eyebrow mb-6 text-accent-light">
+          <motion.p {...fade(0.1)} className="eyebrow mb-4 text-accent-light">
             {brand.firmName}
           </motion.p>
 
-          <h1 className="display-2xl font-bold text-cream">
+          <h1 className="text-[clamp(2.3rem,5.2vw,4.5rem)] font-bold leading-[1.04] tracking-tight text-cream">
             {words.map((w, i) => (
               <React.Fragment key={`${w}-${i}`}>
                 <span className="inline-block overflow-hidden pb-[0.14em] align-bottom">
@@ -99,7 +95,7 @@ export function Hero() {
 
           <motion.p
             {...fade(0.8)}
-            className="mt-8 max-w-xl text-lg leading-relaxed text-cream/90 [text-shadow:0_1px_16px_rgb(0_0_0/0.4)] md:text-xl"
+            className="mt-5 max-w-xl text-base leading-relaxed text-cream/95 md:text-lg"
           >
             {brand.hero.subtitle}
           </motion.p>
