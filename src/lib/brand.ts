@@ -54,7 +54,7 @@ export const brand = {
   phone: '03-0000000',
   /** International format, digits only — for tel: and WhatsApp links. */
   phoneE164: '972300000000',
-  whatsapp: '972500000000',
+  whatsapp: '972524694158',
   email: 'office@example.co.il',
   address: {
     street: 'רחוב הדוגמה 1',
