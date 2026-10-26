@@ -1,19 +1,32 @@
 import Image from 'next/image';
-import { Clock, Lock, MapPin, Mail, MessageCircle, Phone } from 'lucide-react';
+import { Clock, MapPin, Mail, Phone, type LucideIcon } from 'lucide-react';
 import { brand, telHref, whatsappHref, mailHref } from '@/lib/brand';
-import { ConciergePanel } from '@/components/ai/ConciergePanel';
+import { WhatsAppIcon } from '@/components/ui/whatsapp-icon';
 import { Reveal } from '@/components/motion/Reveal';
 
-const POINTS = [
-  { icon: MessageCircle, text: 'מספרים במה מדובר, בלי לפרט את האירוע' },
-  { icon: Lock, text: 'הפרטים נשלחים למשרד רק באישור שלכם' },
-  { icon: Clock, text: 'מענה ראשוני מיד, והמשרד חוזר אליכם בהקדם' },
+interface ContactItem {
+  label: string;
+  value: string;
+  href?: string;
+  external?: boolean;
+  icon: LucideIcon | typeof WhatsAppIcon;
+}
+
+const ITEMS: ContactItem[] = [
+  { label: 'טלפון', value: brand.phone, href: telHref, icon: Phone },
+  { label: 'וואטסאפ', value: brand.phone, href: whatsappHref, external: true, icon: WhatsAppIcon },
+  { label: 'דוא״ל', value: brand.email, href: mailHref, icon: Mail },
+  {
+    label: 'כתובת',
+    value: `${brand.address.street}, ${brand.address.city}`,
+    href: brand.mapUrl,
+    external: true,
+    icon: MapPin,
+  },
+  { label: 'שעות', value: brand.hours, icon: Clock },
 ];
 
-/**
- * Contact is a conversation, not a form: the panel on the right is the same
- * thread as the floating window (shared state in ConciergeProvider).
- */
+/** Direct contact details. The conversation itself lives in the floating chat. */
 export function Contact() {
   return (
     <section
@@ -29,60 +42,47 @@ export function Contact() {
         aria-hidden="true"
         className="pointer-events-none absolute -end-10 bottom-0 h-[40rem] w-auto opacity-[0.05]"
       />
-      <div className="shell relative z-10 grid gap-12 lg:grid-cols-2 lg:gap-16">
-        <Reveal>
+      <div className="shell relative z-10 max-w-4xl">
+        <Reveal className="text-center">
           <p className="eyebrow mb-3 text-accent-light">זמינים עבורכם</p>
           <h2 id="contact-title" className="text-4xl text-cream md:text-5xl">
-            מתחילים בשיחה
+            נשמח לשמוע מכם
           </h2>
-          <p className="mt-6 max-w-md leading-relaxed text-cream/80">
-            במקום למלא טופס, פשוט שוחחו איתנו. העוזר הדיגיטלי של המשרד יענה על שאלות, ואם תרצו, יאסוף
-            כמה פרטים קצרים כדי שנחזור אליכם.
+          <p className="mx-auto mt-6 max-w-xl leading-relaxed text-cream/80">
+            אפשר לשוחח עם העוזר הדיגיטלי, להתקשר או לכתוב בוואטסאפ. בפנייה הראשונה אין צורך לפרט את האירוע.
           </p>
-
-          <ul className="mt-8 space-y-3">
-            {POINTS.map(({ icon: Icon, text }) => (
-              <li key={text} className="flex items-start gap-3 text-cream/90">
-                <Icon className="mt-0.5 h-5 w-5 shrink-0 text-accent-light" aria-hidden="true" />
-                {text}
-              </li>
-            ))}
-          </ul>
-
-          <p className="mt-10 text-sm font-medium text-cream/70">מעדיפים ליצור קשר ישירות?</p>
-          <ul className="mt-3 space-y-3 text-cream/90">
-            <li>
-              <a href={telHref} className="flex items-center gap-3 hover:text-accent-light">
-                <Phone className="h-5 w-5 text-accent-light" aria-hidden="true" />
-                {brand.phone}
-              </a>
-            </li>
-            <li>
-              <a
-                href={whatsappHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 hover:text-accent-light"
-              >
-                <MessageCircle className="h-5 w-5 text-accent-light" aria-hidden="true" />
-                וואטסאפ
-              </a>
-            </li>
-            <li>
-              <a href={mailHref} className="flex items-center gap-3 hover:text-accent-light">
-                <Mail className="h-5 w-5 text-accent-light" aria-hidden="true" />
-                {brand.email}
-              </a>
-            </li>
-            <li className="flex items-center gap-3">
-              <MapPin className="h-5 w-5 text-accent-light" aria-hidden="true" />
-              {brand.address.street}, {brand.address.city}
-            </li>
-          </ul>
         </Reveal>
 
         <Reveal delay={0.1}>
-          <ConciergePanel className="h-[34rem] max-h-[85dvh] rounded-2xl shadow-2xl" />
+          <ul className="mt-12 grid gap-4 sm:grid-cols-2">
+            {ITEMS.map(({ label, value, href, external, icon: Icon }) => {
+              const body = (
+                <>
+                  <Icon className="h-6 w-6 shrink-0 text-accent-light" aria-hidden="true" />
+                  <span className="flex flex-col leading-snug">
+                    <span className="text-xs text-cream/70">{label}</span>
+                    <span className="text-lg font-medium text-cream">{value}</span>
+                  </span>
+                </>
+              );
+              const base = 'flex items-center gap-4 rounded-2xl border border-cream/15 bg-cream/5 p-5';
+              return (
+                <li key={label} className="sm:last:odd:col-span-2">
+                  {href ? (
+                    <a
+                      href={href}
+                      {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                      className={`${base} transition-colors hover:border-accent-light hover:bg-cream/10`}
+                    >
+                      {body}
+                    </a>
+                  ) : (
+                    <div className={base}>{body}</div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         </Reveal>
       </div>
     </section>
