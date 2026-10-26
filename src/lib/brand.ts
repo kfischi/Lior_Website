@@ -102,8 +102,11 @@ export const brand = {
      * posterId is a Cloudinary public ID shown before/while the video loads and
      * whenever motion is reduced or the video is unavailable.
      */
-    videoUrl: '',
-    posterId: 'lawyer-os/hero-placeholder',
+    videoUrl: 'https://res.cloudinary.com/dptyfvwyo/video/upload/v1793048459/HERO_qpewzw.mp4',
+    // First frame of the video, served by Cloudinary as a JPG (absolute URLs
+    // pass straight through the custom image loader).
+    posterId:
+      'https://res.cloudinary.com/dptyfvwyo/video/upload/so_0,f_jpg,q_auto,w_1920/v1793048459/HERO_qpewzw.jpg',
     /** Fallback still background (Cloudinary public ID). */
     imageId: 'lawyer-os/hero-placeholder',
   },
