@@ -8,7 +8,6 @@ import { CookieConsent } from '@/components/legal/CookieConsent';
 import { ChatBot } from '@/components/ai/ChatBot';
 import { ConciergeProvider } from '@/components/ai/ConciergeProvider';
 import { AccessibilityWidget } from '@/components/a11y/AccessibilityWidget';
-import { WhatsAppButton } from '@/components/ai/WhatsAppButton';
 import { ScrollProgress } from '@/components/motion/ScrollProgress';
 
 /*
@@ -65,7 +64,6 @@ export default function RootLayout({
         <ConciergeProvider>
           {children}
           <ChatBot />
-          <WhatsAppButton />
           <AccessibilityWidget />
         </ConciergeProvider>
         <CookieConsent />

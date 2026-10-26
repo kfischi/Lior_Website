@@ -5,8 +5,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'motion/react';
 import { Menu, X, Phone } from 'lucide-react';
-import { brand, telHref } from '@/lib/brand';
+import { brand, telHref, whatsappHref } from '@/lib/brand';
 import { Button } from '@/components/ui/button';
+import { WhatsAppIcon } from '@/components/ui/whatsapp-icon';
 import { OpenChatButton } from '@/components/ai/OpenChatButton';
 import { cn } from '@/lib/utils';
 
@@ -48,7 +49,7 @@ export function Header() {
         <Link
           href="/"
           className={cn(
-            'flex items-center gap-3 font-heading text-lg font-bold transition-colors md:text-xl',
+            'flex items-center gap-3 font-heading text-lg lg:shrink-0 lg:whitespace-nowrap font-bold transition-colors md:text-xl',
             scrolled ? 'text-navy' : 'text-cream',
           )}
         >
@@ -63,7 +64,7 @@ export function Header() {
           {brand.firmNameShort}
         </Link>
 
-        <ul className="hidden items-center gap-7 lg:flex">
+        <ul className="hidden items-center gap-5 whitespace-nowrap lg:flex xl:gap-7">
           {NAV.map((item) => (
             <li key={item.href}>
               <a
@@ -85,10 +86,18 @@ export function Header() {
           ))}
         </ul>
 
+<a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="וואטסאפ: שליחת הודעה למשרד (נפתח בחלון חדש)"
+          className="ms-auto flex h-11 shrink-0 animate-ring-green items-center gap-2 rounded-full bg-[#0f7a45] px-3 text-sm font-semibold text-white shadow-md ring-1 ring-white/70 transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light sm:px-4 lg:ms-0"
+        >
+          <WhatsAppIcon className="h-6 w-6" />
+          <span className="max-[400px]:hidden">וואטסאפ</span>
+        </a>
+
         <div className="hidden items-center gap-3 lg:flex">
-          <OpenChatButton size="sm" variant={scrolled ? 'accent' : 'accentOnDark'}>
-            שיחה עם המשרד
-          </OpenChatButton>
           <Button asChild variant={scrolled ? 'outline' : 'onDark'} size="sm">
             <a href={telHref}>
               <Phone className="h-4 w-4" />
