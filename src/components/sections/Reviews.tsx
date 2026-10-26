@@ -26,7 +26,7 @@ export function Reviews() {
       <div className="shell">
         <Reveal className="mx-auto mb-14 max-w-2xl text-center">
           <p className="eyebrow mb-3">לקוחות מספרים</p>
-          <h2 id="reviews-title" className="text-3xl text-navy md:text-4xl">
+          <h2 id="reviews-title" className="text-4xl text-navy md:text-5xl">
             המלצות
           </h2>
           {brand.testimonialsSource && (

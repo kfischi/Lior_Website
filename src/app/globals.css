@@ -101,11 +101,37 @@
 
   /* Small-caps editorial eyebrow label. */
   .eyebrow {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
     font-size: 0.8125rem;
     font-weight: 600;
     letter-spacing: 0.14em;
     color: var(--brand-accent);
+  }
+  .eyebrow::before,
+  .eyebrow::after {
+    content: '';
+    width: 1.75rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.5;
+  }
+
+  /* Fine film grain over dark sections: adds depth without a heavy image. */
+  .grain {
+    position: relative;
+    isolation: isolate;
+  }
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   /* Hairline divider. */
@@ -131,7 +157,24 @@
   }
 }
 
-/* Fluid display type for hero. */
+@theme {
+  --animate-marquee: marquee 50s linear infinite;
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(50%);
+    }
+  }
+}
+
+/* Fluid display type. */
+@utility display-2xl {
+  font-size: clamp(2.9rem, 8.2vw, 7rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
 @utility display-xl {
   font-size: clamp(2.5rem, 6vw, 5.5rem);
   line-height: 1.02;

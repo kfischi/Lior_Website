@@ -14,7 +14,7 @@ export function Faq() {
       <div className="shell max-w-3xl">
         <div className="mb-12 text-center">
           <p className="eyebrow mb-3">שאלות ותשובות</p>
-          <h2 id="faq-title" className="text-3xl text-navy md:text-4xl">
+          <h2 id="faq-title" className="text-4xl text-navy md:text-5xl">
             שאלות נפוצות
           </h2>
         </div>

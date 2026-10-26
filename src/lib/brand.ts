@@ -142,6 +142,17 @@ export const brand = {
       'https://res.cloudinary.com/dptyfvwyo/video/upload/so_0,f_jpg,q_auto,w_1920/v1793048459/HERO_qpewzw.jpg',
     /** Fallback still background (Cloudinary public ID). */
     imageId: 'lawyer-os/hero-placeholder',
+    /**
+     * Framing of the hero media. The picture is enlarged by `zoom` around
+     * `origin`, which trims the edges furthest from it — used to crop out the
+     * AI-generator watermark in the bottom corners. 1 = no crop.
+     */
+    mediaFrame: { zoom: 1.16, origin: '50% 0%' },
+    /**
+     * Seconds cut from the end of the loop. The clip restarts this early to hide
+     * a glitch in its last frames (the duplicated figure). 0 = play to the end.
+     */
+    videoTrimEnd: 2,
   },
 
   // --- AI chatbot ---
@@ -174,12 +185,37 @@ export const brand = {
       'עו״ד ליאור-קלואי ארז מנהלת משרד המתמחה באפליה והתעמרות בעבודה, בהטרדה מינית ובמשפט פלילי. ' +
       'אלה עניינים שבהם אדם נמצא לא פעם בנקודה קשה ורגישה בחייו, ולכן הדגש במשרד הוא על הקשבה, ' +
       'דיסקרטיות והסבר ברור של האפשרויות, כך שתוכלו לקבל החלטות בביטחון.',
+    /** Pull quote, taken from the approach described in `body`. */
+    quote: 'הקשבה, דיסקרטיות והסבר ברור של האפשרויות, כדי שתוכלו לקבל החלטות בביטחון.',
     credentials: [
       'עורכת דין, חברה בלשכת עורכי הדין בישראל',
       'התמחות באפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי',
     ],
     /** Cloudinary public ID for the attorney portrait. Local /public path or Cloudinary ID. Leave empty for a monogram panel. */
     portraitId: '/images/lior-portrait.webp',
+  },
+
+  // --- Scrolling band under the hero (practice areas are added automatically) ---
+  marquee: ['רגישות', 'נחישות', 'דיסקרטיות'],
+
+  // --- How it works ---
+  process: {
+    eyebrow: 'איך זה עובד',
+    heading: 'שלושה צעדים פשוטים',
+    steps: [
+      {
+        title: 'שיחה קצרה',
+        text: 'מספרים לנו במה מדובר, בצ׳אט, בטלפון או בוואטסאפ. אין צורך לפרט את האירוע.',
+      },
+      {
+        title: 'פגישת ייעוץ',
+        text: 'מבינים את התמונה המלאה, והאפשרויות והסיכונים מוסברים בפשטות.',
+      },
+      {
+        title: 'מחליטים ופועלים',
+        text: 'בונים יחד את הצעד הבא, ועורכת הדין מלווה אתכם לאורך הדרך.',
+      },
+    ],
   },
 
   // --- Why us ---

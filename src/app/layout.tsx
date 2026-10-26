@@ -7,6 +7,7 @@ import { buildMetadata, legalServiceJsonLd, attorneyJsonLd } from '@/lib/seo';
 import { CookieConsent } from '@/components/legal/CookieConsent';
 import { ChatBot } from '@/components/ai/ChatBot';
 import { ConciergeProvider } from '@/components/ai/ConciergeProvider';
+import { ScrollProgress } from '@/components/motion/ScrollProgress';
 
 /*
  * Fonts self-host at build time via next/font — no runtime requests to Google.
@@ -57,6 +58,7 @@ export default function RootLayout({
         <a href="#main" className="skip-link">
           דלג לתוכן הראשי
         </a>
+        <ScrollProgress />
         <ConciergeProvider>
           {children}
           <ChatBot />

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Clock, Lock, MapPin, Mail, MessageCircle, Phone } from 'lucide-react';
 import { brand, telHref, whatsappHref, mailHref } from '@/lib/brand';
 import { ConciergePanel } from '@/components/ai/ConciergePanel';
@@ -15,11 +16,23 @@ const POINTS = [
  */
 export function Contact() {
   return (
-    <section id="contact" aria-labelledby="contact-title" className="section bg-navy text-cream">
-      <div className="shell grid gap-12 lg:grid-cols-2 lg:gap-16">
+    <section
+      id="contact"
+      aria-labelledby="contact-title"
+      className="section grain relative overflow-hidden bg-navy text-cream"
+    >
+      <Image
+        src={brand.logo.iconLight}
+        alt=""
+        width={brand.logo.iconSize.width}
+        height={brand.logo.iconSize.height}
+        aria-hidden="true"
+        className="pointer-events-none absolute -end-10 bottom-0 h-[40rem] w-auto opacity-[0.05]"
+      />
+      <div className="shell relative z-10 grid gap-12 lg:grid-cols-2 lg:gap-16">
         <Reveal>
           <p className="eyebrow mb-3 text-accent-light">זמינים עבורכם</p>
-          <h2 id="contact-title" className="text-3xl text-cream md:text-4xl">
+          <h2 id="contact-title" className="text-4xl text-cream md:text-5xl">
             מתחילים בשיחה
           </h2>
           <p className="mt-6 max-w-md leading-relaxed text-cream/80">
