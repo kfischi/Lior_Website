@@ -18,6 +18,9 @@ function Stars({ rating }: { rating: number }) {
 }
 
 export function Reviews() {
+  // Never show placeholder reviews: the section appears only with real ones.
+  if (brand.testimonials.length === 0) return null;
+
   return (
     <section id="reviews" aria-labelledby="reviews-title" className="section bg-cream">
       <div className="shell">

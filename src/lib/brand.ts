@@ -41,30 +41,33 @@ export interface FaqItem {
 
 export const brand = {
   // --- Identity ---
-  firmName: 'משרד עורכי דין לדוגמה',
-  firmNameShort: 'לדוגמה ושות׳',
-  tagline: 'ייצוג משפטי מקצועי, אישי וללא פשרות',
-  attorneyName: 'עו״ד ישראל ישראלי',
+  firmName: 'משרד עורכת דין ליאור-קלואי ארז',
+  firmNameShort: 'ליאור-קלואי ארז, עו״ד',
+  tagline: 'ליווי משפטי ברגישות, בנחישות ובדיסקרטיות',
+  attorneyName: 'עו״ד ליאור-קלואי ארז',
   /** Short legal-services description — used in meta + JSON-LD. */
   description:
-    'משרד עורכי דין המתמחה בליטיגציה אזרחית-מסחרית, דיני משפחה ונדל״ן. ' +
-    'ליווי משפטי צמוד, מקצועי ודיסקרטי ללקוחות פרטיים ועסקיים.',
+    'משרד עורכת דין ליאור-קלואי ארז בחריש: אפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי. ' +
+    'ליווי אישי, מקצועי ודיסקרטי מהשיחה הראשונה.',
+  /** Public website address. */
+  website: 'https://www.liorerezadv.com',
 
   // --- Contact ---
-  phone: '03-0000000',
+  phone: '052-469-4158',
   /** International format, digits only — for tel: and WhatsApp links. */
-  phoneE164: '972300000000',
+  phoneE164: '972524694158',
   whatsapp: '972524694158',
-  email: 'office@example.co.il',
+  fax: '077-4702353',
+  email: 'Lioraere@gmail.com',
   address: {
-    street: 'רחוב הדוגמה 1',
-    city: 'תל אביב',
-    postalCode: '0000000',
+    street: 'רח׳ רימון 5',
+    city: 'חריש',
+    postalCode: '3786100',
     country: 'IL',
   },
-  hours: 'א׳–ה׳, 09:00–18:00',
+  hours: 'בתיאום מראש',
   /** Maps embed/link target. */
-  mapUrl: 'https://maps.google.com/?q=Tel+Aviv',
+  mapUrl: 'https://maps.google.com/?q=%D7%A8%D7%99%D7%9E%D7%95%D7%9F+5+%D7%97%D7%A8%D7%99%D7%A9',
 
   // --- Social ---
   social: {
@@ -89,9 +92,10 @@ export const brand = {
 
   // --- Hero ---
   hero: {
-    title: 'ייצוג משפטי שאפשר לסמוך עליו',
+    title: 'ליווי משפטי ברגישות ובנחישות',
     subtitle:
-      'משרד בוטיק המעניק ליווי משפטי אישי, מקצועי ודיסקרטי — מהפגישה הראשונה ועד להשגת התוצאה.',
+      'אפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי. ליווי אישי ודיסקרטי מהשיחה הראשונה, ' +
+      'כדי שתדעו מה האפשרויות שלכם ותוכלו לפעול בביטחון.',
     primaryCta: 'לקביעת ייעוץ',
     secondaryCta: 'וואטסאפ',
     /**
@@ -119,7 +123,7 @@ export const brand = {
       'לתחום הנכון, אענה על שאלות כלליות ואעזור לקבוע פגישת ייעוץ.',
     /** Quick-start suggestions shown as chips. */
     suggestedPrompts: [
-      'באילו תחומים אתם מטפלים?',
+      'נפגעתי בעבודה, מה אפשר לעשות?',
       'כמה עולה ייעוץ ראשוני?',
       'איך קובעים פגישה?',
     ],
@@ -127,143 +131,110 @@ export const brand = {
   },
 
   // --- Trust strip (E-E-A-T) ---
-  trustStats: [
-    { value: '25+', label: 'שנות ניסיון' },
-    { value: '1,500+', label: 'תיקים שטופלו' },
-    { value: '6', label: 'תחומי התמחות' },
-    { value: '98%', label: 'שביעות רצון לקוחות' },
-  ],
+  // Shown only when it has items. Add verified numbers only (years of
+  // experience, cases, etc.) — never placeholders.
+  trustStats: [] as { value: string; label: string }[],
 
   // --- About ---
   about: {
     heading: 'אודות המשרד',
     body:
-      'המשרד הוקם מתוך תפיסה שלפיה ייצוג משפטי איכותי מתחיל בהקשבה. ' +
-      'אנו משלבים ניסיון רב-שנים בבתי המשפט עם יחס אישי, זמינות ושקיפות מלאה ' +
-      'בכל שלב בתהליך. כל לקוח מקבל אסטרטגיה המותאמת בדיוק לעניינו.',
+      'עו״ד ליאור-קלואי ארז מנהלת משרד המתמחה באפליה והתעמרות בעבודה, בהטרדה מינית ובמשפט פלילי. ' +
+      'אלה עניינים שבהם אדם נמצא לא פעם בנקודה קשה ורגישה בחייו, ולכן הדגש במשרד הוא על הקשבה, ' +
+      'דיסקרטיות והסבר ברור של האפשרויות, כך שתוכלו לקבל החלטות בביטחון.',
     credentials: [
-      'חבר/ה בלשכת עורכי הדין בישראל',
-      'תואר LL.B במשפטים',
-      'התמחות בליטיגציה מסחרית',
+      'עורכת דין, חברה בלשכת עורכי הדין בישראל',
+      'התמחות באפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי',
     ],
-    /** Cloudinary public ID for the attorney portrait. */
-    portraitId: 'lawyer-os/attorney-placeholder',
+    /** Cloudinary public ID for the attorney portrait. Leave empty for a monogram panel. */
+    portraitId: '',
   },
 
   // --- Why us ---
   whyUs: [
     {
       title: 'יחס אישי',
-      description: 'ליווי צמוד של עורך הדין עצמו, ללא העברה בין מתמחים.',
+      description: 'ליווי צמוד של עורכת הדין עצמה, מהשיחה הראשונה ועד סיום הטיפול.',
       icon: 'HeartHandshake',
     },
     {
-      title: 'ניסיון מוכח',
-      description: 'מאות תיקים מנוהלים בהצלחה במגוון תחומים משפטיים.',
+      title: 'התמחות ממוקדת',
+      description: 'המשרד מתמקד בשלושה תחומים: עבודה, הטרדה מינית ופלילי.',
       icon: 'Award',
     },
     {
-      title: 'שקיפות מלאה',
-      description: 'הסבר ברור על הסיכויים, הסיכונים והעלויות מראש.',
-      icon: 'Eye',
+      title: 'רגישות ודיסקרטיות',
+      description: 'כל פנייה נשארת חסויה, ומטופלת בזהירות ובכבוד.',
+      icon: 'ShieldCheck',
     },
     {
-      title: 'זמינות',
-      description: 'מענה מהיר ועדכון שוטף לאורך כל הטיפול בתיק.',
-      icon: 'Clock',
+      title: 'שקיפות מלאה',
+      description: 'הסבר ברור על האפשרויות, הסיכונים והעלויות מראש.',
+      icon: 'Eye',
     },
   ],
 
   // --- Practice areas ---
   practiceAreas: [
     {
-      slug: 'civil-litigation',
-      title: 'ליטיגציה אזרחית',
-      description: 'ייצוג בתביעות אזרחיות ומסחריות בכל הערכאות.',
-      icon: 'Scale',
-    },
-    {
-      slug: 'family-law',
-      title: 'דיני משפחה',
-      description: 'גירושין, משמורת, הסכמי ממון וצוואות ברגישות הנדרשת.',
-      icon: 'Users',
-    },
-    {
-      slug: 'real-estate',
-      title: 'נדל״ן ומקרקעין',
-      description: 'ליווי עסקאות, מיסוי מקרקעין והתחדשות עירונית.',
-      icon: 'Building2',
-    },
-    {
-      slug: 'commercial',
-      title: 'מסחרי וחוזים',
-      description: 'עריכת חוזים, ליווי עסקאות וייעוץ שוטף לעסקים.',
+      slug: 'workplace-discrimination',
+      title: 'אפליה והתעמרות בעבודה',
+      description:
+        'ליווי עובדות ועובדים שנפגעו באפליה, בהתעמרות או בפגיעה בזכויותיהם במקום העבודה.',
       icon: 'Briefcase',
     },
     {
-      slug: 'labor-law',
-      title: 'דיני עבודה',
-      description: 'ייצוג עובדים ומעסיקים בסכסוכי עבודה.',
-      icon: 'Gavel',
+      slug: 'sexual-harassment',
+      title: 'הטרדה מינית',
+      description: 'ייצוג וליווי בעניינים של הטרדה מינית, ברגישות ובדיסקרטיות מלאה.',
+      icon: 'ShieldCheck',
     },
     {
-      slug: 'torts',
-      title: 'נזיקין ופיצויים',
-      description: 'תביעות נזקי גוף, רשלנות וביטוח.',
-      icon: 'ShieldCheck',
+      slug: 'criminal-law',
+      title: 'משפט פלילי',
+      description: 'ייצוג וליווי בהליכים פליליים, משלב החקירה ועד סיום ההליך.',
+      icon: 'Gavel',
     },
   ] satisfies PracticeArea[],
 
   // --- Testimonials ---
-  testimonials: [
-    {
-      name: 'ר. כהן',
-      role: 'לקוח פרטי',
-      rating: 5,
-      text: 'ליווי מקצועי ואנושי לאורך כל הדרך. הרגשתי בידיים טובות בכל רגע.',
-    },
-    {
-      name: 'מ. לוי',
-      role: 'בעלת עסק',
-      rating: 5,
-      text: 'זמינות יוצאת דופן ותוצאה מעבר למצופה. ממליצה בחום.',
-    },
-    {
-      name: 'א. פרץ',
-      role: 'לקוח עסקי',
-      rating: 5,
-      text: 'גישה אסטרטגית וחדה. ידעו בדיוק איך לנהל את התיק שלי.',
-    },
-  ] satisfies Testimonial[],
+  // Real, permitted client reviews only. The section stays hidden while empty.
+  testimonials: [] as Testimonial[],
 
   // --- FAQ (also rendered as FAQPage JSON-LD) ---
   faq: [
     {
       question: 'כמה עולה פגישת ייעוץ ראשונית?',
       answer:
-        'פגישת הייעוץ הראשונה נועדה להבין את עניינכם ולהציג מסלול פעולה. ' +
+        'פגישת הייעוץ הראשונה נועדה להבין את עניינכם ולהציג את האפשרויות. ' +
         'עלות הפגישה תימסר מראש ובשקיפות מלאה בעת קביעת התור.',
+    },
+    {
+      question: 'האם הפנייה למשרד חסויה?',
+      answer:
+        'כן. עורכת דין חבה בחובת סודיות כלפי לקוחותיה, ופניות מטופלות בדיסקרטיות מלאה. ' +
+        'עם זאת, מומלץ לא למסור פרטים רגישים בהודעות באתר, ולהשאיר אותם לשיחה ישירה.',
+    },
+    {
+      question: 'נפגעתי בעבודה. מה כדאי לעשות כבר עכשיו?',
+      answer:
+        'כדאי לתעד מה קרה: תאריכים, מה נאמר, מי נכח, והודעות כתובות. ' +
+        'מומלץ להתייעץ לפני שמגישים תלונה או חותמים על מסמך כלשהו, כדי שתדעו מה האפשרויות לפני שמקבלים החלטה.',
     },
     {
       question: 'תוך כמה זמן אקבל מענה?',
       answer:
-        'אנו משתדלים לחזור לכל פנייה בתוך יום עסקים אחד. בפניות דחופות ניתן ' +
-        'ליצור קשר טלפוני או בוואטסאפ לקבלת מענה מהיר יותר.',
-    },
-    {
-      question: 'האם המשרד מטפל בתיקים בכל הארץ?',
-      answer:
-        'כן. המשרד מייצג לקוחות בכל הערכאות ובכל רחבי הארץ, ומקיים פגישות ' +
-        'גם באמצעים מקוונים בהתאם לצורך.',
+        'אנו משתדלים לחזור לכל פנייה בהקדם. בפניות דחופות ניתן ליצור קשר טלפוני ' +
+        'או בוואטסאפ לקבלת מענה מהיר יותר.',
     },
   ] satisfies FaqItem[],
 
   // --- Legal pages ---
   legal: {
     /** Date the privacy/terms/accessibility statements were last updated. */
-    lastUpdated: '2026-06-01',
+    lastUpdated: '2026-10-26',
     /** Accessibility coordinator contact (Israeli standard 5568 requirement). */
-    accessibilityContact: 'office@example.co.il',
+    accessibilityContact: 'Lioraere@gmail.com',
   },
 } as const;
 

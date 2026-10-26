@@ -24,7 +24,7 @@ function score(entry: KnowledgeEntry, text: string): number {
     const k = normalize(keyword);
     if (k && text.includes(k)) total += k.includes(' ') ? 3 : 2;
   }
-  return total;
+  return total * (entry.weight ?? 1);
 }
 
 const GREETINGS = new Set(['שלום', 'היי', 'הי', 'הלו', 'אהלן', 'בוקר', 'ערב', 'צהריים', 'תודה']);

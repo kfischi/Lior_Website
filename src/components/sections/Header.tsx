@@ -12,7 +12,7 @@ const NAV = [
   { href: '#practice', label: 'תחומי עיסוק' },
   { href: '#about', label: 'אודות' },
   { href: '#why', label: 'למה אנחנו' },
-  { href: '#reviews', label: 'המלצות' },
+  ...(brand.testimonials.length > 0 ? [{ href: '#reviews', label: 'המלצות' }] : []),
   { href: '#faq', label: 'שאלות' },
   { href: '#contact', label: 'צור קשר' },
 ];

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Printer } from 'lucide-react';
 import { brand, telHref, mailHref } from '@/lib/brand';
 
 /** Inline brand glyphs (lucide dropped brand logos in v1). */
@@ -77,6 +77,14 @@ export function Footer() {
                 {brand.phone}
               </a>
             </li>
+            {brand.fax && (
+              <li className="flex items-center gap-2">
+                <Printer className="h-4 w-4 text-bronze" aria-hidden="true" />
+                <span>
+                  פקס: <span dir="ltr">{brand.fax}</span>
+                </span>
+              </li>
+            )}
             <li>
               <a href={mailHref} className="flex items-center gap-2 hover:text-bronze">
                 <Mail className="h-4 w-4 text-bronze" aria-hidden="true" />

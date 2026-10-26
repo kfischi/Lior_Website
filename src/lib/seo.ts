@@ -68,8 +68,8 @@ export function legalServiceJsonLd() {
     description: brand.description,
     url: base,
     telephone: `+${brand.phoneE164}`,
+    faxNumber: brand.fax,
     email: brand.email,
-    priceRange: '₪₪',
     address: {
       '@type': 'PostalAddress',
       streetAddress: brand.address.street,
@@ -77,7 +77,6 @@ export function legalServiceJsonLd() {
       postalCode: brand.address.postalCode,
       addressCountry: brand.address.country,
     },
-    openingHours: 'Su-Th 09:00-18:00',
     areaServed: { '@type': 'Country', name: 'Israel' },
     knowsLanguage: ['he', 'en'],
     serviceType: brand.practiceAreas.map((a) => a.title),
