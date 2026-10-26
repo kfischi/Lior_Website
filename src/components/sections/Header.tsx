@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, useReducedMotion } from 'motion/react';
 import { Menu, X, Phone } from 'lucide-react';
 import { brand, telHref } from '@/lib/brand';
@@ -45,10 +46,18 @@ export function Header() {
         <Link
           href="/"
           className={cn(
-            'font-heading text-lg font-bold transition-colors md:text-xl',
+            'flex items-center gap-3 font-heading text-lg font-bold transition-colors md:text-xl',
             scrolled ? 'text-navy' : 'text-cream',
           )}
         >
+          <Image
+            src={scrolled ? brand.logo.iconDark : brand.logo.iconLight}
+            alt=""
+            width={brand.logo.iconSize.width}
+            height={brand.logo.iconSize.height}
+            priority
+            className="h-11 w-auto"
+          />
           {brand.firmNameShort}
         </Link>
 

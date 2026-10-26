@@ -51,6 +51,18 @@ export const brand = {
     'ליווי אישי, מקצועי ודיסקרטי מהשיחה הראשונה.',
   /** Public website address. */
   website: 'https://www.liorerezadv.com',
+  /**
+   * Logo files (transparent WebP, in /public/images). `lockup` is the full
+   * white mark for dark backgrounds; the icon comes in a light and a dark
+   * version for the header over the hero and over the cream page.
+   */
+  logo: {
+    lockup: '/images/logo-lockup-white.webp',
+    lockupSize: { width: 588, height: 258 },
+    iconLight: '/images/logo-icon-white.webp',
+    iconDark: '/images/logo-icon-navy.webp',
+    iconSize: { width: 159, height: 258 },
+  },
 
   // --- Contact ---
   phone: '052-469-4158',

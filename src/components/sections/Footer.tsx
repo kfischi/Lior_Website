@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { MapPin, Phone, Mail, Clock, Printer } from 'lucide-react';
 import { brand, telHref, mailHref } from '@/lib/brand';
 
@@ -39,8 +40,15 @@ export function Footer() {
     <footer className="border-t border-cream/10 bg-navy text-cream/85">
       <div className="shell grid gap-10 py-16 md:grid-cols-3">
         <div>
-          <h2 className="font-heading text-xl font-bold text-cream">{brand.firmName}</h2>
-          <p className="mt-3 max-w-xs text-sm leading-relaxed text-cream/60">{brand.tagline}</p>
+          <h2 className="sr-only">{brand.firmName}</h2>
+          <Image
+            src={brand.logo.lockup}
+            alt=""
+            width={brand.logo.lockupSize.width}
+            height={brand.logo.lockupSize.height}
+            className="h-auto w-80 max-w-full"
+          />
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-cream/60">{brand.tagline}</p>
           {(facebook || linkedin || instagram) && (
             <div className="mt-5 flex gap-3">
               {facebook && (
