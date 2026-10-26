@@ -430,6 +430,13 @@ export const brand = {
     },
   ] satisfies Testimonial[],
 
+  // --- Video reviews (files in /public/videos; add a `captions` .vtt path to show subtitles) ---
+  videoReviews: [
+    { src: '/videos/review-1.mp4', poster: '/videos/review-1.webp', label: 'ביקורת וידאו מלקוח' },
+    { src: '/videos/review-2.mp4', poster: '/videos/review-2.webp', label: 'ביקורת וידאו מלקוח' },
+    { src: '/videos/review-3.mp4', poster: '/videos/review-3.webp', label: 'ביקורת וידאו מלקוח' },
+  ] as { src: string; poster: string; label: string; captions?: string }[],
+
   // --- FAQ (also rendered as FAQPage JSON-LD) ---
   faq: [
     {

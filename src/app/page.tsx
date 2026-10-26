@@ -9,6 +9,7 @@ import { WhyUs } from '@/components/sections/WhyUs';
 import { About } from '@/components/sections/About';
 import { PracticeAreas } from '@/components/sections/PracticeAreas';
 import { Reviews } from '@/components/sections/Reviews';
+import { VideoReviews } from '@/components/sections/VideoReviews';
 import { Articles } from '@/components/sections/Articles';
 import { Faq } from '@/components/sections/Faq';
 import { Contact } from '@/components/sections/Contact';
@@ -36,6 +37,7 @@ export default function HomePage() {
         <About />
         <Process />
         <Reviews />
+        <VideoReviews />
         <Articles />
         <Faq />
         <Contact />

@@ -163,6 +163,7 @@
   --animate-blink: blink 1.6s ease-in-out infinite;
   --animate-arrow: arrow-bob 1.6s ease-in-out infinite;
   --animate-ring: ring-pulse 2s ease-out infinite;
+  --animate-ring-green: ring-pulse-green 2.2s ease-out infinite;
   @keyframes blink {
     0%,
     100% {
@@ -179,8 +180,17 @@
       opacity: 1;
     }
     50% {
-      transform: translateY(8px);
-      opacity: 0.35;
+      transform: translateY(10px);
+      opacity: 0.55;
+    }
+  }
+  @keyframes ring-pulse-green {
+    0% {
+      box-shadow: 0 0 0 0 rgb(15 122 69 / 0.6);
+    }
+    80%,
+    100% {
+      box-shadow: 0 0 0 20px rgb(15 122 69 / 0);
     }
   }
   @keyframes ring-pulse {

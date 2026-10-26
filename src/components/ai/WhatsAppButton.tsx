@@ -1,6 +1,5 @@
 'use client';
 
-import { useConsentPending } from '@/components/legal/CookieConsent';
 import { whatsappHref } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 
@@ -13,21 +12,20 @@ function WhatsAppGlyph({ className }: { className?: string }) {
   );
 }
 
-/** Floating WhatsApp shortcut, stacked above the accessibility button. */
+/** Floating WhatsApp shortcut, placed high on the screen edge so it stands out. */
 export function WhatsAppButton() {
-  const cookiePending = useConsentPending();
   return (
     <a
       href={whatsappHref}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="שליחת הודעה בוואטסאפ (נפתח בחלון חדש)"
+      aria-label="וואטסאפ: שליחת הודעה למשרד (נפתח בחלון חדש)"
       className={cn(
-        'fixed start-5 z-[58] flex h-14 w-14 items-center justify-center rounded-full bg-[#0f7a45] text-white shadow-xl ring-2 ring-white transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light',
-        cookiePending ? 'bottom-[18.5rem] sm:bottom-40' : 'bottom-24',
+        'fixed end-4 bottom-[38svh] sm:end-5 z-[58] flex h-16 animate-ring-green items-center gap-2 rounded-full bg-[#0f7a45] px-4 text-white shadow-xl ring-2 ring-white transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light',
       )}
     >
-      <WhatsAppGlyph className="h-8 w-8" />
+      <WhatsAppGlyph className="h-9 w-9" />
+      <span className="hidden text-base font-semibold sm:inline">וואטסאפ</span>
     </a>
   );
 }

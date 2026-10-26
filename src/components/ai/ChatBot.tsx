@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { ArrowDown, X } from 'lucide-react';
+import { ArrowDown } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useConsentPending } from '@/components/legal/CookieConsent';
 import { cn } from '@/lib/utils';
@@ -10,108 +10,57 @@ import { Avatar, ConciergePanel } from './ConciergePanel';
 import { useConcierge } from './ConciergeProvider';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const NUDGE_KEY = 'concierge-nudge-seen';
-
-function readSeen(): boolean {
-  try {
-    return sessionStorage.getItem(NUDGE_KEY) === '1';
-  } catch {
-    return true;
-  }
-}
 
 /**
- * Floating entry point to the conversation: a labelled pill (so people notice
- * it), a single gentle nudge after a while, and a bottom sheet on phones.
+ * Floating entry point to the conversation: a prominent labelled button with a
+ * callout and a bobbing arrow until first use, and a bottom sheet on phones.
  */
 function Floating() {
   const reduced = useReducedMotion();
   const { panelOpen, openPanel, closePanel } = useConcierge();
   const cookiePending = useConsentPending();
-  const [nudge, setNudge] = React.useState(false);
   const [opened, setOpened] = React.useState(false);
-
-  React.useEffect(() => {
-    if (readSeen()) return;
-    const t = window.setTimeout(() => setNudge(true), 12000);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  function dismissNudge() {
-    setNudge(false);
-    try {
-      sessionStorage.setItem(NUDGE_KEY, '1');
-    } catch {
-      /* ignore */
-    }
-  }
 
   // Keep the launcher clear of the cookie banner while it is showing.
   const bottom = cookiePending ? 'bottom-52 sm:bottom-24' : 'bottom-5';
 
   return (
     <>
-      <AnimatePresence>
-        {nudge && !panelOpen && (
-          <motion.div
-            initial={reduced ? { opacity: 0 } : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease: EASE }}
-            className={cn(
-              'fixed end-5 z-[60] max-w-[16rem] rounded-2xl rounded-ee-sm bg-navy px-4 py-3 text-sm text-cream shadow-xl',
-              cookiePending ? 'bottom-80 sm:bottom-52' : 'bottom-40',
-            )}
-          >
-            <button
-              type="button"
-              onClick={dismissNudge}
-              aria-label="סגירת ההודעה"
-              className="absolute -start-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-cream text-navy shadow"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-            <button
-              type="button"
-              className="text-start"
-              onClick={() => {
-                dismissNudge();
-                openPanel();
-              }}
-            >
-              יש שאלה על המקרה שלכם? אפשר לשאול אותי, בדיסקרטיות.
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {!panelOpen && (
-        <div className={cn('fixed end-5 z-[60] flex flex-col items-center gap-1.5', bottom)}>
+        <div className={cn('fixed end-4 z-[60] flex flex-col items-center gap-1.5 sm:end-5', bottom)}>
           {!opened && (
-            <ArrowDown
-              aria-hidden="true"
-              strokeWidth={3}
-              className="h-9 w-9 animate-arrow text-accent drop-shadow-[0_1px_2px_rgb(255_255_255/0.9)]"
-            />
+            <>
+              <p className="relative rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-navy shadow-xl ring-1 ring-navy/10">
+                יש שאלה? אני כאן ועונה מיד
+              </p>
+              <span
+                aria-hidden="true"
+                className="flex h-11 w-11 animate-arrow items-center justify-center rounded-full bg-accent text-white shadow-lg ring-2 ring-white"
+              >
+                <ArrowDown className="h-7 w-7" strokeWidth={3} />
+              </span>
+            </>
           )}
           <button
             type="button"
             onClick={() => {
-              dismissNudge();
               setOpened(true);
               openPanel();
             }}
             aria-label="שיחה עם המשרד, פתיחת העוזר הדיגיטלי"
-            className="flex h-14 animate-ring items-center gap-2.5 rounded-full bg-accent px-5 text-cream shadow-xl ring-2 ring-cream/70 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy"
+            className="flex h-[4.5rem] animate-ring items-center gap-3 rounded-full bg-linear-to-l from-accent to-navy ps-2 pe-6 text-cream shadow-2xl ring-2 ring-white transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light"
           >
             <span className="relative flex" aria-hidden="true">
-              <Avatar className="h-9 w-9" />
-              <span className="absolute -bottom-0.5 -end-0.5 flex h-3 w-3">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-light opacity-75" />
-                <span className="relative inline-flex h-3 w-3 animate-blink rounded-full bg-accent-light ring-2 ring-accent" />
+              <Avatar className="h-14 w-14 ring-2 ring-white" />
+              <span className="absolute bottom-0 end-0 flex h-4 w-4">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-4 w-4 rounded-full bg-emerald-400 ring-2 ring-white" />
               </span>
             </span>
-            <span className="text-sm font-medium">שיחה עם המשרד</span>
+            <span className="flex flex-col items-start leading-tight">
+              <span className="text-base font-bold">שיחה עם המשרד</span>
+              <span className="text-xs text-cream/90">מענה מיידי, בדיסקרטיות</span>
+            </span>
           </button>
         </div>
       )}

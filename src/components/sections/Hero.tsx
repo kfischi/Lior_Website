@@ -5,56 +5,9 @@ import Image from 'next/image';
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { ChevronDown } from 'lucide-react';
 import { brand } from '@/lib/brand';
-import { Avatar } from '@/components/ai/ConciergePanel';
-import { useConcierge } from '@/components/ai/ConciergeProvider';
 import { HeroVideo } from './HeroVideo';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-
-/** A glass card that invites a conversation; each chip opens the chat with that question. */
-function ChatInvite() {
-  const { openPanel, send, startIntake } = useConcierge();
-
-  return (
-    <motion.aside
-      aria-label="שיחה מהירה עם העוזר הדיגיטלי"
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.9, ease: EASE, delay: 1.1 }}
-      className="absolute bottom-40 end-6 z-10 hidden w-[21rem] rounded-2xl border border-cream/20 bg-navy/40 p-5 text-cream shadow-2xl backdrop-blur-xl md:block lg:end-12"
-    >
-      <div className="flex items-center gap-3">
-        <Avatar className="h-12 w-12" />
-        <div className="leading-snug">
-          <p className="text-sm font-semibold">שאלו את העוזר הדיגיטלי של ליאור</p>
-          <p className="text-xs text-cream/75">עונה על שאלות כלליות ומסדר פנייה למשרד</p>
-        </div>
-      </div>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {brand.chat.suggestedPrompts.map((p) => (
-          <button
-            key={p}
-            type="button"
-            onClick={() => {
-              openPanel();
-              send(p);
-            }}
-            className="rounded-full border border-cream/25 bg-cream/10 px-3 py-1.5 text-xs text-cream transition-colors hover:bg-cream/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light"
-          >
-            {p}
-          </button>
-        ))}
-        <button
-          type="button"
-          onClick={startIntake}
-          className="rounded-full bg-accent-light px-3 py-1.5 text-xs font-medium text-navy transition-colors hover:bg-accent-light/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream"
-        >
-          קביעת ייעוץ
-        </button>
-      </div>
-    </motion.aside>
-  );
-}
 
 export function Hero() {
   const reduced = useReducedMotion();
@@ -152,8 +105,6 @@ export function Hero() {
           </motion.p>
         </div>
       </div>
-
-      <ChatInvite />
 
       <div className="absolute inset-x-0 bottom-8 z-10 flex justify-center">
         <motion.a
