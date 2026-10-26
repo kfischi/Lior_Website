@@ -72,7 +72,12 @@ export function Header() {
                 )}
               >
                 {item.label}
-                <span className="absolute -bottom-1 start-0 h-px w-0 bg-bronze transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-full" />
+                <span
+                  className={cn(
+                    'absolute -bottom-1 start-0 h-px w-0 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-full',
+                    scrolled ? 'bg-accent' : 'bg-accent-light',
+                  )}
+                />
               </a>
             </li>
           ))}

@@ -8,7 +8,7 @@ function Stars({ rating }: { rating: number }) {
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}
-          className="h-4 w-4 text-bronze"
+          className="h-4 w-4 text-accent"
           aria-hidden="true"
           fill={i < rating ? 'currentColor' : 'none'}
         />

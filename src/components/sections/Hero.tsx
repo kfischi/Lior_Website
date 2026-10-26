@@ -69,7 +69,7 @@ export function Hero() {
         className="shell relative z-10 py-32"
       >
         <div className="max-w-3xl">
-          <motion.p variants={item} className="eyebrow mb-5">
+          <motion.p variants={item} className="eyebrow mb-5 text-accent-light">
             {brand.firmName}
           </motion.p>
           <motion.h1 variants={item} className="display-xl font-bold text-cream">
@@ -82,7 +82,7 @@ export function Hero() {
             {brand.hero.subtitle}
           </motion.p>
           <motion.div variants={item} className="mt-10 flex flex-wrap gap-4">
-            <Button asChild size="lg" variant="accent">
+            <Button asChild size="lg" variant="accentOnDark">
               <a href="#contact">
                 <Phone className="h-5 w-5" />
                 {brand.hero.primaryCta}

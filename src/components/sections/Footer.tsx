@@ -52,17 +52,17 @@ export function Footer() {
           {(facebook || linkedin || instagram) && (
             <div className="mt-5 flex gap-3">
               {facebook && (
-                <a href={facebook} aria-label="פייסבוק" className="text-cream/70 hover:text-bronze">
+                <a href={facebook} aria-label="פייסבוק" className="text-cream/70 hover:text-accent-light">
                   <Facebook className="h-5 w-5" />
                 </a>
               )}
               {linkedin && (
-                <a href={linkedin} aria-label="לינקדאין" className="text-cream/70 hover:text-bronze">
+                <a href={linkedin} aria-label="לינקדאין" className="text-cream/70 hover:text-accent-light">
                   <Linkedin className="h-5 w-5" />
                 </a>
               )}
               {instagram && (
-                <a href={instagram} aria-label="אינסטגרם" className="text-cream/70 hover:text-bronze">
+                <a href={instagram} aria-label="אינסטגרם" className="text-cream/70 hover:text-accent-light">
                   <Instagram className="h-5 w-5" />
                 </a>
               )}
@@ -74,33 +74,33 @@ export function Footer() {
           <h3 className="font-semibold text-cream">יצירת קשר</h3>
           <ul className="mt-4 space-y-3 text-sm">
             <li className="flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-bronze" aria-hidden="true" />
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent-light" aria-hidden="true" />
               <span>
                 {brand.address.street}, {brand.address.city}
               </span>
             </li>
             <li>
-              <a href={telHref} className="flex items-center gap-2 hover:text-bronze">
-                <Phone className="h-4 w-4 text-bronze" aria-hidden="true" />
+              <a href={telHref} className="flex items-center gap-2 hover:text-accent-light">
+                <Phone className="h-4 w-4 text-accent-light" aria-hidden="true" />
                 {brand.phone}
               </a>
             </li>
             {brand.fax && (
               <li className="flex items-center gap-2">
-                <Printer className="h-4 w-4 text-bronze" aria-hidden="true" />
+                <Printer className="h-4 w-4 text-accent-light" aria-hidden="true" />
                 <span>
                   פקס: <span dir="ltr">{brand.fax}</span>
                 </span>
               </li>
             )}
             <li>
-              <a href={mailHref} className="flex items-center gap-2 hover:text-bronze">
-                <Mail className="h-4 w-4 text-bronze" aria-hidden="true" />
+              <a href={mailHref} className="flex items-center gap-2 hover:text-accent-light">
+                <Mail className="h-4 w-4 text-accent-light" aria-hidden="true" />
                 {brand.email}
               </a>
             </li>
             <li className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-bronze" aria-hidden="true" />
+              <Clock className="h-4 w-4 text-accent-light" aria-hidden="true" />
               {brand.hours}
             </li>
           </ul>
@@ -111,7 +111,7 @@ export function Footer() {
           <ul className="mt-4 space-y-2 text-sm">
             {LEGAL_LINKS.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="hover:text-bronze">
+                <Link href={l.href} className="hover:text-accent-light">
                   {l.label}
                 </Link>
               </li>

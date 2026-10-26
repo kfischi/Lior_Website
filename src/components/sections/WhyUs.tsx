@@ -16,7 +16,7 @@ export function WhyUs() {
         <Stagger as="ul" className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
           {brand.whyUs.map((item) => (
             <StaggerItem as="li" key={item.title} className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-bronze/10 text-bronze ring-1 ring-bronze/20">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent ring-1 ring-accent/20">
                 <Icon name={item.icon} className="h-7 w-7" />
               </div>
               <h3 className="mt-5 text-lg font-semibold text-navy">{item.title}</h3>

@@ -20,7 +20,7 @@ export function About() {
                 />
               ) : (
                 <div className="flex h-full w-full flex-col items-center justify-center gap-5 bg-navy p-8 text-center text-cream">
-                  <Scale className="h-16 w-16 text-bronze" aria-hidden="true" />
+                  <Scale className="h-16 w-16 text-accent-light" aria-hidden="true" />
                   <p className="font-heading text-2xl font-bold">{brand.attorneyName}</p>
                   <p className="text-sm text-cream/70">{brand.address.city}</p>
                 </div>
@@ -39,7 +39,7 @@ export function About() {
             <ul className="mt-8 space-y-3">
               {brand.about.credentials.map((c) => (
                 <li key={c} className="flex items-start gap-3">
-                  <Check className="mt-1 h-5 w-5 shrink-0 text-bronze" aria-hidden="true" />
+                  <Check className="mt-1 h-5 w-5 shrink-0 text-accent" aria-hidden="true" />
                   <span className="text-ink/85">{c}</span>
                 </li>
               ))}

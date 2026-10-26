@@ -5,14 +5,15 @@
  * Brand tokens (--brand-*) are injected at runtime from src/lib/brand.ts in
  * layout.tsx, so editing brand.ts re-themes the whole site. The @theme inline
  * block maps those runtime vars to Tailwind color/font utilities (navy, cream,
- * bronze, ink, bg-background, font-heading, ...). Opacity modifiers like
+ * accent, ink, bg-background, font-heading, ...). Opacity modifiers like
  * `text-ink/70` and `border-navy/10` work because these are theme colors.
  */
 
 @theme inline {
   --color-navy: var(--brand-navy);
   --color-cream: var(--brand-cream);
-  --color-bronze: var(--brand-bronze);
+  --color-accent: var(--brand-accent);
+  --color-accent-light: var(--brand-accent-light);
   --color-ink: var(--brand-ink);
 
   --color-background: var(--brand-cream);
@@ -29,10 +30,11 @@
 @layer base {
   :root {
     /* Default placeholder palette — overridden at runtime from brand.ts. */
-    --brand-navy: #0f2741;
-    --brand-cream: #f7f4ed;
-    --brand-bronze: #a9743b;
-    --brand-ink: #1a1a1a;
+    --brand-navy: #1a3742;
+    --brand-cream: #f4f6f6;
+    --brand-accent: #3c7186;
+    --brand-accent-light: #8db5c4;
+    --brand-ink: #17242b;
   }
 
   html {
@@ -61,12 +63,12 @@
   }
 
   ::selection {
-    background-color: color-mix(in srgb, var(--brand-bronze) 28%, transparent);
+    background-color: color-mix(in srgb, var(--brand-accent) 28%, transparent);
     color: var(--brand-ink);
   }
 
   :focus-visible {
-    outline: 2px solid var(--brand-bronze);
+    outline: 2px solid var(--brand-accent);
     outline-offset: 2px;
     border-radius: 2px;
   }
@@ -103,7 +105,7 @@
     font-size: 0.8125rem;
     font-weight: 600;
     letter-spacing: 0.14em;
-    color: var(--brand-bronze);
+    color: var(--brand-accent);
   }
 
   /* Hairline divider. */

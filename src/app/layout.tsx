@@ -34,8 +34,8 @@ export const viewport: Viewport = {
 
 /** Inject brand.ts colors as CSS variables so one file re-themes the whole site. */
 function brandVars(): string {
-  const { navy, cream, bronze, ink } = brand.colors;
-  return `:root{--brand-navy:${navy};--brand-cream:${cream};--brand-bronze:${bronze};--brand-ink:${ink};}`;
+  const { navy, cream, accent, accentLight, ink } = brand.colors;
+  return `:root{--brand-navy:${navy};--brand-cream:${cream};--brand-accent:${accent};--brand-accent-light:${accentLight};--brand-ink:${ink};}`;
 }
 
 export default function RootLayout({

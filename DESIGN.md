@@ -13,19 +13,22 @@ authoritative, expensive. Motion is cinematic but never flashy.
 Think: the sites of top boutique firms and luxury hospitality — Latham-tier
 seriousness, Aesop-level restraint, Linear-level polish on interactions.
 Generous negative space, a strong serif display, hairline rules, and a single
-warm metallic accent used sparingly.
+single cool steel-blue accent used sparingly.
 
-## Palette (white-label; defaults — no yellow)
+## Palette (white-label; matched to this firm's logo)
 
 | Token | Default | Use |
 | --- | --- | --- |
-| `navy` | `#0F2741` | Primary. Deep, near-ink blue. |
-| `cream` | `#F7F4ED` | Page background. Warm off-white. |
-| `bronze` | `#A9743B` | Accent ONLY. Rules, small CTAs, highlights. Never large fills. |
-| `ink` | `#1A1A1A` | Body text on light. |
+| `navy` | `#1A3742` | Primary. Deep teal-slate, used for dark sections and the header mark. |
+| `cream` | `#F4F6F6` | Page background. Cool off-white. |
+| `accent` | `#3C7186` | Steel blue taken from the logo. Buttons and links on light backgrounds. |
+| `accentLight` | `#8DB5C4` | The same blue, lightened. Accent text, icons and buttons on dark sections. |
+| `ink` | `#17242B` | Body text on light. Blue-black. |
 
-Rules: one accent, used at <10% of any viewport. Large surfaces are navy or
-cream. High contrast always. Avoid pure black and pure white.
+Rules: one accent family, used at <10% of any viewport. Large surfaces are navy
+or cream. Never use `accent` for text on `navy` or `accentLight` on `cream`;
+that is what the two tokens are for. All text pairs meet WCAG AA (4.5:1).
+Avoid pure black and pure white.
 
 ## Typography
 
@@ -55,9 +58,9 @@ cream. High contrast always. Avoid pure black and pure white.
 
 ## Components
 
-- Buttons: solid navy (primary), bronze (accent, small), and a "quiet" ghost
+- Buttons: solid navy (primary), steel-blue accent (small; `accentOnDark` on dark sections), and a "quiet" ghost
   with an animated underline. Pill or 6px radius — pick one and keep it.
-- Inputs: generous height (44px+), hairline border, focus ring in bronze.
+- Inputs: generous height (44px+), hairline border, focus ring in accent.
 - Cards: minimal — border + hover lift (translateY 4px + shadow), not loud.
 - Chatbot: feels like a premium concierge — rounded panel, navy header,
   streaming text, typing/thinking indicator, suggested prompts.

@@ -13,8 +13,8 @@
  *  Colors are injected as CSS variables in src/app/layout.tsx, so changing them
  *  here re-themes the entire site — no component edits required.
  *
- *  DEFAULT PLACEHOLDER PALETTE: deep navy + cream-white + subtle bronze accent.
- *  (No yellow.) Replace per client.
+ *  PALETTE: matched to the firm logo. Contrast checked (WCAG AA). Replace per
+ *  client; keep `accent` readable on `cream` and `accentLight` on `navy`.
  * =============================================================================
  */
 
@@ -88,12 +88,13 @@ export const brand = {
     instagram: '',
   },
 
-  // --- Colors (placeholder palette — replace per client; no yellow) ---
+  // --- Colors: matched to the firm logo (dusty steel blue + silver) ---
   colors: {
-    navy: '#0F2741', // deep navy — primary
-    cream: '#F7F4ED', // cream-white — background
-    bronze: '#A9743B', // subtle bronze — accent
-    ink: '#1A1A1A', // near-black body text
+    navy: '#1A3742', // deep teal-slate — primary, dark sections
+    cream: '#F4F6F6', // cool off-white — page background
+    accent: '#3C7186', // steel blue from the logo — buttons, links on light
+    accentLight: '#8DB5C4', // light steel blue — accent on dark sections
+    ink: '#17242B', // blue-black body text
   },
 
   // --- Fonts (next/font keys; see src/app/layout.tsx) ---

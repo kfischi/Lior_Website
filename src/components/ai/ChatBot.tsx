@@ -24,16 +24,16 @@ function ContactCard({
 }) {
   return (
     <div className="mt-2 rounded-lg border border-navy/10 bg-cream p-3 text-sm">
-      <a href={data.telHref} className="flex items-center gap-2 py-1 text-navy hover:text-bronze">
-        <Phone className="h-4 w-4 text-bronze" /> {data.phone}
+      <a href={data.telHref} className="flex items-center gap-2 py-1 text-navy hover:text-accent">
+        <Phone className="h-4 w-4 text-accent" /> {data.phone}
       </a>
       <a
         href={data.whatsapp}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 py-1 text-navy hover:text-bronze"
+        className="flex items-center gap-2 py-1 text-navy hover:text-accent"
       >
-        <MessageCircle className="h-4 w-4 text-bronze" /> וואטסאפ
+        <MessageCircle className="h-4 w-4 text-accent" /> וואטסאפ
       </a>
     </div>
   );
@@ -45,7 +45,7 @@ function WhatsAppCard({ href }: { href: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-bronze px-3 py-2.5 text-sm font-medium text-cream transition-colors hover:bg-bronze/90"
+      className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-2.5 text-sm font-medium text-cream transition-colors hover:bg-accent/90"
     >
       <MessageCircle className="h-4 w-4" />
       שליחת ההודעה למשרד בוואטסאפ
@@ -133,7 +133,7 @@ function ChatBotInner() {
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? 'סגירת הצ׳אט' : 'פתיחת הצ׳אט עם עוזר המשרד'}
         aria-expanded={open}
-        className="fixed bottom-5 end-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-bronze text-cream shadow-lg transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2"
+        className="fixed bottom-5 end-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-cream shadow-lg ring-2 ring-cream/70 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>
@@ -149,7 +149,7 @@ function ChatBotInner() {
             className="fixed bottom-24 end-5 z-50 flex h-[32rem] max-h-[calc(100vh-7rem)] w-[min(23rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-navy/10 bg-cream shadow-2xl"
           >
             <header className="flex items-center gap-2.5 bg-navy px-4 py-3.5 text-cream">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-bronze/90">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-light text-navy">
                 <MessageCircle className="h-4 w-4" />
               </span>
               <div className="leading-tight">
@@ -185,7 +185,7 @@ function ChatBotInner() {
                       key={p}
                       type="button"
                       onClick={() => submit(p)}
-                      className="rounded-full border border-navy/15 bg-cream px-3 py-1.5 text-xs text-navy transition-colors hover:border-bronze hover:text-bronze"
+                      className="rounded-full border border-navy/15 bg-cream px-3 py-1.5 text-xs text-navy transition-colors hover:border-accent hover:text-accent"
                     >
                       {p}
                     </button>
@@ -210,7 +210,7 @@ function ChatBotInner() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="כתבו הודעה..."
                 autoComplete="off"
-                className="flex-1 rounded-full border border-navy/15 bg-background px-4 py-2 text-sm focus-visible:border-bronze focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze/30"
+                className="flex-1 rounded-full border border-navy/15 bg-background px-4 py-2 text-sm focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
               />
               {busy ? (
                 <button
@@ -226,7 +226,7 @@ function ChatBotInner() {
                   type="submit"
                   aria-label="שליחה"
                   disabled={!input.trim()}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-bronze text-cream transition-opacity disabled:opacity-40"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-cream transition-opacity disabled:opacity-40"
                 >
                   <Send className="h-4 w-4" />
                 </button>

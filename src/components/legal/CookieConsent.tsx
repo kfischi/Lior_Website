@@ -60,7 +60,7 @@ export function CookieConsent() {
         <p className="text-sm leading-relaxed text-ink/70">
           אתר זה עושה שימוש בעוגיות חיוניות לתפעולו. בכפוף לאישורכם נשתמש גם
           בעוגיות לשיפור החוויה ולמדידה. למידע נוסף עיינו ב
-          <Link href="/legal/privacy" className="mx-1 text-bronze underline underline-offset-2">
+          <Link href="/legal/privacy" className="mx-1 text-accent underline underline-offset-2">
             מדיניות הפרטיות
           </Link>
           .

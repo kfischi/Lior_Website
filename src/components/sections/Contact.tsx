@@ -27,7 +27,7 @@ export function Contact() {
     <section id="contact" aria-labelledby="contact-title" className="section bg-navy text-cream">
       <div className="shell grid gap-12 lg:grid-cols-2 lg:gap-16">
         <Reveal>
-          <p className="eyebrow mb-3">זמינים עבורכם</p>
+          <p className="eyebrow mb-3 text-accent-light">זמינים עבורכם</p>
           <h2 id="contact-title" className="text-3xl text-cream md:text-4xl">
             קביעת ייעוץ
           </h2>
@@ -37,8 +37,8 @@ export function Contact() {
 
           <ul className="mt-8 space-y-4 text-cream/90">
             <li>
-              <a href={telHref} className="flex items-center gap-3 hover:text-bronze">
-                <Phone className="h-5 w-5 text-bronze" aria-hidden="true" />
+              <a href={telHref} className="flex items-center gap-3 hover:text-accent-light">
+                <Phone className="h-5 w-5 text-accent-light" aria-hidden="true" />
                 {brand.phone}
               </a>
             </li>
@@ -47,20 +47,20 @@ export function Contact() {
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 hover:text-bronze"
+                className="flex items-center gap-3 hover:text-accent-light"
               >
-                <MessageCircle className="h-5 w-5 text-bronze" aria-hidden="true" />
+                <MessageCircle className="h-5 w-5 text-accent-light" aria-hidden="true" />
                 וואטסאפ
               </a>
             </li>
             <li>
-              <a href={mailHref} className="flex items-center gap-3 hover:text-bronze">
-                <Mail className="h-5 w-5 text-bronze" aria-hidden="true" />
+              <a href={mailHref} className="flex items-center gap-3 hover:text-accent-light">
+                <Mail className="h-5 w-5 text-accent-light" aria-hidden="true" />
                 {brand.email}
               </a>
             </li>
             <li className="flex items-center gap-3">
-              <MapPin className="h-5 w-5 text-bronze" aria-hidden="true" />
+              <MapPin className="h-5 w-5 text-accent-light" aria-hidden="true" />
               {brand.address.street}, {brand.address.city}
             </li>
           </ul>
@@ -73,7 +73,7 @@ export function Contact() {
                 role="status"
                 className="flex h-full min-h-80 flex-col items-center justify-center text-center"
               >
-                <CheckCircle2 className="h-14 w-14 text-bronze" aria-hidden="true" />
+                <CheckCircle2 className="h-14 w-14 text-accent" aria-hidden="true" />
                 {state.status === 'sent' ? (
                   <>
                     <h3 className="mt-4 font-heading text-xl font-bold text-navy">הפנייה נשלחה!</h3>
