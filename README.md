@@ -128,3 +128,9 @@ npm run ingest     # הטמעת ידע ל-RAG (דורש Supabase + OpenAI)
 מדריכים ב-`src/lib/articles.ts` (עמודי `/articles`), שאלות ותשובות ב-`/faq`, `llms.txt`, `llms-full.txt`, `feed.xml`, sitemap,
 robots שמאפשר זחלני חיפוש ובינה מלאכותית, ו-JSON-LD (Article, FAQPage, LegalService, Attorney, WebSite).
 כל טקסט משפטי חייב אישור של עורכת הדין לפני הסתמכות עליו.
+
+## כתוביות לביקורות וידאו
+
+`npm run captions` שולח כל סרטון ב-`brand.videoReviews` ל-Gemini ויוצר טיוטת כתוביות `public/videos/review-N.he.vtt`
+(דורש `GOOGLE_GENERATIVE_AI_API_KEY`). הטיוטה היא תמלול מכונה של דברי לקוחות: חובה לקרוא אותה מול הסרטון ולתקן לפני
+פרסום, ואז להוסיף `captions: '/videos/review-N.he.vtt'` לסרטון ב-`src/lib/brand.ts`.
