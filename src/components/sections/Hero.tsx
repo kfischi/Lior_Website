@@ -3,10 +3,8 @@
 import * as React from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
-import { MessageCircle, MessagesSquare, ChevronDown } from 'lucide-react';
-import { brand, whatsappHref } from '@/lib/brand';
-import { Button } from '@/components/ui/button';
-import { OpenChatButton } from '@/components/ai/OpenChatButton';
+import { ChevronDown } from 'lucide-react';
+import { brand } from '@/lib/brand';
 import { Avatar } from '@/components/ai/ConciergePanel';
 import { useConcierge } from '@/components/ai/ConciergeProvider';
 import { HeroVideo } from './HeroVideo';
@@ -152,19 +150,6 @@ export function Hero() {
           >
             {brand.hero.subtitle}
           </motion.p>
-
-          <motion.div {...fade(0.95)} className="mt-10 flex flex-wrap gap-4">
-            <OpenChatButton size="lg" variant="accentOnDark">
-              <MessagesSquare className="h-5 w-5" />
-              {brand.hero.primaryCta}
-            </OpenChatButton>
-            <Button asChild size="lg" variant="onDark">
-              <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="h-5 w-5" />
-                {brand.hero.secondaryCta}
-              </a>
-            </Button>
-          </motion.div>
         </div>
       </div>
 
