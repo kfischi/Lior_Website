@@ -39,6 +39,20 @@ function ContactCard({
   );
 }
 
+function WhatsAppCard({ href }: { href: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-bronze px-3 py-2.5 text-sm font-medium text-cream transition-colors hover:bg-bronze/90"
+    >
+      <MessageCircle className="h-4 w-4" />
+      שליחת ההודעה למשרד בוואטסאפ
+    </a>
+  );
+}
+
 function MessageBubble({ message }: { message: UIMessage }) {
   const isUser = message.role === 'user';
   return (
@@ -58,6 +72,9 @@ function MessageBubble({ message }: { message: UIMessage }) {
           part.output
         ) {
           return <ContactCard key={i} data={part.output as never} />;
+        }
+        if (part.type === 'tool-whatsappHandoff' && 'output' in part && part.output) {
+          return <WhatsAppCard key={i} href={(part.output as { href: string }).href} />;
         }
         return null;
       })}

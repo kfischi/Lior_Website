@@ -1,6 +1,8 @@
 import {
   streamText,
   convertToModelMessages,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
   stepCountIs,
   type UIMessage,
 } from 'ai';
@@ -8,12 +10,13 @@ import { anthropic } from '@ai-sdk/anthropic';
 import { buildSystemPrompt } from '@/lib/ai/system';
 import { retrieveContext } from '@/lib/ai/rag';
 import { chatTools } from '@/lib/ai/tools';
+import { fallbackReply } from '@/lib/ai/fallback';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
 
-const MODEL = process.env.CHAT_MODEL || 'claude-sonnet-4-5';
+const MODEL = process.env.CHAT_MODEL || 'claude-sonnet-5-5';
 
 /** Join the text parts of a UIMessage into a plain string. */
 function messageText(message: UIMessage | undefined): string {
@@ -44,15 +47,24 @@ async function persistExchange(
   }
 }
 
-export async function POST(req: Request) {
-  // Graceful fallback when the LLM key is not configured.
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return Response.json(
-      { error: 'הצ׳אט אינו מוגדר כעת. אנא צרו קשר טלפוני.' },
-      { status: 503 },
-    );
-  }
+/** Streams a fixed reply as a UI message stream, with a light typing cadence. */
+function streamStaticReply(text: string): Response {
+  const stream = createUIMessageStream({
+    execute: async ({ writer }) => {
+      const id = 'fallback';
+      writer.write({ type: 'text-start', id });
+      const words = text.split(/(\s+)/);
+      for (let i = 0; i < words.length; i += 3) {
+        writer.write({ type: 'text-delta', id, delta: words.slice(i, i + 3).join('') });
+        await new Promise((r) => setTimeout(r, 25));
+      }
+      writer.write({ type: 'text-end', id });
+    },
+  });
+  return createUIMessageStreamResponse({ stream });
+}
 
+export async function POST(req: Request) {
   let body: { messages: UIMessage[]; sessionId?: string };
   try {
     body = await req.json();
@@ -69,7 +81,12 @@ export async function POST(req: Request) {
   const trimmed = messages.slice(-12);
   const lastUserText = messageText([...trimmed].reverse().find((m) => m.role === 'user'));
 
-  // RAG (optional) — retrieve relevant firm knowledge for this query.
+  // No AI key configured: answer from the knowledge base instead of failing.
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return streamStaticReply(fallbackReply(lastUserText));
+  }
+
+  // RAG (optional) — only active when Supabase + embeddings are configured.
   const context = await retrieveContext(lastUserText);
 
   const modelMessages = await convertToModelMessages(trimmed);
@@ -80,7 +97,7 @@ export async function POST(req: Request) {
     messages: modelMessages,
     tools: chatTools,
     stopWhen: stepCountIs(4),
-    temperature: 0.4,
+    temperature: 0.5,
     onFinish: ({ text }) => {
       void persistExchange(sessionId, lastUserText, text);
     },

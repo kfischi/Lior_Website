@@ -37,14 +37,38 @@ npm run dev                  # http://localhost:3000
 | `SITE_URL` | כן | כתובת האתר (SEO/sitemap) |
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | כן | שם ה-Cloud לתמונות |
 | `ANTHROPIC_API_KEY` | לצ'אט | מפתח Claude (צד שרת) |
-| `CHAT_MODEL` | לא | דגם Claude (ברירת מחדל `claude-sonnet-4-5`) |
-| `N8N_LEAD_WEBHOOK_URL` | ללידים | Webhook לטופס (צד שרת) |
+| `CHAT_MODEL` | לא | דגם Claude (ברירת מחדל `claude-sonnet-5-5`) |
+| `WHATSAPP_ACCESS_TOKEN` / `WHATSAPP_PHONE_NUMBER_ID` | לשליחה ישירה | WhatsApp Cloud API של Meta (צד שרת) |
+| `WHATSAPP_NOTIFY_TO` / `WHATSAPP_LEAD_TEMPLATE` | לשליחה ישירה | מספר המשרד ושם התבנית המאושרת |
 | `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | ל-RAG/היסטוריה | Supabase (צד שרת) |
 | `OPENAI_API_KEY` | ל-RAG | embeddings (צד שרת) |
 
 > כל מה שאינו קריטי הוא אופציונלי: בלעדיו הפיצ'ר פשוט נכבה בחן.
 
-## צ'אטבוט + RAG
+## ידע הצ'אטבוט
+
+כל מה שהצ'אט יודע על המשרד נמצא ב-[`src/lib/knowledge.ts`](src/lib/knowledge.ts) וב-`brand.ts`.
+הידע נכנס ישירות להנחיות המודל, בלי מסד נתונים. **ערכו את הקובץ** והחליפו את הניסוחים
+הכלליים בתהליך, במדיניות השכר ובהתמחויות האמיתיות של המשרד. הצ'אט מתייחס לכל מה שכתוב שם כעובדה.
+בלי `ANTHROPIC_API_KEY` הצ'אט עונה מאותו קובץ ידע לפי נושאים (פחות גמיש, אבל לא נופל).
+
+## וואטסאפ: חיבור ישיר דרך Meta
+
+טופס הלידים ב-`src/lib/actions/lead.ts`:
+
+- **עם הגדרות Meta**: הליד נשלח מהשרת ישירות לוואטסאפ של המשרד (WhatsApp Cloud API).
+- **בלי הגדרות, או אם Meta דחתה**: הגולש מקבל כפתור עם הודעה מוכנה (`wa.me`). הליד לא הולך לאיבוד.
+
+הגדרה ב-Meta (developers.facebook.com):
+1. צרו אפליקציה מסוג Business והוסיפו את המוצר WhatsApp.
+2. ב-API Setup העתיקו `Phone number ID` ויצרו Access Token קבוע (System User).
+3. **צרו תבנית הודעה (Template)** בקטגוריית Utility עם 4 משתנים: `{{1}}` שם, `{{2}}` טלפון, `{{3}}` תחום, `{{4}}` פרטים, והמתינו לאישור.
+4. הגדירו את `WHATSAPP_LEAD_TEMPLATE` לשם התבנית ואת `WHATSAPP_NOTIFY_TO` למספר שיקבל את הלידים.
+
+> כלל של Meta: הודעה חופשית (בלי תבנית) מגיעה רק אם הנמען כתב למספר העסק ב-24 השעות האחרונות.
+> לכן נדרשת תבנית מאושרת כדי לקבל לידים באופן אמין.
+
+## צ'אטבוט + RAG (אופציונלי)
 
 1. הריצו את ההגירה [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql)
    בפרויקט Supabase (pgvector + טבלאות שיחה + טבלת `documents`).

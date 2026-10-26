@@ -68,14 +68,35 @@ export function Contact() {
 
         <Reveal delay={0.1}>
           <div className="rounded-2xl bg-cream p-6 text-ink shadow-2xl md:p-8">
-            {state.status === 'success' ? (
+            {state.status === 'sent' || state.status === 'handoff' ? (
               <div
                 role="status"
                 className="flex h-full min-h-80 flex-col items-center justify-center text-center"
               >
                 <CheckCircle2 className="h-14 w-14 text-bronze" aria-hidden="true" />
-                <h3 className="mt-4 font-heading text-xl font-bold text-navy">הפנייה נשלחה!</h3>
-                <p className="mt-2 text-ink/65">תודה שפניתם אלינו. נחזור אליכם בהקדם האפשרי.</p>
+                {state.status === 'sent' ? (
+                  <>
+                    <h3 className="mt-4 font-heading text-xl font-bold text-navy">הפנייה נשלחה!</h3>
+                    <p className="mt-2 text-ink/65">
+                      קיבלנו את הפרטים ונחזור אליכם בהקדם. אפשר גם להמשיך את השיחה בוואטסאפ.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="mt-4 font-heading text-xl font-bold text-navy">רגע אחד לפני שמסיימים</h3>
+                    <p className="mt-2 text-ink/65">
+                      הכנו לכם הודעה מוכנה. לחצו כדי לשלוח אותה למשרד בוואטסאפ.
+                    </p>
+                  </>
+                )}
+                {state.waHref && (
+                  <Button asChild variant="accent" size="lg" className="mt-6">
+                    <a href={state.waHref} target="_blank" rel="noopener noreferrer">
+                      <MessageCircle className="h-5 w-5" />
+                      {state.status === 'sent' ? 'המשך בוואטסאפ' : 'שליחה בוואטסאפ'}
+                    </a>
+                  </Button>
+                )}
               </div>
             ) : (
               <form action={formAction} className="space-y-5" noValidate>
