@@ -347,8 +347,48 @@ export const brand = {
   ] satisfies PracticeArea[],
 
   // --- Testimonials ---
-  // Real, permitted client reviews only. The section stays hidden while empty.
-  testimonials: [] as Testimonial[],
+  // Real client reviews only, quoted word for word (spacing normalised), with the
+  // reviewer's first name or initial and city as shown at the source. The section
+  // stays hidden while this is empty.
+  //
+  // Selection rule: nothing that claims an outcome ("won", "got what I wanted"),
+  // describes the client's case or health, or uses the word "specialist", and no
+  // quotes with typos. Excluded reviews are listed in docs/seo/backlog.md.
+  // Do not add an aggregate rating or review markup: Google treats self-published
+  // ratings as ineligible, and the Bar's rules on advertising apply.
+  testimonialsSource: 'ביקורות שפורסמו באתר LawReviews',
+  testimonials: [
+    {
+      name: 'ט.',
+      role: 'ינואר 2024',
+      rating: 5,
+      text: 'ממליצה על עו"ד ליאור ארז! עו"ד איכפתית, מקצועית, חריפה וזמינה. היא תהיה שם בשבילך לכל שאלה ותמצא דרך יצירתית לפתרון המיטבי עבורך.',
+    },
+    {
+      name: 'אלה, אשדוד',
+      role: 'ינואר 2024',
+      rating: 5,
+      text: 'עורכת דין מצוינת, נותנת ייעוץ וייצוג מעולה. תמיד זמינה וקשובה. בקיאה בדיני החוקים ויודעת לתת את המקסימום לכל מקרה ולקוח. ממליצה מאוד.',
+    },
+    {
+      name: 'שולי, רחובות',
+      role: 'ינואר 2024',
+      rating: 5,
+      text: 'ליאור עו"ד מוכשרת ומיומנת, הוכיחה מקצועיות, חדות מחשבה וחשיבה מחוץ לקופסא. קיבלתי יחס אישי ואדיב, שירות איכותי ובזכות ליאור תהליך המשפט הפך לפשוט. ממליצה בחום!!',
+    },
+    {
+      name: 'הילה ק., מודיעין',
+      role: 'ינואר 2024',
+      rating: 5,
+      text: 'קיבלתי מעורכת הדין ליאור ארז שירות ראוי לציון, מקצועיות, רצינות, עניינית מאוד, עזרה לי בנושא הרשויות. היחס של ליאור יוצא מגדר הרגיל ועשתה כל שביכולתה להשביע את רצוני.',
+    },
+    {
+      name: 'ד.',
+      role: 'פברואר 2024',
+      rating: 5,
+      text: 'עו"ד ליאור ארז, אשה מקסימה, אנושית הוגנת, ומאוד מקצועית, תמיד נמצאת גם בשעות לא שגרתיות בזמן דחיפות ומצוקה, מוכיחה בעשיה אכפתית ועקבית תמיד מחוברת לרעיון קידום והגנה על אזרחים ודאגה על זכויותיהם.',
+    },
+  ] satisfies Testimonial[],
 
   // --- FAQ (also rendered as FAQPage JSON-LD) ---
   faq: [

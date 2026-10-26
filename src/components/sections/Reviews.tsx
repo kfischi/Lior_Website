@@ -29,11 +29,18 @@ export function Reviews() {
           <h2 id="reviews-title" className="text-3xl text-navy md:text-4xl">
             המלצות
           </h2>
+          {brand.testimonialsSource && (
+            <p className="mt-3 text-sm text-ink/60">{brand.testimonialsSource}</p>
+          )}
         </Reveal>
 
-        <Stagger as="ul" className="grid gap-6 md:grid-cols-3">
+        <Stagger as="ul" className="flex flex-wrap justify-center gap-6">
           {brand.testimonials.map((t) => (
-            <StaggerItem as="li" key={t.name}>
+            <StaggerItem
+              as="li"
+              key={t.name}
+              className="w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
+            >
               <figure className="flex h-full flex-col gap-4 rounded-xl border border-navy/10 bg-background p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
                 <Stars rating={t.rating} />
                 <blockquote className="flex-1 leading-relaxed text-ink/80">
