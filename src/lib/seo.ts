@@ -1,45 +1,54 @@
 import type { Metadata } from 'next';
-import { brand } from './brand';
+import { brand, type PracticeArea } from './brand';
 import { siteUrl } from './utils';
 
 /**
  * SEO + GEO (Generative Engine Optimization) helpers.
  * - buildMetadata(): Next.js Metadata per page.
- * - JSON-LD builders: LegalService, Attorney, FAQPage, BreadcrumbList.
+ * - JSON-LD builders: LegalService, Attorney, Service, FAQPage, BreadcrumbList.
+ *
+ * Only facts that exist in brand.ts are emitted. Do not add claims (service
+ * area, languages, hours, ratings) that the firm has not confirmed.
  */
 
 interface PageMetaInput {
+  /** Inner-page title; the brand suffix is appended. */
   title?: string;
+  /** Full <title>, used as-is (home page). Wins over `title`. */
+  absoluteTitle?: string;
   description?: string;
   /** Path beginning with "/" (canonical). Defaults to "/". */
   path?: string;
-  /** Cloudinary public ID or absolute URL for the OG image. */
+  /** Absolute URL or path to the social preview image. */
   ogImage?: string;
   noindex?: boolean;
 }
 
+const DEFAULT_OG_IMAGE = '/opengraph-image.png';
+
 export function buildMetadata({
   title,
+  absoluteTitle,
   description,
   path = '/',
-  ogImage,
+  ogImage = DEFAULT_OG_IMAGE,
   noindex = false,
 }: PageMetaInput = {}): Metadata {
   const base = siteUrl();
-  const fullTitle = title ? `${title} | ${brand.firmName}` : brand.firmName;
+  const fullTitle =
+    absoluteTitle ?? (title ? `${title} | ${brand.seo.titleSuffix}` : brand.firmName);
   const desc = description || brand.description;
-  const url = `${base}${path}`;
+  const url = `${base}${path === '/' ? '' : path}` || base;
+  const image = { url: ogImage, width: 1200, height: 630, alt: brand.firmName };
 
   return {
     metadataBase: new URL(base),
-    title: fullTitle,
+    title: absoluteTitle || title ? { absolute: fullTitle } : fullTitle,
     description: desc,
     applicationName: brand.firmName,
     authors: [{ name: brand.attorneyName }],
-    alternates: { canonical: url },
-    robots: noindex
-      ? { index: false, follow: false }
-      : { index: true, follow: true },
+    alternates: { canonical: path },
+    robots: noindex ? { index: false, follow: false } : { index: true, follow: true },
     openGraph: {
       type: 'website',
       locale: 'he_IL',
@@ -47,13 +56,13 @@ export function buildMetadata({
       title: fullTitle,
       description: desc,
       url,
-      ...(ogImage ? { images: [{ url: ogImage }] } : {}),
+      images: [image],
     },
     twitter: {
       card: 'summary_large_image',
       title: fullTitle,
       description: desc,
-      ...(ogImage ? { images: [ogImage] } : {}),
+      images: [ogImage],
     },
   };
 }
@@ -64,9 +73,11 @@ export function legalServiceJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'LegalService',
+    '@id': `${base}/#firm`,
     name: brand.firmName,
     description: brand.description,
     url: base,
+    image: `${base}${DEFAULT_OG_IMAGE}`,
     telephone: `+${brand.phoneE164}`,
     faxNumber: brand.fax,
     email: brand.email,
@@ -77,8 +88,7 @@ export function legalServiceJsonLd() {
       postalCode: brand.address.postalCode,
       addressCountry: brand.address.country,
     },
-    areaServed: { '@type': 'Country', name: 'Israel' },
-    knowsLanguage: ['he', 'en'],
+    knowsLanguage: 'he',
     serviceType: brand.practiceAreas.map((a) => a.title),
   };
 }
@@ -90,7 +100,8 @@ export function attorneyJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'Attorney',
     name: brand.attorneyName,
-    worksFor: { '@type': 'LegalService', name: brand.firmName },
+    jobTitle: 'עורכת דין',
+    worksFor: { '@id': `${base}/#firm` },
     url: base,
     telephone: `+${brand.phoneE164}`,
     email: brand.email,
@@ -103,7 +114,21 @@ export function attorneyJsonLd() {
   };
 }
 
-/** FAQPage structured data — used on the home page and practice-area pages. */
+/** A practice area as a schema.org Service offered by the firm. */
+export function serviceJsonLd(area: PracticeArea) {
+  const base = siteUrl();
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: area.title,
+    description: area.description,
+    url: `${base}/practice-areas/${area.slug}`,
+    serviceType: area.title,
+    provider: { '@id': `${base}/#firm` },
+  };
+}
+
+/** FAQPage structured data. Must match the FAQ visible on the same page. */
 export function faqJsonLd(items: { question: string; answer: string }[] = brand.faq) {
   return {
     '@context': 'https://schema.org',
@@ -126,7 +151,7 @@ export function breadcrumbJsonLd(crumbs: { name: string; path: string }[]) {
       '@type': 'ListItem',
       position: i + 1,
       name: c.name,
-      item: `${base}${c.path}`,
+      item: `${base}${c.path === '/' ? '' : c.path}`,
     })),
   };
 }

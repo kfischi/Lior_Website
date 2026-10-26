@@ -2,25 +2,24 @@ import type { MetadataRoute } from 'next';
 import { brand } from '@/lib/brand';
 import { siteUrl } from '@/lib/utils';
 
+/**
+ * lastmod comes from brand.seo.lastModified (bump it when public content
+ * changes), not from the build time, so crawlers see honest change dates.
+ */
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = siteUrl();
-  const now = new Date();
+  const lastModified = new Date(brand.seo.lastModified);
 
-  const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${base}/`, lastModified: now, changeFrequency: 'monthly', priority: 1 },
-    { url: `${base}/legal/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${base}/legal/accessibility`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${base}/legal/terms`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+  return [
+    { url: `${base}/`, lastModified, changeFrequency: 'monthly', priority: 1 },
+    ...brand.practiceAreas.map((area) => ({
+      url: `${base}/practice-areas/${area.slug}`,
+      lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    })),
+    { url: `${base}/legal/privacy`, lastModified, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${base}/legal/accessibility`, lastModified, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${base}/legal/terms`, lastModified, changeFrequency: 'yearly', priority: 0.3 },
   ];
-
-  // Practice areas are anchors on the home page today; when dedicated pages are
-  // added at /practice-areas/[slug] they will be picked up here automatically.
-  const practiceRoutes: MetadataRoute.Sitemap = brand.practiceAreas.map((area) => ({
-    url: `${base}/#${area.slug}`,
-    lastModified: now,
-    changeFrequency: 'monthly',
-    priority: 0.6,
-  }));
-
-  return [...staticRoutes, ...practiceRoutes];
 }

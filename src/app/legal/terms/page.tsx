@@ -4,7 +4,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildMetadata({
   title: 'תנאי שימוש',
-  description: `תנאי השימוש באתר ${brand.firmName}`,
+  description: `תנאי השימוש באתר ${brand.firmName}: אופי המידע באתר, קניין רוחני, הגבלת אחריות ויצירת קשר.`,
   path: '/legal/terms',
 });
 

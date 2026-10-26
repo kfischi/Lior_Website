@@ -4,7 +4,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildMetadata({
   title: 'מדיניות פרטיות',
-  description: `מדיניות הפרטיות של ${brand.firmName}`,
+  description: `מדיניות הפרטיות של ${brand.firmName}: איזה מידע נאסף באתר, כיצד נעשה בו שימוש, איך הוא מאובטח ומהן זכויותיכם.`,
   path: '/legal/privacy',
 });
 

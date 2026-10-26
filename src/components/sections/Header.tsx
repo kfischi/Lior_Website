@@ -10,12 +10,12 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const NAV = [
-  { href: '#practice', label: 'תחומי עיסוק' },
-  { href: '#about', label: 'אודות' },
-  { href: '#why', label: 'למה אנחנו' },
-  ...(brand.testimonials.length > 0 ? [{ href: '#reviews', label: 'המלצות' }] : []),
-  { href: '#faq', label: 'שאלות' },
-  { href: '#contact', label: 'צור קשר' },
+  { href: '/#practice', label: 'תחומי עיסוק' },
+  { href: '/#about', label: 'אודות' },
+  { href: '/#why', label: 'למה אנחנו' },
+  ...(brand.testimonials.length > 0 ? [{ href: '/#reviews', label: 'המלצות' }] : []),
+  { href: '/#faq', label: 'שאלות' },
+  { href: '/#contact', label: 'צור קשר' },
 ];
 
 export function Header() {
