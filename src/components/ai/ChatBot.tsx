@@ -48,18 +48,14 @@ function Floating() {
               openPanel();
             }}
             aria-label="שיחה עם המשרד, פתיחת העוזר הדיגיטלי"
-            className="flex h-[4.5rem] animate-ring items-center gap-3 rounded-full bg-linear-to-l from-accent to-navy ps-2 pe-6 text-cream shadow-2xl ring-2 ring-white transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light"
+            className="flex h-[4.5rem] w-[4.5rem] animate-ring items-center justify-center rounded-full bg-linear-to-l from-accent to-navy text-cream shadow-2xl ring-2 ring-white transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light"
           >
             <span className="relative flex" aria-hidden="true">
-              <Avatar className="h-14 w-14 ring-2 ring-white" />
+              <Avatar className="h-[3.75rem] w-[3.75rem] ring-2 ring-white" />
               <span className="absolute bottom-0 end-0 flex h-4 w-4">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-4 w-4 rounded-full bg-emerald-400 ring-2 ring-white" />
               </span>
-            </span>
-            <span className="flex flex-col items-start leading-tight">
-              <span className="text-base font-bold">שיחה עם המשרד</span>
-              <span className="text-xs text-cream/90">מענה מיידי, בדיסקרטיות</span>
             </span>
           </button>
         </div>
