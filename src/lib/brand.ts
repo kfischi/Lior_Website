@@ -473,7 +473,9 @@ export const brand = {
     { src: '/videos/review-1.mp4', poster: '/videos/review-1.webp', label: 'ביקורת וידאו מלקוח' },
     { src: '/videos/review-2.mp4', poster: '/videos/review-2.webp', label: 'ביקורת וידאו מלקוח' },
     { src: '/videos/review-3.mp4', poster: '/videos/review-3.webp', label: 'ביקורת וידאו מלקוח' },
-  ] as { src: string; poster: string; label: string; captions?: string }[],
+    { src: '/videos/review-4.mp4', poster: '/videos/review-4.webp', label: 'ביקורת וידאו מלקוחה' },
+    { src: '/videos/review-5.mp4', poster: '/videos/review-5.webp', label: 'ביקורת וידאו מלקוחה', landscape: true },
+  ] as { src: string; poster: string; label: string; captions?: string; landscape?: boolean }[],
 
   // --- FAQ (also rendered as FAQPage JSON-LD) ---
   faq: [

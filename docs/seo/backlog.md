@@ -73,8 +73,13 @@ attorney approves each one under the Bar's advertising rules):
 | רחל בהרל, מחניים | 21.01.2024 | claims an outcome, health and public-policy matters |
 | חיים ק., גבעת זאב | 19.01.2024 | health matter, typos |
 
+A scanned handwritten-style letter from a client ("ליאה", dated 3.4.16) was also supplied.
+It is **not** published: it is a private letter, so the writer's permission is needed, and
+the scan is too blurry to quote word for word.
+
 ## Done
 
+- 2026-10-27: two more client video reviews added (five in total).
 - 2026-10-27: reviews extended to nine, dated and sorted newest first (see section above).
 - 2026-10-26: five vetted client reviews added to the home page.
 - 2026-10-26: production URL fallback (no more localhost canonicals), home title
