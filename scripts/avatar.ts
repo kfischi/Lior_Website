@@ -23,6 +23,10 @@
  *   --gap <seconds>     pause between lines (default 0.45)
  *   --max-chunk <s>     longest piece sent to a provider (default 28)
  *
+ *   --video <file>     skip generation: use a finished video (made in any talking-avatar service) as the
+ *                       welcome video. Line start times come from --starts "0,6.4,..." (seconds, one per
+ *                       line), or --srt <file> (subtitles from that service), or else from the pauses
+ *
  * The person in the photo must have agreed to this use of their face and voice.
  */
 import { spawnSync } from 'node:child_process';
@@ -296,6 +300,90 @@ const localRender: Render = async (photo, audio, out, startAt) => {
 
 const PROVIDERS: Record<string, Render> = { preview: previewRender, local: localRender, fal: falRender, did: didRender };
 
+// ---------- importing a finished video ----------
+
+function parseSrtTime(t: string): number {
+  const m = /(\d+):(\d+):(\d+)[,.](\d+)/.exec(t);
+  return m ? Number(m[1]) * 3600 + Number(m[2]) * 60 + Number(m[3]) + Number(m[4].padEnd(3, '0')) / 1000 : 0;
+}
+
+/** Start time of each script line from subtitle cues: words are spread evenly over each cue's time. */
+function startsFromSrt(srt: string, segments: Segment[]): number[] {
+  const cues = srt
+    .replace(/\r/g, '')
+    .split(/\n{2,}/)
+    .map((block) => block.split('\n').filter(Boolean))
+    .map((lines) => {
+      const i = lines.findIndex((l) => l.includes('-->'));
+      if (i < 0) return null;
+      const [a, b] = lines[i].split('-->');
+      return { start: parseSrtTime(a), end: parseSrtTime(b), words: lines.slice(i + 1).join(' ').split(/\s+/).filter(Boolean).length };
+    })
+    .filter((c): c is { start: number; end: number; words: number } => c !== null && c.words > 0);
+  if (!cues.length) throw new Error('No cues found in the subtitle file.');
+  const totalWords = cues.reduce((n, c) => n + c.words, 0);
+  const scriptWords = segments.map((x) => x.text.split(/\s+/).filter(Boolean).length);
+  const scriptTotal = scriptWords.reduce((n, w) => n + w, 0);
+  let before = 0;
+  return scriptWords.map((w) => {
+    // Position of this line's first word, scaled to the subtitle file's word count.
+    const target = (before / scriptTotal) * totalWords;
+    before += w;
+    let seen = 0;
+    for (const c of cues) {
+      if (target < seen + c.words) return Math.round((c.start + ((target - seen) / c.words) * (c.end - c.start)) * 10) / 10;
+      seen += c.words;
+    }
+    return Math.round(cues.at(-1)!.start * 10) / 10;
+  });
+}
+
+/** Start of speech after each of the (count - 1) longest pauses in the video's sound. */
+function startsFromPauses(video: string, count: number): number[] {
+  const log = spawnSync('ffmpeg', ['-i', video, '-vn', '-af', 'silencedetect=noise=-35dB:d=0.3', '-f', 'null', '-'], { encoding: 'utf8' }).stderr;
+  const total = duration(video);
+  const begins = [...log.matchAll(/silence_start: ([\d.]+)/g)].map((m) => Number(m[1]));
+  const ends = [...log.matchAll(/silence_end: ([\d.]+)/g)].map((m) => Number(m[1]));
+  const gaps = begins
+    .map((b, i) => ({ start: b, end: ends[i] ?? total, length: (ends[i] ?? total) - b }))
+    .filter((g) => g.start > 0.3 && g.end < total - 0.3);
+  if (gaps.length < count - 1) {
+    throw new Error(`Found ${gaps.length} pauses but need ${count - 1}. Give the times with --starts "0,6.4,..." or subtitles with --srt.`);
+  }
+  const cuts = [...gaps].sort((a, b) => b.length - a.length).slice(0, count - 1).sort((a, b) => a.start - b.start);
+  if (Math.min(...cuts.map((c) => c.length)) < 0.45) console.warn('Warning: some of the pauses used are short; check the start times by clicking through the transcript.');
+  return [0, ...cuts.map((c) => Math.round(c.end * 10) / 10)];
+}
+
+function importVideo(intro: IntroFile, args: Record<string, string>, outName: string): void {
+  const source = resolve(ROOT, args.video);
+  const count = intro.segments.length;
+  let starts: number[];
+  if (args.starts) {
+    starts = args.starts.split(',').map((x) => Number(x.trim()));
+    if (starts.length !== count || starts.some((x) => !Number.isFinite(x))) throw new Error(`--starts needs ${count} numbers (one per line).`);
+  } else if (args.srt) {
+    starts = startsFromSrt(readFileSync(resolve(ROOT, args.srt), 'utf8'), intro.segments);
+  } else {
+    starts = startsFromPauses(source, count);
+  }
+  mkdirSync(join(ROOT, 'public/videos'), { recursive: true });
+  const outFile = join(ROOT, 'public/videos', `${outName}.mp4`);
+  ffmpeg([
+    '-i', source, '-vf', "scale='min(720,iw)':-2", '-c:v', 'libx264', '-crf', '24', '-preset', 'slow', '-pix_fmt', 'yuv420p',
+    '-c:a', 'aac', '-b:a', '96k', '-movflags', '+faststart', outFile,
+  ]);
+  const posterFile = join(ROOT, 'public/images', `${outName}-poster.webp`);
+  ffmpeg(['-ss', '0.3', '-i', outFile, '-frames:v', '1', '-c:v', 'libwebp', '-quality', '80', posterFile]);
+  intro.src = `/videos/${outName}.mp4`;
+  intro.poster = `/images/${outName}-poster.webp`;
+  intro.segments = intro.segments.map((x, i) => ({ ...x, start: starts[i] }));
+  writeFileSync(INTRO_JSON, `${JSON.stringify(intro, null, 2)}\n`);
+  console.log(`Imported: public/videos/${outName}.mp4 · ${duration(outFile).toFixed(1)} s · ${(statSync(outFile).size / 1_048_576).toFixed(1)} MB`);
+  console.log(`Line starts (s): ${starts.join(', ')}`);
+  console.log('Click through the transcript in the chat to check that each line starts in the right place.');
+}
+
 // ---------- main ----------
 
 async function main() {
@@ -310,6 +398,10 @@ async function main() {
   if (!render) throw new Error(`Unknown --provider "${providerName}". Use preview, fal or did.`);
 
   const intro = JSON.parse(readFileSync(INTRO_JSON, 'utf8')) as IntroFile;
+  if (args.video) {
+    importVideo(intro, args, outName);
+    return;
+  }
   console.log(`${intro.segments.length} lines · speech: ${tts} · video: ${providerName}`);
   if (args['dry-run']) {
     intro.segments.forEach((s, i) => console.log(`  ${i + 1}. [${s.focus ?? '-'}] ${s.text.slice(0, 60)}`));

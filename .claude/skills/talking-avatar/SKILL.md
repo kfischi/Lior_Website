@@ -37,6 +37,18 @@ npm run avatar -- --tts recorded --recording my-reading.m4a --provider local   #
 - Tested here: setup, the pause-based split, chunking with motion kept continuous across chunks, the join, the
   site playback, and a 12 s run on real Hebrew speech (frames reviewed: natural, subtle movement, no artefacts).
 
+## Using a video made elsewhere (the most realistic result)
+A web talking-avatar service (D-ID, HeyGen, Hedra and similar; check that it has a Hebrew voice) can make a
+photoreal lip-synced video from the photo and the script without any code. Bring that MP4 in:
+```
+npm run avatar -- --video ~/Downloads/liora.mp4                  # line starts from the pauses between lines
+npm run avatar -- --video liora.mp4 --srt liora.srt              # or from the service's subtitle export
+npm run avatar -- --video liora.mp4 --starts "0,6.4,12,..."      # or typed in: 12 numbers in seconds
+```
+It re-encodes to a 720 px H.264 file, makes the poster, writes `src/lib/avatar-intro.json`, and the chat, captions,
+transcript and site highlights work as for any other route. Afterwards click through the transcript in the chat to
+confirm each line starts at the right second.
+
 ## Inputs
 - Photo: front-facing, sharp, neutral expression, head and shoulders, plain lighting
   (default `public/images/lior-about.webp`). A square crop with the face in the upper half frames best.

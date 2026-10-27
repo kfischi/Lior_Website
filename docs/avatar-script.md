@@ -28,6 +28,13 @@ The line that says she is a virtual assistant and not a substitute for legal adv
 3. `npm run avatar -- --tts recorded --lines-dir <folder> --provider local` animates the photo and writes the
    captions' start times. The file count must equal the number of lines in `src/lib/avatar-intro.json`.
 
+## A finished video from a talking-avatar service
+
+Make the video there (photo plus the lines above, a Hebrew voice), download the MP4 (and the subtitles file if the
+service has one), then: `npm run avatar -- --video liora.mp4 [--srt liora.srt | --starts "0,6.4,..."]`.
+Without `--srt` or `--starts` the line starts are taken from the pauses between lines, so leave a clear pause
+(about a second) between them.
+
 ## Recording by hand (instead of `npm run avatar`)
 
 - MP4 (H.264 + AAC), square (1:1, for example 1080x1080), face in the upper two thirds with room above the head.
