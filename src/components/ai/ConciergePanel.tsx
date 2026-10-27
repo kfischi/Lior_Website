@@ -694,7 +694,7 @@ export function ConciergePanel({
         // While the video plays the chips scroll inside a short strip, so the message log and input keep room.
         className={cn(
           'flex flex-wrap items-center gap-2 border-t border-navy/10 px-4 pb-1 pt-3',
-          intro && 'max-h-24 overflow-y-auto',
+          intro && 'max-h-[3.4rem] overflow-y-auto',
         )}
       >
         {intakeStep ? (

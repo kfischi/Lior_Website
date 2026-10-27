@@ -130,13 +130,14 @@ export function IntroStage({
       // While closed the buttons must not be reachable by Tab or by a screen reader.
       inert={!visible}
       className={cn(
-        'flex shrink-0 flex-col overflow-hidden bg-black text-cream outline-none transition-[height,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
+        'flex shrink-0 flex-col overflow-hidden bg-black text-cream outline-none transition-[max-height,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
         visible
-          ? 'h-[36%] max-h-[24rem] min-h-[11rem] opacity-100 [@media(max-height:40rem)]:h-[32%] [@media(max-height:40rem)]:min-h-[8.5rem]'
-          : 'pointer-events-none h-0 opacity-0',
+          ? 'max-h-[30rem] opacity-100'
+          : 'pointer-events-none max-h-0 opacity-0',
       )}
     >
-      <div className="relative min-h-0 flex-1">
+      {/* The picture keeps the video's own shape, so the whole face is always in view, never cropped. */}
+      <div className="relative mx-auto aspect-[720/560] max-h-[46dvh] w-full">
         <video
           ref={videoRef}
           src={src}
@@ -145,7 +146,7 @@ export function IntroStage({
           playsInline
           muted={muted}
           aria-label="סרטון היכרות: העוזרת הווירטואלית של ליאור מציגה את האתר"
-          className="h-full w-full object-cover object-top"
+          className="h-full w-full object-contain"
           onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
           onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
           onPlay={() => setPlaying(true)}
@@ -159,8 +160,8 @@ export function IntroStage({
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/55 to-transparent"
         />
-        <div className="absolute inset-x-0 top-0 z-20 flex items-center gap-2 p-2.5">
-          <span className="whitespace-nowrap rounded-full bg-black/45 px-3 py-1 text-xs backdrop-blur">
+        <div className="absolute inset-x-0 top-0 z-20 flex items-center gap-1.5 p-2">
+          <span className="whitespace-nowrap rounded-full bg-black/45 px-2.5 py-1 text-[0.7rem] backdrop-blur">
             נוצר בבינה מלאכותית
           </span>
           <span className="flex-1" />
@@ -169,7 +170,7 @@ export function IntroStage({
             onClick={() => setTranscriptOpen((v) => !v)}
             aria-pressed={transcriptOpen}
             aria-label="תמלול מלא"
-            className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
+            className="rounded-full bg-black/45 p-1.5 backdrop-blur transition-colors hover:bg-black/65"
           >
             <FileText className="h-4 w-4" />
           </button>
@@ -178,7 +179,7 @@ export function IntroStage({
             onClick={() => setCaptionsOn((v) => !v)}
             aria-pressed={captionsOn}
             aria-label="כתוביות"
-            className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
+            className="rounded-full bg-black/45 p-1.5 backdrop-blur transition-colors hover:bg-black/65"
           >
             {captionsOn ? <Captions className="h-4 w-4" /> : <CaptionsOff className="h-4 w-4" />}
           </button>
@@ -187,7 +188,7 @@ export function IntroStage({
             onClick={() => setMuted((v) => !v)}
             aria-pressed={muted}
             aria-label="השתקה"
-            className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
+            className="rounded-full bg-black/45 p-1.5 backdrop-blur transition-colors hover:bg-black/65"
           >
             {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </button>
@@ -195,7 +196,7 @@ export function IntroStage({
             type="button"
             onClick={() => onDone('skipped')}
             aria-label="סגירת הסרטון והמשך לצ׳אט"
-            className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
+            className="rounded-full bg-black/45 p-1.5 backdrop-blur transition-colors hover:bg-black/65"
           >
             <X className="h-4 w-4" />
           </button>
