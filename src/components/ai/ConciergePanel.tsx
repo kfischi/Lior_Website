@@ -13,6 +13,7 @@ import { splitSuggestions } from '@/lib/ai/suggestions';
 import { splitSiteAction, type SiteTarget } from '@/lib/site-actions';
 import { INTAKE_STEPS, useConcierge, type IntakeStep } from './ConciergeProvider';
 import { INTRO_START_DELAY_MS, IntroStage } from './IntroStage';
+import { DocumentReader } from './DocumentReader';
 import { useSiteNavigator } from './siteNav';
 import { useSpeechInput, useSpeechOutput } from './useVoice';
 
@@ -409,6 +410,7 @@ export function ConciergePanel({
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const hasIntro = Boolean(brand.chat.intro.src);
+  const [docOpen, setDocOpen] = React.useState(false);
   const [intro, setIntro] = React.useState(() => introWanted(autoFocus));
   const [introDelay, setIntroDelay] = React.useState(INTRO_START_DELAY_MS);
 
@@ -706,6 +708,7 @@ export function ConciergePanel({
             <Chip tone="solid" onClick={startIntake}>
               קביעת ייעוץ
             </Chip>
+            <Chip onClick={() => setDocOpen(true)}>קריאת מכתב או מסמך</Chip>
             {firstOnly &&
               starters.map((p) => (
                 <Chip key={p} onClick={() => choose({ label: p, value: p })}>
@@ -790,6 +793,15 @@ export function ConciergePanel({
         <Shield className="h-3 w-3 shrink-0" aria-hidden="true" />
         {brand.chat.disclaimer} הפרטים נשלחים רק באישורך.
       </p>
+      {docOpen && (
+        <DocumentReader
+          onClose={() => setDocOpen(false)}
+          onSend={(text) => {
+            setDocOpen(false);
+            send(text);
+          }}
+        />
+      )}
     </section>
   );
 }

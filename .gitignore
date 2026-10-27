@@ -52,3 +52,6 @@ next-env.d.ts
 *.opus
 *.ogg
 *.m4a
+
+# offline text-reading engine, copied from node_modules by scripts/copy-ocr-assets.mjs
+/public/ocr/
