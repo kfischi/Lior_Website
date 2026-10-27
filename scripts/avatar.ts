@@ -14,6 +14,8 @@
  *   --tts <name>        silent (default) | recorded | elevenlabs | gemini
  *   --recording <file>  with --tts recorded: one recording (audio or video) of the whole script read aloud
  *                       with a short pause between the lines; it is cut into lines at the pauses
+ *   --lines-dir <dir>   with --tts recorded: a folder with one audio file per line (01.mp3, 02.mp3 ...),
+ *                       in order; the safest way, for example when a voice site makes each line separately
  *   --voice <id>        ElevenLabs voice id, or a Gemini voice name (default Kore)
  *   --provider <name>   preview (default) | local | fal | did
  *                       local: animates the photo on this machine, no account or key (npm run avatar:setup first)
@@ -24,7 +26,7 @@
  * The person in the photo must have agreed to this use of their face and voice.
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 interface Segment {
@@ -192,6 +194,21 @@ function splitRecording(recording: string, count: number): string[] {
   return files;
 }
 
+/** One audio file per line, in name order (01, 02, ... 12), with the silence trimmed from the edges. */
+function linesFromDir(dir: string, count: number): string[] {
+  const names = readdirSync(dir)
+    .filter((n) => /\.(mp3|wav|m4a|aac|ogg|opus|flac|mp4|mov|webm)$/i.test(n))
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  if (names.length !== count) {
+    throw new Error(`${dir} has ${names.length} audio files but the script has ${count} lines. Name them 01, 02, ... in order.`);
+  }
+  return names.map((name, i) => {
+    const file = join(WORK, `line-${String(i).padStart(2, '0')}.wav`);
+    ffmpeg(['-i', join(dir, name), '-vn', '-ac', '1', '-ar', '44100', '-af', 'silenceremove=start_periods=1:start_threshold=-45dB,areverse,silenceremove=start_periods=1:start_threshold=-45dB,areverse', file]);
+    return file;
+  });
+}
+
 // ---------- talking video providers ----------
 
 type Render = (photo: string, audio: string, out: string, startAt: number) => Promise<void>;
@@ -310,10 +327,11 @@ async function main() {
   ffmpeg(['-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=mono', '-t', gap.toFixed(2), gapFile]);
   const lines: { file: string; seconds: number }[] = [];
   if (tts === 'recorded') {
-    if (!args.recording) throw new Error('--recording <file> is required with --tts recorded.');
-    for (const file of splitRecording(resolve(ROOT, args.recording), intro.segments.length)) {
-      lines.push({ file, seconds: duration(file) });
-    }
+    if (!args.recording && !args['lines-dir']) throw new Error('--recording <file> or --lines-dir <folder> is required with --tts recorded.');
+    const files = args['lines-dir']
+      ? linesFromDir(resolve(ROOT, args['lines-dir']), intro.segments.length)
+      : splitRecording(resolve(ROOT, args.recording), intro.segments.length);
+    for (const file of files) lines.push({ file, seconds: duration(file) });
   } else {
     for (let i = 0; i < intro.segments.length; i++) {
       const file = join(WORK, `line-${String(i).padStart(2, '0')}.wav`);

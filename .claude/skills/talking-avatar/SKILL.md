@@ -23,6 +23,8 @@ npm run avatar -- --tts recorded --recording my-reading.m4a --provider local   #
 - `--tts recorded`: one recording (audio or a phone video) of the whole script read aloud, with a clear pause of
   about a second between lines. It is cut into lines at the longest pauses, and each line's start time is exact.
   Real recorded Hebrew sounds far better than any offline synthetic voice.
+- `--lines-dir <folder>`: instead of one recording, one audio file per line named `01.mp3`, `02.mp3`, ... in order.
+  The safest way, for example with a text-to-speech site that makes each line separately.
 - `--provider local` (`scripts/avatar-local/puppet.py`): MediaPipe face landmarks and 2D animation. The mouth opens
   with the loudness and brightness of the voice, plus blinks, small head movement, breathing and brow lifts. About
   3 frames a second on 4 CPU cores (a 90 s video takes around 7 minutes).

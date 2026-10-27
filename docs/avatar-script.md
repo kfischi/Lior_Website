@@ -21,6 +21,13 @@ site all read it. `npm run avatar` builds the video from it (see `.claude/skills
 
 The line that says she is a virtual assistant and not a substitute for legal advice must stay.
 
+## With a ready-made voice from a text-to-speech site
+
+1. Paste each numbered line separately into the site, with a Hebrew voice (name it "ליאורה"; calm, warm, not fast).
+2. Download each result and name the files `01.mp3`, `02.mp3` ... in order (12 files), in one folder.
+3. `npm run avatar -- --tts recorded --lines-dir <folder> --provider local` animates the photo and writes the
+   captions' start times. The file count must equal the number of lines in `src/lib/avatar-intro.json`.
+
 ## Recording by hand (instead of `npm run avatar`)
 
 - MP4 (H.264 + AAC), square (1:1, for example 1080x1080), face in the upper two thirds with room above the head.
