@@ -68,6 +68,14 @@ export interface PressArticle {
   excerpt?: string;
 }
 
+/** One line of the intro video's script; `start` is in seconds from the start of the video. */
+export interface IntroSegment {
+  start: number;
+  text: string;
+  /** Lights up the matching item of the tour while this line plays. */
+  focus?: 'chat' | 'questions' | 'articles' | 'contact';
+}
+
 /** A client's letter shown as a scanned image among the reviews (no rating). */
 export interface TestimonialLetter {
   name: string;
@@ -203,6 +211,48 @@ export const brand = {
       'איך קובעים פגישה?',
     ],
     disclaimer: 'המידע כללי ואינו מהווה ייעוץ משפטי.',
+    /**
+     * Welcome video in the chat: the virtual assistant introduces herself and the site. It starts
+     * two seconds after the chat opens, once per browser tab. Leave `src` empty to switch it off.
+     * `segments` are the captions and the transcript; their `start` times must match the recording.
+     * The script to record is in docs/avatar-script.md.
+     */
+    intro: {
+      src: '',
+      poster: '/images/lior-about.webp',
+      segments: [
+        { start: 0, text: 'שלום, ברוכים הבאים. אני ליאורה, העוזרת הווירטואלית של עורכת הדין ליאור קלואי ארז.' },
+        {
+          start: 7,
+          text: 'אני כאן בשבילכם עשרים וארבע שעות ביממה, שבעה ימים בשבוע. גם כשליאור בפגישה או בבית משפט, וגם בלילה. מי שפונה אלינו אף פעם לא נשאר לבד.',
+        },
+        {
+          start: 19,
+          text: 'כך זה עובד: כל השיחה איתי מתנהלת כאן, בצ׳אט. אפשר לכתוב, ואפשר גם ללחוץ על המיקרופון ולדבר.',
+          focus: 'chat',
+        },
+        {
+          start: 28,
+          text: 'מתחת לצ׳אט תראו שאלות מוכנות, ובמהלך השיחה אשאל כמה שאלות קצרות: מה קרה, עד כמה זה דחוף, ואיך חוזרים אליכם. זה עוזר לליאור להבין את העניין מראש, ולטפל בפנייה שלכם מהר יותר, לפי הדחיפות.',
+          focus: 'questions',
+        },
+        {
+          start: 46,
+          text: 'באתר יש גם מדריכים ומאמרים, ותשובות לשאלות נפוצות על התעמרות בעבודה, אפליה, הטרדה מינית וחקירה במשטרה. אפשר לקרוא אותם בכל שעה, ואני אפנה אתכם לחומר המתאים.',
+          focus: 'articles',
+        },
+        {
+          start: 61,
+          text: 'ואם אתם מעדיפים לדבר ישירות עם ליאור, אפשר להתקשר או לשלוח הודעה בוואטסאפ, או להשאיר פרטים כאן בצ׳אט והיא תחזור אליכם.',
+          focus: 'contact',
+        },
+        {
+          start: 73,
+          text: 'חשוב לדעת: אני עוזרת וירטואלית, ואיני מחליפה ייעוץ משפטי. אבל אעשה כל מה שאפשר כדי שתגיעו לליאור בצורה הנוחה והמהירה ביותר.',
+        },
+        { start: 85, text: 'אז איך אפשר לעזור לכם היום?' },
+      ] as IntroSegment[],
+    },
   },
 
   // --- Trust strip (E-E-A-T) ---

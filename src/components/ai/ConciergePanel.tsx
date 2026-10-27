@@ -5,13 +5,26 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
-import { MessageCircle, Mic, Phone, RotateCcw, Send, Shield, Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X } from 'lucide-react';
+import { MessageCircle, Mic, Phone, Play, RotateCcw, Send, Shield, Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X } from 'lucide-react';
 import type { UIMessage } from 'ai';
 import { brand, telHref, whatsappHref } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 import { splitSuggestions } from '@/lib/ai/suggestions';
 import { INTAKE_STEPS, useConcierge, type IntakeStep } from './ConciergeProvider';
+import { INTRO_START_DELAY_MS, IntroStage } from './IntroStage';
 import { useSpeechInput, useSpeechOutput } from './useVoice';
+
+const INTRO_SEEN_KEY = 'concierge-intro-seen-v1';
+
+/** The welcome video plays once per browser tab, and only in the floating window. */
+function introWanted(enabled: boolean): boolean {
+  if (!enabled || !brand.chat.intro.src || typeof window === 'undefined') return false;
+  try {
+    return !sessionStorage.getItem(INTRO_SEEN_KEY);
+  } catch {
+    return true;
+  }
+}
 
 const PLACEHOLDER: Record<IntakeStep, string> = {
   name: 'השם שלך',
@@ -365,6 +378,19 @@ export function ConciergePanel({
   const starters = area ? area.page.faq.map((f) => f.question) : brand.chat.suggestedPrompts;
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const hasIntro = Boolean(brand.chat.intro.src);
+  const [intro, setIntro] = React.useState(() => introWanted(autoFocus));
+  const [introDelay, setIntroDelay] = React.useState(INTRO_START_DELAY_MS);
+
+  function closeIntro(reason: 'ended' | 'skipped' | 'chat') {
+    setIntro(false);
+    try {
+      sessionStorage.setItem(INTRO_SEEN_KEY, '1');
+    } catch {
+      // Private mode: the video may play again next time.
+    }
+    if (reason !== 'skipped') window.setTimeout(() => inputRef.current?.focus(), 50);
+  }
 
   // Voice: dictate a message, and optionally hear the answers read aloud.
   const [readAloud, setReadAloud] = React.useState(false);
@@ -428,8 +454,9 @@ export function ConciergePanel({
   return (
     <section
       aria-label="שיחה עם העוזרת של ליאור"
-      className={cn('flex flex-col overflow-hidden bg-cream', className)}
+      className={cn('relative flex flex-col overflow-hidden bg-cream', className)}
     >
+      {intro && <IntroStage onDone={closeIntro} delayMs={introDelay} />}
       <header className="bg-navy text-cream">
         <div className="flex items-center gap-3 px-4 py-3.5">
           <Avatar className="h-11 w-11" speaking={speaking} />
@@ -443,6 +470,20 @@ export function ConciergePanel({
               {speaking ? 'העוזרת מקריאה את התשובה' : ''}
             </span>
           </div>
+          {autoFocus && hasIntro && !intro && (
+            <button
+              type="button"
+              onClick={() => {
+                setIntroDelay(0);
+                setIntro(true);
+              }}
+              aria-label="צפייה בסרטון ההיכרות"
+              title="סרטון היכרות"
+              className="rounded-full p-2 text-cream/80 transition-colors hover:bg-cream/10 hover:text-cream"
+            >
+              <Play className="h-5 w-5" />
+            </button>
+          )}
           {messages.length > 1 && (
             <button
               type="button"
