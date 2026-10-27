@@ -726,7 +726,7 @@ export const brand = {
   // --- Legal pages ---
   legal: {
     /** Date the privacy/terms/accessibility statements were last updated. */
-    lastUpdated: '2026-10-26',
+    lastUpdated: '2026-10-27',
     /** Accessibility coordinator (Israeli standard 5568 / accessibility regulations). */
     accessibilityCoordinator: 'עו״ד ליאור-קלואי ארז',
     accessibilityContact: 'Lioraere@gmail.com',
