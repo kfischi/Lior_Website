@@ -129,7 +129,7 @@ async function speak(tts: string, text: string, voice: string | undefined, file:
   }
   if (tts === 'elevenlabs') {
     if (!voice) throw new Error('--voice <ElevenLabs voice id> is required with --tts elevenlabs.');
-    const res = await http(`https://api.elevenlabs.io/v1/text-to-speech/${voice}?output_format=mp3_44100_128`, {
+    const res = await http(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voice)}?output_format=mp3_44100_128`, {
       method: 'POST',
       headers: { 'xi-api-key': need('ELEVENLABS_API_KEY'), 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -147,10 +147,10 @@ async function speak(tts: string, text: string, voice: string | undefined, file:
   if (tts === 'gemini') {
     const model = process.env.GEMINI_TTS_MODEL || 'gemini-2.5-flash-preview-tts';
     const res = await http(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${need('GOOGLE_GENERATIVE_AI_API_KEY')}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': need('GOOGLE_GENERATIVE_AI_API_KEY') },
         body: JSON.stringify({
           contents: [{ parts: [{ text: `Say warmly and calmly, in Hebrew: ${text}` }] }],
           generationConfig: {
@@ -249,6 +249,11 @@ const falRender: Render = async (photo, audio, out) => {
   const statusUrl = String(submit.status_url ?? '');
   const responseUrl = String(submit.response_url ?? '');
   if (!statusUrl || !responseUrl) throw new Error(`fal: unexpected submit response ${JSON.stringify(submit).slice(0, 300)}`);
+  for (const u of [statusUrl, responseUrl]) {
+    if (new URL(u).protocol !== 'https:' || !new URL(u).hostname.endsWith('fal.run')) {
+      throw new Error('fal: refusing to send the key to an unexpected address.');
+    }
+  }
   await poll('fal render', async () => {
     const s = record(await (await http(statusUrl, { headers })).json());
     if (s.status === 'COMPLETED') return true;
@@ -462,7 +467,8 @@ async function main() {
   const photoArg = args.photo || 'public/images/lior-about.webp';
   const tts = args.tts || 'silent';
   const providerName = args.provider || 'preview';
-  const outName = args.out || 'intro';
+  const outName = (args.out || 'intro').replace(/[^\w-]/g, '');
+  if (!outName) throw new Error('--out must be a plain name such as "intro".');
   const gap = Number(args.gap || 0.45);
   const maxChunk = Number(args['max-chunk'] || 28);
   const render = PROVIDERS[providerName];

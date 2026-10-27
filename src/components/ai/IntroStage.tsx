@@ -19,13 +19,17 @@ export const INTRO_START_DELAY_MS = 2000;
 export function IntroStage({
   onDone,
   delayMs = INTRO_START_DELAY_MS,
+  focusOnShow = false,
 }: {
   onDone: (reason: 'ended' | 'skipped') => void;
   delayMs?: number;
+  /** Move keyboard focus into the video when it opens (a replay the visitor asked for). */
+  focusOnShow?: boolean;
 }) {
   const { src, poster, segments } = brand.chat.intro;
   const reduced = useReducedMotion();
   const videoRef = React.useRef<HTMLVideoElement>(null);
+  const regionRef = React.useRef<HTMLDivElement>(null);
   const [visible, setVisible] = React.useState(false);
   const [time, setTime] = React.useState(0);
   const [duration, setDuration] = React.useState(0);
@@ -43,6 +47,7 @@ export function IntroStage({
   React.useEffect(() => {
     const timer = window.setTimeout(() => {
       setVisible(true);
+      if (focusOnShow) regionRef.current?.focus();
       const video = videoRef.current;
       if (!video) return;
       if (reduced) {
@@ -52,7 +57,7 @@ export function IntroStage({
       video.play().catch(() => setNeedsTap(true));
     }, delayMs);
     return () => window.clearTimeout(timer);
-  }, [reduced, delayMs]);
+  }, [reduced, delayMs, focusOnShow]);
 
   // Light up what she is talking about.
   React.useEffect(() => {
@@ -76,12 +81,18 @@ export function IntroStage({
 
   return (
     <div
+      ref={regionRef}
       role="region"
+      tabIndex={-1}
+      data-intro-stage
       aria-label="סרטון היכרות עם העוזרת של ליאור"
-      aria-hidden={!visible}
+      // While closed the buttons must not be reachable by Tab or by a screen reader.
+      inert={!visible}
       className={cn(
-        'flex shrink-0 flex-col overflow-hidden bg-black text-cream transition-[height,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
-        visible ? 'h-[48%] max-h-[24rem] min-h-[15rem] opacity-100' : 'pointer-events-none h-0 opacity-0',
+        'flex shrink-0 flex-col overflow-hidden bg-black text-cream outline-none transition-[height,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
+        visible
+          ? 'h-[48%] max-h-[24rem] min-h-[15rem] opacity-100 [@media(max-height:40rem)]:min-h-[9rem]'
+          : 'pointer-events-none h-0 opacity-0',
       )}
     >
       <div className="relative min-h-0 flex-1">
@@ -99,12 +110,13 @@ export function IntroStage({
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
           onEnded={() => onDone('ended')}
+          onError={() => onDone('skipped')}
         />
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/55 to-transparent"
         />
-        <div className="absolute inset-x-0 top-0 flex items-center gap-2 p-2.5">
+        <div className="absolute inset-x-0 top-0 z-20 flex items-center gap-2 p-2.5">
           <span className="whitespace-nowrap rounded-full bg-black/45 px-3 py-1 text-xs backdrop-blur">
             נוצר בבינה מלאכותית
           </span>
@@ -122,7 +134,7 @@ export function IntroStage({
             type="button"
             onClick={() => setCaptionsOn((v) => !v)}
             aria-pressed={captionsOn}
-            aria-label={captionsOn ? 'כיבוי כתוביות' : 'הפעלת כתוביות'}
+            aria-label="כתוביות"
             className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
           >
             {captionsOn ? <Captions className="h-4 w-4" /> : <CaptionsOff className="h-4 w-4" />}
@@ -131,7 +143,7 @@ export function IntroStage({
             type="button"
             onClick={() => setMuted((v) => !v)}
             aria-pressed={muted}
-            aria-label={muted ? 'הפעלת קול' : 'השתקה'}
+            aria-label="השתקה"
             className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
           >
             {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -146,7 +158,7 @@ export function IntroStage({
           </button>
         </div>
 
-        {(needsTap || (!playing && time === 0)) && visible && (
+        {visible && (needsTap || !playing) && (
           <button
             type="button"
             onClick={play}

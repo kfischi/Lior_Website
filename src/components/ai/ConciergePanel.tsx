@@ -45,22 +45,32 @@ export function Avatar({ className, speaking }: { className?: string; speaking?:
       height={96}
       className={cn(
         'shrink-0 rounded-full object-cover ring-2 ring-accent-light/70',
-        speaking && 'motion-safe:animate-talk motion-safe:animate-voice-ring',
+        speaking && 'motion-safe:animate-speaking',
         className,
       )}
     />
   );
 }
 
+const WAVE_DELAYS = [
+  '[animation-delay:0s]',
+  '[animation-delay:0.2s]',
+  '[animation-delay:0.1s]',
+  '[animation-delay:0.3s]',
+  '[animation-delay:0.15s]',
+];
+
 /** Sound bars beside the name while the answer is read aloud (decoration; the status text says it). */
 function VoiceWave() {
   return (
     <span aria-hidden="true" className="flex h-4 items-center gap-0.5">
-      {[0, 0.2, 0.1, 0.3, 0.15].map((delay) => (
+      {WAVE_DELAYS.map((delay) => (
         <span
           key={delay}
-          className="h-full w-0.5 origin-center rounded-full bg-accent-light motion-safe:animate-wave"
-          style={{ animationDelay: `${delay}s` }}
+          className={cn(
+            'h-full w-0.5 origin-center rounded-full bg-accent-light motion-safe:animate-wave',
+            delay,
+          )}
         />
       ))}
     </span>
@@ -382,14 +392,26 @@ export function ConciergePanel({
   const [intro, setIntro] = React.useState(() => introWanted(autoFocus));
   const [introDelay, setIntroDelay] = React.useState(INTRO_START_DELAY_MS);
 
-  function closeIntro(reason: 'ended' | 'skipped') {
-    setIntro(false);
+  const replayRef = React.useRef<HTMLButtonElement>(null);
+
+  // Counts as seen as soon as it opens, so closing the chat mid-video does not replay it with sound.
+  React.useEffect(() => {
+    if (!intro) return;
     try {
       sessionStorage.setItem(INTRO_SEEN_KEY, '1');
     } catch {
       // Private mode: the video may play again next time.
     }
-    if (reason !== 'skipped') window.setTimeout(() => inputRef.current?.focus(), 50);
+  }, [intro]);
+
+  function closeIntro(reason: 'ended' | 'skipped') {
+    // Focus is lost when the video unmounts; put it back only if it was in the video (or nowhere).
+    const active = document.activeElement;
+    const focusWasInIntro =
+      !active || active === document.body || Boolean(active.closest('[data-intro-stage]'));
+    setIntro(false);
+    if (!focusWasInIntro) return;
+    window.requestAnimationFrame(() => (reason === 'skipped' ? replayRef.current : inputRef.current)?.focus());
   }
 
   // Voice: dictate a message, and optionally hear the answers read aloud.
@@ -471,6 +493,7 @@ export function ConciergePanel({
           </div>
           {autoFocus && hasIntro && !intro && (
             <button
+              ref={replayRef}
               type="button"
               onClick={() => {
                 setIntroDelay(0);
@@ -567,7 +590,7 @@ export function ConciergePanel({
           </div>
         )}
       </header>
-      {intro && <IntroStage onDone={closeIntro} delayMs={introDelay} />}
+      {intro && <IntroStage onDone={closeIntro} delayMs={introDelay} focusOnShow={introDelay === 0} />}
 
       <div
         ref={scrollRef}

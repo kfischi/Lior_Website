@@ -47,3 +47,8 @@ next-env.d.ts
 
 # agent worktrees
 /.claude/worktrees/
+
+# Voice recordings (personal data): keep them out of git
+*.opus
+*.ogg
+*.m4a

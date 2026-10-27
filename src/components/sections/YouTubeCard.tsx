@@ -6,7 +6,7 @@ import { Play } from 'lucide-react';
 interface YouTubeCardProps {
   videoId: string;
   label: string;
-  /** Optional local poster; otherwise YouTube's own thumbnail is used. */
+  /** Optional local poster. Without one a plain panel is shown: nothing is fetched from YouTube before the click. */
   poster?: string;
   landscape?: boolean;
 }
@@ -19,9 +19,15 @@ const ID_PATTERN = /^[\w-]{11}$/;
  */
 export function YouTubeCard({ videoId, label, poster, landscape }: YouTubeCardProps) {
   const [active, setActive] = React.useState(false);
+  const frameRef = React.useRef<HTMLIFrameElement>(null);
+
+  // The button that was focused is replaced by the player: hand the focus over to it.
+  React.useEffect(() => {
+    if (active) frameRef.current?.focus();
+  }, [active]);
+
   if (!ID_PATTERN.test(videoId)) return null;
 
-  const thumb = poster ?? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
   const shape = landscape ? 'aspect-video' : 'aspect-[9/16]';
 
   return (
@@ -30,6 +36,8 @@ export function YouTubeCard({ videoId, label, poster, landscape }: YouTubeCardPr
     >
       {active ? (
         <iframe
+          ref={frameRef}
+          tabIndex={-1}
           title={label}
           src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&playsinline=1&cc_load_policy=1&hl=he&cc_lang_pref=he`}
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
@@ -39,15 +47,18 @@ export function YouTubeCard({ videoId, label, poster, landscape }: YouTubeCardPr
         />
       ) : (
         <>
-          {/* Plain <img>: a remote YouTube thumbnail, outside the Cloudinary image loader. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={thumb}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+          {poster ? (
+            // eslint-disable-next-line @next/next/no-img-element -- a small local poster, same as the other video cards
+            <img
+              src={poster}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <div aria-hidden="true" className="absolute inset-0 bg-linear-to-br from-navy to-black" />
+          )}
           <button
             type="button"
             onClick={() => setActive(true)}
@@ -56,6 +67,9 @@ export function YouTubeCard({ videoId, label, poster, landscape }: YouTubeCardPr
           >
             <span className="flex h-20 w-20 items-center justify-center rounded-full bg-cream/90 text-navy shadow-2xl backdrop-blur transition-transform duration-300 group-hover:scale-110">
               <Play className="h-9 w-9 translate-x-[-2px]" fill="currentColor" aria-hidden="true" />
+            </span>
+            <span className="absolute inset-x-0 bottom-0 p-4 text-center text-xs text-cream/85">
+              לחיצה על ההפעלה תטען את הסרטון מ־YouTube
             </span>
           </button>
         </>

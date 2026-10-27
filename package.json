@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "ingest": "node --env-file=.env.local --import tsx scripts/ingest.ts",
+    "ingest": "node --env-file-if-exists=.env.local --import tsx scripts/ingest.ts",
     "captions": "node --env-file=.env.local --import tsx scripts/captions.ts",
     "avatar": "node --env-file=.env.local --import tsx scripts/avatar.ts",
     "avatar:setup": "bash scripts/avatar-local/setup.sh",

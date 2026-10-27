@@ -165,8 +165,7 @@
   --animate-ring: ring-pulse 2s ease-out infinite;
   --animate-ring-green: ring-pulse-green 2.2s ease-out infinite;
   /* The assistant's photo while she is speaking: a soft breath and a spreading ring. */
-  --animate-talk: talk 1.3s ease-in-out infinite;
-  --animate-voice-ring: voice-ring 1.3s ease-out infinite;
+  --animate-speaking: talk 1.3s ease-in-out infinite, voice-ring 1.3s ease-out infinite;
   --animate-wave: wave 0.9s ease-in-out infinite;
   @keyframes talk {
     0%,
