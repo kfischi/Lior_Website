@@ -1,4 +1,5 @@
 import { brand } from '@/lib/brand';
+import { VideoCard } from './VideoCard';
 
 /** Client video reviews: native controls, nothing loads until a visitor presses play. */
 export function VideoReviews() {
@@ -16,17 +17,7 @@ export function VideoReviews() {
         <ul className="mx-auto flex max-w-5xl snap-x snap-mandatory gap-5 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:overflow-visible">
           {items.map((v, i) => (
             <li key={v.src} className="w-[72%] shrink-0 snap-center md:w-auto">
-              <video
-                controls
-                playsInline
-                preload="none"
-                poster={v.poster}
-                aria-label={`${v.label} ${i + 1}`}
-                className="aspect-[9/16] w-full rounded-2xl bg-black object-cover shadow-2xl"
-              >
-                <source src={v.src} type="video/mp4" />
-                {v.captions && <track kind="captions" srcLang="he" label="עברית" src={v.captions} default />}
-              </video>
+              <VideoCard src={v.src} poster={v.poster} label={`${v.label} ${i + 1}`} captions={v.captions} />
             </li>
           ))}
         </ul>

@@ -40,8 +40,8 @@ export function Footer() {
 
   return (
     <footer className="border-t border-cream/10 bg-navy text-cream/85">
-      <div className="shell grid gap-10 py-16 md:grid-cols-3">
-        <div>
+      <div className="shell grid gap-12 py-16 md:grid-cols-12 md:gap-8 md:py-20">
+        <div className="md:col-span-5">
           <h2 className="sr-only">{brand.firmName}</h2>
           <Image
             src={brand.logo.lockup}
@@ -72,8 +72,8 @@ export function Footer() {
           )}
         </div>
 
-        <div>
-          <h3 className="font-semibold text-cream">יצירת קשר</h3>
+        <div className="md:col-span-4">
+          <h3 className="font-heading text-lg font-bold text-cream">יצירת קשר</h3>
           <ul className="mt-4 space-y-3 text-sm">
             <li className="flex items-start gap-2">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent-light" aria-hidden="true" />
@@ -108,8 +108,8 @@ export function Footer() {
           </ul>
         </div>
 
-        <nav aria-label="קישורים משפטיים">
-          <h3 className="font-semibold text-cream">מידע</h3>
+        <nav aria-label="קישורים משפטיים" className="md:col-span-3">
+          <h3 className="font-heading text-lg font-bold text-cream">מידע</h3>
           <ul className="mt-4 space-y-2 text-sm">
             {LEGAL_LINKS.map((l) => (
               <li key={l.href}>
@@ -123,7 +123,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-cream/10">
-        <div className="shell flex flex-col items-center justify-between gap-2 py-5 text-xs text-cream/55 md:flex-row">
+        <div className="shell flex flex-col items-center justify-between gap-2 pb-28 pt-5 text-xs text-cream/70 md:flex-row md:pb-5">
           <p>
             © {year} {brand.firmName}. כל הזכויות שמורות.
             {brand.legal.licenseNumber && <> מס׳ רישיון עו״ד: {brand.legal.licenseNumber}.</>}
