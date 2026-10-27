@@ -29,19 +29,12 @@ function Floating() {
       {!panelOpen && (
         <div className={cn('fixed end-3 z-[60] flex flex-col items-center gap-1.5 sm:end-5', bottom)}>
           {!opened && (
-            <>
-              <p className="rounded-2xl bg-white px-3 py-1.5 text-center text-sm font-semibold leading-snug text-navy shadow-xl ring-1 ring-navy/10">
-                יש שאלה?
-                <br />
-                אני עונה מיד
-              </p>
-              <span
-                aria-hidden="true"
-                className="flex h-11 w-11 animate-arrow items-center justify-center rounded-full bg-accent text-white shadow-lg ring-2 ring-white"
-              >
-                <ArrowDown className="h-7 w-7" strokeWidth={3} />
-              </span>
-            </>
+            <span
+              aria-hidden="true"
+              className="flex h-11 w-11 animate-arrow items-center justify-center rounded-full bg-accent text-white shadow-lg ring-2 ring-white"
+            >
+              <ArrowDown className="h-7 w-7" strokeWidth={3} />
+            </span>
           )}
           <button
             type="button"
