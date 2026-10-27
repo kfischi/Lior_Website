@@ -86,7 +86,7 @@ export function TeachForm({ prefill }: { prefill?: string }) {
       </div>
       <Status state={state} />
       <Button type="submit" variant="accent" disabled={pending}>
-        {pending ? 'שומר...' : 'לימוד העוזר'}
+        {pending ? 'שומר...' : 'לימוד העוזרת'}
       </Button>
     </form>
   );

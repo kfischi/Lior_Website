@@ -13,7 +13,7 @@ import { LoginForm, TeachForm } from '@/components/admin/AdminForms';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
-  title: 'ניהול העוזר הדיגיטלי',
+  title: 'ניהול העוזרת של ליאור',
   robots: { index: false, follow: false },
 };
 
@@ -30,7 +30,7 @@ export default async function AdminPage({
     <main id="main" className="min-h-screen bg-cream py-12">
       <div className="shell max-w-3xl">
         <p className="eyebrow mb-2">{brand.firmName}</p>
-        <h1 className="text-3xl text-navy md:text-4xl">ניהול העוזר הדיגיטלי</h1>
+        <h1 className="text-3xl text-navy md:text-4xl">ניהול העוזרת של ליאור</h1>
         <Body q={q} />
       </div>
     </main>
@@ -60,7 +60,7 @@ async function Body({ q }: { q?: string }) {
     <div className="mt-6 space-y-12">
       <div className="flex items-center justify-between gap-4">
         <p className="text-ink/75">
-          כאן מלמדים את העוזר. כל מה שנשמר נכנס לשיחות הבאות, ועדיף על הידע הקיים.
+          כאן מלמדים את העוזרת. כל מה שנשמר נכנס לשיחות הבאות, ועדיף על הידע הקיים.
         </p>
         <form action={logoutAction}>
           <Button type="submit" variant="outline" size="sm">
@@ -78,7 +78,7 @@ async function Body({ q }: { q?: string }) {
 
       <section aria-labelledby="unknown-title">
         <h2 id="unknown-title" className="mb-1 text-2xl text-navy">
-          שאלות שהעוזר לא ידע לענות עליהן
+          שאלות שהעוזרת לא ידעה לענות עליהן
         </h2>
         <p className="mb-4 text-sm text-ink/65">
           שאלות כלליות שנשמרו אוטומטית, בלי פרטים מזהים. לחצי &quot;ללמד&quot; כדי לענות עליהן.
@@ -115,7 +115,7 @@ async function Body({ q }: { q?: string }) {
 
       <section aria-labelledby="notes-title">
         <h2 id="notes-title" className="mb-4 text-2xl text-navy">
-          מה העוזר כבר למד ({notes.length})
+          מה העוזרת כבר למדה ({notes.length})
         </h2>
         {notes.length === 0 ? (
           <p className="text-ink/60">עוד לא לימדת אותו כלום.</p>

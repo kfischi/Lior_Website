@@ -24,12 +24,12 @@ export function Faq() {
             שאלות נפוצות
           </h2>
           <p className="mt-6 max-w-sm text-lg leading-relaxed text-ink/75">
-            לא מצאתם את התשובה? אפשר לשאול את העוזר הדיגיטלי, והוא יענה מיד.
+            לא מצאתם את התשובה? אפשר לשאול את העוזרת של ליאור, והיא תענה מיד.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
             <OpenChatButton intake={false} variant="accent" size="lg">
               <MessagesSquare className="h-5 w-5" />
-              לשאול את העוזר
+              לשאול את ליאור
             </OpenChatButton>
             <Link href="/faq" className="font-medium text-accent underline underline-offset-4">
               לכל השאלות והתשובות

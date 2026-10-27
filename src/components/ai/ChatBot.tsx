@@ -42,7 +42,7 @@ function Floating() {
               setOpened(true);
               openPanel();
             }}
-            aria-label="שיחה עם המשרד, פתיחת העוזר הדיגיטלי"
+            aria-label="שיחה עם המשרד, פתיחת העוזרת של ליאור"
             className="flex h-[4.5rem] w-[4.5rem] animate-ring items-center justify-center rounded-full bg-linear-to-l from-accent to-navy text-cream shadow-2xl ring-2 ring-white transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light"
           >
             <span className="relative flex" aria-hidden="true">

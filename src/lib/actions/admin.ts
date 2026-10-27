@@ -59,7 +59,7 @@ export async function teachAction(_prev: FormState, formData: FormData): Promise
     return { ok: false, message: 'השמירה נכשלה. נסו שוב.' };
   }
   revalidatePath('/admin');
-  return { ok: true, message: 'נשמר. העוזר ישתמש בזה כבר בשיחה הבאה.' };
+  return { ok: true, message: 'נשמר. העוזרת תשתמש בזה כבר בשיחה הבאה.' };
 }
 
 const IdSchema = z.string().uuid();

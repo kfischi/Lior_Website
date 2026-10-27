@@ -139,7 +139,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
           <div className="shell max-w-3xl text-center">
             <h2 id="cta-title" className="text-3xl text-cream">רוצים לדבר על המקרה שלכם?</h2>
             <p className="mx-auto mt-4 max-w-xl text-cream/80">
-              אפשר לשוחח עם העוזר הדיגיטלי ולהשאיר כמה פרטים קצרים, או לכתוב בוואטסאפ. בלי צורך לפרט את האירוע בפנייה הראשונה.
+              אפשר לשוחח עם העוזרת של ליאור ולהשאיר כמה פרטים קצרים, או לכתוב בוואטסאפ. בלי צורך לפרט את האירוע בפנייה הראשונה.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <OpenChatButton size="lg" variant="accentOnDark">
