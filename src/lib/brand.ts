@@ -158,11 +158,11 @@ export const brand = {
   // --- AI chatbot ---
   chat: {
     /** Shown in the chat header and used by the model as its name. */
-    assistantName: 'העוזר הדיגיטלי של ליאור',
+    assistantName: 'העוזרת של ליאור',
     /** Round avatar in the chat (a local /public path or a Cloudinary ID). */
     avatar: '/images/lior-avatar.webp',
     greeting:
-      'שלום, אני העוזר הדיגיטלי של המשרד של ליאור. אפשר לספר לי במה מדובר, ואכוון אתכם ' +
+      'שלום, אני העוזרת של ליאור. אפשר לספר לי במה מדובר, ואכוון אתכם ' +
       'לתחום הנכון, אענה על שאלות כלליות ואעזור לקבוע פגישת ייעוץ.',
     /** Quick-start suggestions shown as chips. */
     suggestedPrompts: [
@@ -190,8 +190,18 @@ export const brand = {
     credentials: [
       'עורכת דין, חברה בלשכת עורכי הדין בישראל',
       'התמחות באפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי',
-      'השתלמות בנושא "החקירה הפלילית בראי הסנגור", קבוצת פרקטיקל (Practical Law), יוני 2024',
     ],
+    /** Certificates shown under the credentials (images in /public/images). */
+    certificates: [
+      {
+        title: 'השתלמות: החקירה הפלילית בראי הסנגור',
+        issuer: 'קבוצת פרקטיקל (Practical Law)',
+        date: 'יוני 2024',
+        image: '/images/cert-practical-law-2024.webp',
+        width: 900,
+        height: 1308,
+      },
+    ] as { title: string; issuer: string; date: string; image: string; width: number; height: number }[],
     /** Cloudinary public ID for the attorney portrait. Local /public path or Cloudinary ID. Leave empty for a monogram panel. */
     portraitId: '/images/lior-portrait.webp',
   },
@@ -220,6 +230,7 @@ export const brand = {
   },
 
   // --- Why us ---
+  whyUsIntro: 'ארבעה עקרונות שמלווים כל פנייה, מהשיחה הראשונה ועד סיום הטיפול.',
   whyUs: [
     {
       title: 'יחס אישי',
@@ -484,7 +495,7 @@ export const brand = {
     {
       question: 'האם הצ׳אט באתר נותן ייעוץ משפטי?',
       answer:
-        'לא. הצ׳אט הוא עוזר דיגיטלי מבוסס בינה מלאכותית שנותן מידע כללי, עונה על שאלות נפוצות ומסדר פנייה למשרד. ' +
+        'לא. הצ׳אט הוא עוזרת וירטואלית מבוססת בינה מלאכותית שנותנת מידע כללי, עונה על שאלות נפוצות ומסדרת פנייה למשרד. ' +
         'ייעוץ משפטי אישי ניתן רק בפגישה עם עורכת הדין.',
     },
     {

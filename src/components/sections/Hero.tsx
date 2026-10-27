@@ -70,7 +70,7 @@ export function Hero() {
         className="absolute inset-x-0 top-0 h-28 bg-linear-to-b from-navy/45 to-transparent"
       />
 
-      <div className="shell relative z-10 pb-64 pt-32 md:pb-28">
+      <div className="shell relative z-10 pb-48 pt-32 md:pb-28">
         <div className="max-w-4xl">
           <motion.p
             {...fade(0.1)}

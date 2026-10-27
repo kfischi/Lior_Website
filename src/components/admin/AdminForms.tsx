@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useActionState } from 'react';
-import { loginAction, teachAction, type FormState } from '@/lib/actions/admin';
+import { loginAction, teachAction, testChatAction, type FormState } from '@/lib/actions/admin';
 import { Button } from '@/components/ui/button';
 
 const INITIAL: FormState = { ok: false, message: '' };
@@ -86,8 +86,20 @@ export function TeachForm({ prefill }: { prefill?: string }) {
       </div>
       <Status state={state} />
       <Button type="submit" variant="accent" disabled={pending}>
-        {pending ? 'שומר...' : 'לימוד העוזר'}
+        {pending ? 'שומר...' : 'לימוד העוזרת'}
       </Button>
+    </form>
+  );
+}
+
+export function TestChatForm() {
+  const [state, action, pending] = useActionState(testChatAction, INITIAL);
+  return (
+    <form action={action} className="space-y-3">
+      <Button type="submit" variant="outline" disabled={pending}>
+        {pending ? 'בודקת...' : 'בדיקת חיבור ומהירות'}
+      </Button>
+      <Status state={state} />
     </form>
   );
 }

@@ -6,7 +6,7 @@ import {
   stepCountIs,
   type UIMessage,
 } from 'ai';
-import { getChatModel } from '@/lib/ai/model';
+import { chatProviderOptions, getChatModel } from '@/lib/ai/model';
 import { buildSystemPrompt } from '@/lib/ai/system';
 import { retrieveContext } from '@/lib/ai/rag';
 import { chatTools } from '@/lib/ai/tools';
@@ -113,6 +113,8 @@ export async function POST(req: Request) {
     tools: chatTools,
     stopWhen: stepCountIs(4),
     temperature: 0.5,
+    maxOutputTokens: 700,
+    providerOptions: chatProviderOptions(),
     onFinish: ({ text }) => {
       void persistExchange(sessionId, lastUserText, splitSuggestions(text).text);
     },
@@ -121,5 +123,30 @@ export async function POST(req: Request) {
     },
   });
 
-  return result.toUIMessageStreamResponse();
+  // If the model fails before saying anything (bad key, quota, outage), answer from
+  // the knowledge base instead of showing the visitor an error.
+  const stream = createUIMessageStream({
+    execute: async ({ writer }) => {
+      let produced = false;
+      const chunks = result.toUIMessageStream({
+        onError: (err) => {
+          console.error('Chat model failed:', err);
+          return 'model_error';
+        },
+      });
+      for await (const chunk of chunks) {
+        if (chunk.type === 'error' && !produced) {
+          const taught = await findLearnedAnswer(lastUserText);
+          const id = 'fallback';
+          writer.write({ type: 'text-start', id });
+          writer.write({ type: 'text-delta', id, delta: taught ?? fallbackReply(lastUserText) });
+          writer.write({ type: 'text-end', id });
+          return;
+        }
+        if (chunk.type !== 'start' && chunk.type !== 'start-step') produced = true;
+        writer.write(chunk);
+      }
+    },
+  });
+  return createUIMessageStreamResponse({ stream });
 }

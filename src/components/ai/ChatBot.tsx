@@ -29,19 +29,12 @@ function Floating() {
       {!panelOpen && (
         <div className={cn('fixed end-3 z-[60] flex flex-col items-center gap-1.5 sm:end-5', bottom)}>
           {!opened && (
-            <>
-              <p className="rounded-2xl bg-white px-3 py-1.5 text-center text-sm font-semibold leading-snug text-navy shadow-xl ring-1 ring-navy/10">
-                יש שאלה?
-                <br />
-                אני עונה מיד
-              </p>
-              <span
-                aria-hidden="true"
-                className="flex h-11 w-11 animate-arrow items-center justify-center rounded-full bg-accent text-white shadow-lg ring-2 ring-white"
-              >
-                <ArrowDown className="h-7 w-7" strokeWidth={3} />
-              </span>
-            </>
+            <span
+              aria-hidden="true"
+              className="flex h-11 w-11 animate-arrow items-center justify-center rounded-full bg-accent text-white shadow-lg ring-2 ring-white"
+            >
+              <ArrowDown className="h-7 w-7" strokeWidth={3} />
+            </span>
           )}
           <button
             type="button"
@@ -49,7 +42,7 @@ function Floating() {
               setOpened(true);
               openPanel();
             }}
-            aria-label="שיחה עם המשרד, פתיחת העוזר הדיגיטלי"
+            aria-label="שיחה עם המשרד, פתיחת העוזרת של ליאור"
             className="flex h-[4.5rem] w-[4.5rem] animate-ring items-center justify-center rounded-full bg-linear-to-l from-accent to-navy text-cream shadow-2xl ring-2 ring-white transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light"
           >
             <span className="relative flex" aria-hidden="true">

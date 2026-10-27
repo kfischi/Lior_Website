@@ -47,3 +47,26 @@ export function getChatModel(): LanguageModel | null {
       return null;
   }
 }
+
+/**
+ * Provider options that keep replies quick. Gemini 2.5 Flash "thinks" before it
+ * answers by default, which adds seconds; for short support-style answers a zero
+ * thinking budget is much faster. Other models are left at their defaults.
+ */
+export function chatProviderOptions(): { google: { thinkingConfig: { thinkingBudget: number } } } | undefined {
+  if (resolveChatProvider() !== 'google') return undefined;
+  const model = process.env.GEMINI_MODEL || DEFAULT_GEMINI;
+  return /2\.5-flash/.test(model) ? { google: { thinkingConfig: { thinkingBudget: 0 } } } : undefined;
+}
+
+/** Human-readable name of the configured model, for the admin status check. */
+export function chatModelName(): string | null {
+  switch (resolveChatProvider()) {
+    case 'anthropic':
+      return `Anthropic ${process.env.CHAT_MODEL || DEFAULT_CLAUDE}`;
+    case 'google':
+      return `Google ${process.env.GEMINI_MODEL || DEFAULT_GEMINI}`;
+    default:
+      return null;
+  }
+}

@@ -4,12 +4,13 @@ import * as React from 'react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
-import { MessageCircle, Phone, Send, Shield, Square, X } from 'lucide-react';
+import { MessageCircle, Mic, Phone, Send, Shield, Square, Volume2, VolumeX, X } from 'lucide-react';
 import type { UIMessage } from 'ai';
 import { brand, telHref, whatsappHref } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 import { splitSuggestions } from '@/lib/ai/suggestions';
 import { INTAKE_STEPS, useConcierge, type IntakeStep } from './ConciergeProvider';
+import { useSpeechInput, useSpeechOutput } from './useVoice';
 
 const PLACEHOLDER: Record<IntakeStep, string> = {
   name: 'השם שלך',
@@ -196,7 +197,7 @@ function Bubble({ message, isLast }: { message: UIMessage; isLast: boolean }) {
 
 function Typing() {
   return (
-    <div className="flex items-end gap-2" role="status" aria-label="העוזר מקליד">
+    <div className="flex items-end gap-2" role="status" aria-label="העוזרת מקלידה">
       <Avatar className="mb-0.5 h-8 w-8" />
       <div className="flex w-fit items-center gap-1 rounded-2xl rounded-es-sm bg-navy/[0.06] px-4 py-3">
         {[0, 1, 2].map((i) => (
@@ -246,6 +247,32 @@ export function ConciergePanel({
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
+  // Voice: dictate a message, and optionally hear the answers read aloud.
+  const [readAloud, setReadAloud] = React.useState(false);
+  const spokenId = React.useRef<string | null>(null);
+  const { supported: canSpeak, speak, cancel: cancelSpeech, unlock: unlockSpeech } = useSpeechOutput();
+  const voice = useSpeechInput({
+    onText: setInput,
+    onDone: (text) => {
+      // In free chat a spoken question is sent right away; in the intake the
+      // person checks the text first, because names and numbers are easy to mishear.
+      if (intakeStep) return;
+      send(text);
+      setInput('');
+    },
+  });
+
+  React.useEffect(() => {
+    if (!readAloud || status !== 'ready') return;
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== 'assistant' || spokenId.current === last.id) return;
+    spokenId.current = last.id;
+    const text = last.parts
+      .map((p) => (p.type === 'text' ? splitSuggestions(p.text).text : ''))
+      .join(' ');
+    speak(text);
+  }, [readAloud, status, messages, speak]);
+
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, status]);
@@ -266,7 +293,7 @@ export function ConciergePanel({
 
   return (
     <section
-      aria-label="שיחה עם העוזר הדיגיטלי של המשרד"
+      aria-label="שיחה עם העוזרת של ליאור"
       className={cn('flex flex-col overflow-hidden bg-cream', className)}
     >
       <header className="bg-navy text-cream">
@@ -274,8 +301,29 @@ export function ConciergePanel({
           <Avatar className="h-11 w-11" />
           <div className="min-w-0 flex-1 leading-tight">
             <p className="font-heading text-base font-semibold">{brand.chat.assistantName}</p>
-            <p className="truncate text-xs text-cream/70">עוזר דיגיטלי מבוסס בינה מלאכותית</p>
+            <p className="truncate text-xs text-cream/70">עוזרת וירטואלית · בינה מלאכותית</p>
           </div>
+          {canSpeak && (
+            <button
+              type="button"
+              onClick={() => {
+                if (readAloud) cancelSpeech();
+                else unlockSpeech();
+                // Mark what is already on screen as heard, so only new answers are read.
+                spokenId.current = messages[messages.length - 1]?.id ?? null;
+                setReadAloud((v) => !v);
+              }}
+              aria-pressed={readAloud}
+              aria-label={readAloud ? 'כיבוי הקראת תשובות' : 'הקראת תשובות בקול'}
+              title={readAloud ? 'כיבוי הקראה' : 'הקראת תשובות בקול'}
+              className={cn(
+                'rounded-full p-2 transition-colors',
+                readAloud ? 'bg-accent-light text-navy' : 'text-cream/80 hover:bg-cream/10 hover:text-cream',
+              )}
+            >
+              {readAloud ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+            </button>
+          )}
           {onClose && (
             <button
               type="button"
@@ -368,6 +416,12 @@ export function ConciergePanel({
         )}
       </div>
 
+      {voice.error && (
+        <p role="status" className="px-4 pt-2 text-sm text-red-800">
+          {voice.error}
+        </p>
+      )}
+
       <form onSubmit={submit} className="flex items-center gap-2 px-4 pb-2 pt-2">
         <label htmlFor={`concierge-input-${autoFocus ? 'float' : 'inline'}`} className="sr-only">
           הקלדת הודעה
@@ -377,13 +431,39 @@ export function ConciergePanel({
           id={`concierge-input-${autoFocus ? 'float' : 'inline'}`}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={intakeStep ? PLACEHOLDER[intakeStep] : 'כתבו הודעה...'}
+          placeholder={
+            voice.listening ? 'מקשיבה... אפשר לדבר' : intakeStep ? PLACEHOLDER[intakeStep] : 'כתבו הודעה או לחצו על המיקרופון'
+          }
           type={intakeStep === 'phone' ? 'tel' : 'text'}
           inputMode={intakeStep === 'phone' ? 'tel' : 'text'}
           autoComplete={intakeStep === 'name' ? 'name' : intakeStep === 'phone' ? 'tel' : 'off'}
           maxLength={500}
           className="min-w-0 flex-1 rounded-full border border-navy/20 bg-background px-4 py-2.5 text-[0.9375rem] focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
         />
+        {voice.supported && (
+          <button
+            type="button"
+            onClick={() => {
+              if (voice.listening) {
+                voice.stop();
+              } else {
+                cancelSpeech();
+                voice.start();
+              }
+            }}
+            aria-pressed={voice.listening}
+            aria-label={voice.listening ? 'עצירת ההקלטה' : 'דיבור במקום הקלדה'}
+            title={voice.listening ? 'עצירת ההקלטה' : 'דיבור במקום הקלדה'}
+            className={cn(
+              'flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors',
+              voice.listening
+                ? 'animate-ring border-accent bg-accent text-cream'
+                : 'border-navy/25 bg-background text-navy hover:border-accent hover:text-accent',
+            )}
+          >
+            <Mic className="h-5 w-5" />
+          </button>
+        )}
         {busy && status !== 'ready' ? (
           <button
             type="button"
