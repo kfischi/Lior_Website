@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
-import { MessageCircle, Mic, Phone, Send, Shield, Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X } from 'lucide-react';
+import { MessageCircle, Mic, Phone, RotateCcw, Send, Shield, Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X } from 'lucide-react';
 import type { UIMessage } from 'ai';
 import { brand, telHref, whatsappHref } from '@/lib/brand';
 import { cn } from '@/lib/utils';
@@ -280,6 +280,19 @@ function Bubble({
   );
 }
 
+/** A short, readable reason for a failed request (the server sends {"error": "..."}). */
+function errorDetail(error: Error): string {
+  try {
+    const parsed: unknown = JSON.parse(error.message);
+    if (typeof parsed === 'object' && parsed !== null && 'error' in parsed && typeof parsed.error === 'string') {
+      return parsed.error.slice(0, 120);
+    }
+  } catch {
+    /* not JSON */
+  }
+  return error.message.slice(0, 120);
+}
+
 function Typing() {
   return (
     <div className="flex items-end gap-2" role="status" aria-label="העוזרת מקלידה">
@@ -322,9 +335,11 @@ export function ConciergePanel({
     choose,
     startIntake,
     cancelIntake,
+    reset,
     stop,
   } = useConcierge();
   const [input, setInput] = React.useState('');
+  const [confirmReset, setConfirmReset] = React.useState(false);
   const pathname = usePathname();
   const area = brand.practiceAreas.find((a) => pathname === `/practice-areas/${a.slug}`);
   // On a practice-area page, offer that page's own questions first.
@@ -369,6 +384,15 @@ export function ConciergePanel({
   const stepIndex = intakeStep ? INTAKE_STEPS.indexOf(intakeStep) : -1;
   const firstOnly = messages.length === 1 && !intakeStep;
 
+  function resetChat() {
+    voice.stop();
+    cancelSpeech();
+    spokenId.current = null;
+    setInput('');
+    setConfirmReset(false);
+    reset();
+  }
+
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!input.trim() || busy) return;
@@ -388,6 +412,17 @@ export function ConciergePanel({
             <p className="font-heading text-base font-semibold">{brand.chat.assistantName}</p>
             <p className="truncate text-xs text-cream/70">עוזרת וירטואלית · בינה מלאכותית</p>
           </div>
+          {messages.length > 1 && (
+            <button
+              type="button"
+              onClick={() => setConfirmReset(true)}
+              aria-label="התחלת שיחה חדשה"
+              title="שיחה חדשה"
+              className="rounded-full p-2 text-cream/80 transition-colors hover:bg-cream/10 hover:text-cream"
+            >
+              <RotateCcw className="h-5 w-5" />
+            </button>
+          )}
           {canSpeak && (
             <button
               type="button"
@@ -435,6 +470,31 @@ export function ConciergePanel({
             />
           </div>
         )}
+        {confirmReset && (
+          <div
+            role="alertdialog"
+            aria-label="אישור איפוס השיחה"
+            className="flex flex-wrap items-center justify-between gap-2 bg-cream px-4 py-2.5 text-sm text-ink"
+          >
+            <span>למחוק את השיחה ולהתחיל מחדש?</span>
+            <span className="flex gap-2">
+              <button
+                type="button"
+                onClick={resetChat}
+                className="rounded-full bg-navy px-3.5 py-1 font-medium text-cream hover:bg-navy/90"
+              >
+                מחיקה
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmReset(false)}
+                className="rounded-full border border-navy/25 px-3.5 py-1 font-medium text-navy hover:bg-navy/5"
+              >
+                ביטול
+              </button>
+            </span>
+          </div>
+        )}
       </header>
 
       <div
@@ -467,7 +527,7 @@ export function ConciergePanel({
         {status === 'submitted' && <Typing />}
         {error && (
           <div className="rounded-2xl bg-red-50 px-4 py-2.5 text-sm text-red-800">
-            מצטערים, אירעה תקלה. אפשר להתקשר{' '}
+            מצטערים, אירעה תקלה{error.message ? ` (${errorDetail(error)})` : ''}. אפשר להתקשר{' '}
             <a href={telHref} className="font-semibold underline">
               {brand.phone}
             </a>{' '}

@@ -100,6 +100,8 @@ export interface Concierge {
   choose: (chip: Chip) => void;
   startIntake: () => void;
   cancelIntake: () => void;
+  /** Clears the conversation, the intake and the saved copy, and starts again from the greeting. */
+  reset: () => void;
   stop: () => void;
 }
 
@@ -347,6 +349,20 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
     say('assistant', 'אין בעיה, לא שלחתי כלום. אפשר להמשיך לשאול אותי כל דבר.');
   }, [intake, say]);
 
+  const reset = React.useCallback(() => {
+    if (submitting) return;
+    void chat.stop();
+    chat.clearError();
+    setMessages([greeting]);
+    setIntake(null);
+    setExtras({});
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* storage unavailable: nothing to clear */
+    }
+  }, [submitting, chat, setMessages]);
+
   const aiBusy = chat.status === 'submitted' || chat.status === 'streaming';
   const busy = aiBusy || submitting;
 
@@ -388,9 +404,10 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
       choose,
       startIntake,
       cancelIntake,
+      reset,
       stop: () => void chat.stop(),
     }),
-    [chat, extras, busy, intake, panelOpen, send, choose, startIntake, cancelIntake],
+    [chat, extras, busy, intake, panelOpen, send, choose, startIntake, cancelIntake, reset],
   );
 
   return <ConciergeContext.Provider value={value}>{children}</ConciergeContext.Provider>;

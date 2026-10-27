@@ -6,7 +6,7 @@ import {
   stepCountIs,
   type UIMessage,
 } from 'ai';
-import { chatProviderOptions, getChatModel } from '@/lib/ai/model';
+import { chatModelName, chatProviderOptions, getChatModel } from '@/lib/ai/model';
 import { buildSystemPrompt } from '@/lib/ai/system';
 import { retrieveContext } from '@/lib/ai/rag';
 import { chatTools } from '@/lib/ai/tools';
@@ -64,6 +64,11 @@ function streamStaticReply(text: string): Response {
     },
   });
   return createUIMessageStreamResponse({ stream });
+}
+
+/** Liveness check: open /api/chat in a browser to see that the route is up and which engine answers. */
+export function GET() {
+  return Response.json({ ok: true, engine: chatModelName() ?? 'local (no API)' });
 }
 
 export async function POST(req: Request) {
