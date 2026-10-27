@@ -37,3 +37,13 @@ Please check, in particular:
 5. **Referrals from colleagues**: the assistant says she is glad to receive them. Add a visible line on the site if she wants.
 6. Her original text lists employment, torts, etc. but not sexual harassment or workplace bullying pages that already exist;
    those stay. Say if any area should be removed or get its own page.
+
+## Round 3: more topics and starter questions (to approve)
+
+New answers in `src/lib/knowledge.ts` for people looking for information or wanting to reach Lior: right to silence and to
+consult a lawyer before questioning; the hearing before a dismissal; where a sexual-harassment complaint can be filed;
+how to document what happened; "I am not sure which area this is"; contacting on behalf of a relative (needs the person's
+consent to be represented); how to send documents; existing clients; how to prepare for a meeting; living far away or abroad (Zoom).
+The first screen of the chat now offers eight starter questions instead of three. These are general information in the
+same careful wording as the earlier rounds (no promises, no individual advice), but they are legal statements:
+please read them, especially the first three.

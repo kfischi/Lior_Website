@@ -697,8 +697,8 @@ export function ConciergePanel({
         data-tour-target="questions"
         // While the video plays the chips scroll inside a short strip, so the message log and input keep room.
         className={cn(
-          'flex flex-wrap items-center gap-2 border-t border-navy/10 px-4 pb-1 pt-3',
-          intro && 'max-h-[3.4rem] overflow-y-auto',
+          'flex max-h-[6.5rem] flex-wrap items-center gap-2 overflow-y-auto border-t border-navy/10 px-4 pb-1 pt-3 sm:max-h-[9rem]',
+          intro && 'max-h-[3.4rem] sm:max-h-[3.4rem]',
         )}
       >
         {intakeStep ? (

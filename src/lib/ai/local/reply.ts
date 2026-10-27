@@ -120,7 +120,8 @@ const NAV_VERB = /(?:^|\s)(?:תראי|תראה|תראו|הראי|הראה|הרא
 function navigationTarget(question: string): SiteTarget | undefined {
   const q = ` ${normalizeText(question)} `;
   const words = q.trim().split(' ').length;
-  const verb = NAV_VERB.test(q);
+  // "where do I file a complaint" asks how, not where on the site.
+  const verb = NAV_VERB.test(q) && !/איפה\s+(?:מגישים|עושים|פונים|מתלוננים|אפשר להגיש)/.test(q);
   if (!verb && words > 3) return undefined;
   let best: { target: SiteTarget; len: number } | undefined;
   for (const target of SITE_TARGETS) {
