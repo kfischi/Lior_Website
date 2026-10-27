@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'motion/react';
 import { Menu, X, Phone } from 'lucide-react';
@@ -25,6 +26,16 @@ export function Header() {
   const reduced = useReducedMotion();
   const [open, setOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const pathname = usePathname();
+
+  /** On the home page the name takes you back up to the opening video; elsewhere it opens the home page. */
+  function goHome(e: React.MouseEvent<HTMLAnchorElement>) {
+    setOpen(false);
+    if (pathname !== '/') return;
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    if (window.location.hash) history.replaceState(null, '', '/');
+  }
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -48,6 +59,7 @@ export function Header() {
       <nav aria-label="ניווט ראשי" className="shell flex h-18 items-center justify-between gap-4">
         <Link
           href="/"
+          onClick={goHome}
           className={cn(
             'flex items-center gap-3 font-heading text-lg lg:shrink-0 lg:whitespace-nowrap font-semibold transition-colors md:text-xl',
             scrolled ? 'text-navy' : 'text-cream',
