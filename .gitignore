@@ -39,3 +39,6 @@ next-env.d.ts
 
 # local learning-store fallback
 /.data/
+
+# talking-avatar pipeline scratch space
+/.avatar-work/

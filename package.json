@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "ingest": "node --env-file=.env.local --import tsx scripts/ingest.ts",
-    "captions": "node --env-file=.env.local --import tsx scripts/captions.ts"
+    "captions": "node --env-file=.env.local --import tsx scripts/captions.ts",
+    "avatar": "node --env-file=.env.local --import tsx scripts/avatar.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.89",

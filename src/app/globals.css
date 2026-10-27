@@ -242,6 +242,30 @@
   }
 }
 
+/* The welcome video marks what she is talking about (see components/ai/tour.ts). */
+[data-tour-on] {
+  outline: 3px solid var(--brand-accent-light);
+  outline-offset: 4px;
+  animation: tour-glow 1.6s ease-in-out infinite;
+}
+section[data-tour-on] {
+  outline-offset: -8px;
+}
+@keyframes tour-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: 0 0 28px 6px color-mix(in srgb, var(--brand-accent-light) 65%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-tour-on] {
+    animation: none;
+  }
+}
+
 /* Fluid display type. */
 @utility display-2xl {
   font-size: clamp(2.9rem, 8.2vw, 7rem);

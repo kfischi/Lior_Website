@@ -382,7 +382,7 @@ export function ConciergePanel({
   const [intro, setIntro] = React.useState(() => introWanted(autoFocus));
   const [introDelay, setIntroDelay] = React.useState(INTRO_START_DELAY_MS);
 
-  function closeIntro(reason: 'ended' | 'skipped' | 'chat') {
+  function closeIntro(reason: 'ended' | 'skipped') {
     setIntro(false);
     try {
       sessionStorage.setItem(INTRO_SEEN_KEY, '1');
@@ -456,7 +456,6 @@ export function ConciergePanel({
       aria-label="שיחה עם העוזרת של ליאור"
       className={cn('relative flex flex-col overflow-hidden bg-cream', className)}
     >
-      {intro && <IntroStage onDone={closeIntro} delayMs={introDelay} />}
       <header className="bg-navy text-cream">
         <div className="flex items-center gap-3 px-4 py-3.5">
           <Avatar className="h-11 w-11" speaking={speaking} />
@@ -568,6 +567,7 @@ export function ConciergePanel({
           </div>
         )}
       </header>
+      {intro && <IntroStage onDone={closeIntro} delayMs={introDelay} />}
 
       <div
         ref={scrollRef}
@@ -632,7 +632,7 @@ export function ConciergePanel({
       )}
 
       {/* Quick actions */}
-      <div className="flex flex-wrap items-center gap-2 border-t border-navy/10 px-4 pb-1 pt-3">
+      <div data-tour-target="questions" className="flex flex-wrap items-center gap-2 border-t border-navy/10 px-4 pb-1 pt-3">
         {intakeStep ? (
           <Chip onClick={cancelIntake}>ביטול</Chip>
         ) : (
@@ -656,7 +656,7 @@ export function ConciergePanel({
         </p>
       )}
 
-      <form onSubmit={submit} className="flex items-center gap-2 px-4 pb-2 pt-2">
+      <form onSubmit={submit} data-tour-target="chat" className="flex items-center gap-2 px-4 pb-2 pt-2">
         <label htmlFor={`concierge-input-${autoFocus ? 'float' : 'inline'}`} className="sr-only">
           הקלדת הודעה
         </label>
@@ -676,6 +676,7 @@ export function ConciergePanel({
         />
         {voice.supported && (
           <button
+            data-tour-target="voice"
             type="button"
             onClick={() => {
               if (voice.listening) {
