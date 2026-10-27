@@ -190,8 +190,18 @@ export const brand = {
     credentials: [
       'עורכת דין, חברה בלשכת עורכי הדין בישראל',
       'התמחות באפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי',
-      'השתלמות בנושא "החקירה הפלילית בראי הסנגור", קבוצת פרקטיקל (Practical Law), יוני 2024',
     ],
+    /** Certificates shown under the credentials (images in /public/images). */
+    certificates: [
+      {
+        title: 'השתלמות: החקירה הפלילית בראי הסנגור',
+        issuer: 'קבוצת פרקטיקל (Practical Law)',
+        date: 'יוני 2024',
+        image: '/images/cert-practical-law-2024.webp',
+        width: 900,
+        height: 1308,
+      },
+    ] as { title: string; issuer: string; date: string; image: string; width: number; height: number }[],
     /** Cloudinary public ID for the attorney portrait. Local /public path or Cloudinary ID. Leave empty for a monogram panel. */
     portraitId: '/images/lior-portrait.webp',
   },

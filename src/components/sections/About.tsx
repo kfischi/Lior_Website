@@ -74,6 +74,43 @@ export function About() {
               ))}
             </ul>
 
+            {brand.about.certificates.length > 0 && (
+              <div className="mt-10 border-t border-navy/10 pt-8">
+                <h3 className="mb-4 font-heading text-xl font-bold text-navy">תעודות והשתלמויות</h3>
+                <ul className="flex flex-wrap gap-5">
+                  {brand.about.certificates.map((c) => (
+                    <li key={c.image}>
+                      <a
+                        href={c.image}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${c.title}, ${c.issuer}, ${c.date}. הצגת התעודה בגודל מלא (נפתח בחלון חדש)`}
+                        className="group flex items-center gap-4 rounded-xl border border-navy/10 bg-white p-3 transition-all hover:-translate-y-0.5 hover:border-accent hover:shadow-lg"
+                      >
+                        <Image
+                          src={c.image}
+                          alt=""
+                          width={c.width}
+                          height={c.height}
+                          sizes="112px"
+                          className="h-36 w-28 rounded-md object-cover object-top shadow-sm"
+                        />
+                        <span className="flex max-w-[14rem] flex-col leading-snug">
+                          <span className="font-semibold text-navy">{c.title}</span>
+                          <span className="mt-1 text-sm text-ink/75">
+                            {c.issuer} · {c.date}
+                          </span>
+                          <span className="mt-2 text-sm font-medium text-accent group-hover:underline">
+                            לצפייה בתעודה
+                          </span>
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {brand.trustStats.length > 0 && (
               <dl className="mt-10 grid grid-cols-2 gap-6 border-t border-navy/10 pt-8 sm:grid-cols-4">
                 {brand.trustStats.map((stat) => (
