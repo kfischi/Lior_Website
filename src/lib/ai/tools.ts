@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { brand, telHref, whatsappHref, mailHref } from '@/lib/brand';
 import { buildWhatsAppHref } from '@/lib/lead';
 import { logUnknown } from '@/lib/learning/store';
+import { sanitizeQuestion } from '@/lib/learning/sanitize';
 
 /**
  * Tools the chatbot can call. Read-only and safe: they surface firm information
@@ -41,10 +42,7 @@ export const chatTools = {
     }),
     execute: async ({ question }) => {
       // Defence in depth: strip anything that looks like a phone, ID or email.
-      const clean = question
-        .replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, '')
-        .replace(/\d[\d\s-]{4,}\d/g, '')
-        .trim();
+      const clean = sanitizeQuestion(question);
       if (clean.length >= 3) {
         try {
           await logUnknown(clean);

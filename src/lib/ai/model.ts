@@ -6,7 +6,7 @@ import type { LanguageModel } from 'ai';
 /**
  * Chooses the model behind the chat, from environment variables only.
  *
- *   CHAT_PROVIDER=anthropic | google   (optional; forces a provider)
+ *   CHAT_PROVIDER=anthropic | google | local   (optional; local = no API at all)
  *   ANTHROPIC_API_KEY + CHAT_MODEL     (default model: claude-sonnet-5-5)
  *   GOOGLE_GENERATIVE_AI_API_KEY + GEMINI_MODEL   (default: gemini-2.5-flash)
  *
@@ -23,6 +23,9 @@ export function resolveChatProvider(): ChatProvider | null {
   const hasAnthropic = Boolean(process.env.ANTHROPIC_API_KEY);
   const hasGoogle = Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY);
   const forced = process.env.CHAT_PROVIDER?.trim().toLowerCase();
+
+  // CHAT_PROVIDER=local: no API at all, the local engine answers every question.
+  if (forced === 'local') return null;
 
   if (forced === 'google') return hasGoogle ? 'google' : null;
   if (forced === 'anthropic') return hasAnthropic ? 'anthropic' : null;

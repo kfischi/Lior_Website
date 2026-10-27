@@ -2,9 +2,10 @@
 
 import * as React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
-import { MessageCircle, Mic, Phone, Send, Shield, Square, Volume2, VolumeX, X } from 'lucide-react';
+import { MessageCircle, Mic, Phone, Send, Shield, Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X } from 'lucide-react';
 import type { UIMessage } from 'ai';
 import { brand, telHref, whatsappHref } from '@/lib/brand';
 import { cn } from '@/lib/utils';
@@ -79,8 +80,51 @@ function ActionLink({
   );
 }
 
-function Bubble({ message, isLast }: { message: UIMessage; isLast: boolean }) {
-  const { extras, choose, startIntake, busy } = useConcierge();
+const SITE_PATH = /(\/(?:articles|practice-areas)\/[a-z0-9-]+|\/faq)/g;
+
+function pathLabel(path: string): string {
+  if (path.startsWith('/articles/')) return 'המדריך באתר';
+  if (path.startsWith('/practice-areas/')) return 'עמוד התחום';
+  return 'שאלות ותשובות';
+}
+
+/** Turns site paths in an answer into links, closing the chat so the page is visible. */
+function WithLinks({ text, onNavigate }: { text: string; onNavigate: () => void }) {
+  const parts = text.split(SITE_PATH);
+  return (
+    <>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? (
+          <Link
+            key={i}
+            href={part}
+            onClick={onNavigate}
+            className="font-semibold text-accent underline underline-offset-2"
+          >
+            {pathLabel(part)}
+          </Link>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
+function Bubble({
+  message,
+  isLast,
+  question,
+  showFeedback = false,
+}: {
+  message: UIMessage;
+  isLast: boolean;
+  /** The visitor's question this message answers, for the "did it help" buttons. */
+  question?: string;
+  showFeedback?: boolean;
+}) {
+  const { extras, choose, startIntake, busy, closePanel } = useConcierge();
+  const [vote, setVote] = React.useState<'up' | 'down' | null>(null);
   const ex = extras[message.id];
   const isUser = message.role === 'user';
 
@@ -95,7 +139,11 @@ function Bubble({ message, isLast }: { message: UIMessage; isLast: boolean }) {
     if (part.type === 'text') {
       if (isUser) return <span key={i}>{part.text}</span>;
       const { text } = splitSuggestions(part.text);
-      return text ? <span key={i}>{text}</span> : null;
+      return text ? (
+        <span key={i}>
+          <WithLinks text={text} onNavigate={closePanel} />
+        </span>
+      ) : null;
     }
 
     if (part.type === 'tool-getContactOptions' && 'output' in part && part.output) {
@@ -162,6 +210,43 @@ function Bubble({ message, isLast }: { message: UIMessage; isLast: boolean }) {
             )}
           >
             {content}
+          </div>
+        )}
+
+        {showFeedback && question && hasContent && (
+          <div className="mt-1.5 flex items-center gap-1.5 text-xs text-ink/75">
+            {vote ? (
+              <span role="status">
+                {vote === 'down' ? 'תודה, ליאור תראה את השאלה ותלמד אותי.' : 'שמחה שעזרתי.'}
+              </span>
+            ) : (
+              <>
+                <span>עזר לכם?</span>
+                <button
+                  type="button"
+                  aria-label="התשובה עזרה"
+                  onClick={() => setVote('up')}
+                  className="rounded-full p-1.5 hover:bg-navy/10"
+                >
+                  <ThumbsUp className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="התשובה לא עזרה"
+                  onClick={() => {
+                    setVote('down');
+                    void fetch('/api/chat/feedback', {
+                      method: 'POST',
+                      headers: { 'content-type': 'application/json' },
+                      body: JSON.stringify({ question }),
+                    }).catch(() => undefined);
+                  }}
+                  className="rounded-full p-1.5 hover:bg-navy/10"
+                >
+                  <ThumbsDown className="h-4 w-4" />
+                </button>
+              </>
+            )}
           </div>
         )}
 
@@ -359,9 +444,26 @@ export function ConciergePanel({
         aria-relevant="additions"
         className="flex-1 space-y-3 overflow-y-auto px-4 py-4"
       >
-        {messages.map((m, i) => (
-          <Bubble key={m.id} message={m} isLast={i === messages.length - 1} />
-        ))}
+        {messages.map((m, i) => {
+          const asked = messages
+            .slice(0, i)
+            .reverse()
+            .find((x) => x.role === 'user');
+          const askedText = asked
+            ? asked.parts.map((p) => (p.type === 'text' ? p.text : '')).join(' ').trim()
+            : undefined;
+          return (
+            <Bubble
+              key={m.id}
+              message={m}
+              isLast={i === messages.length - 1}
+              question={askedText}
+              showFeedback={
+                m.role === 'assistant' && i === messages.length - 1 && i > 0 && !m.id.startsWith('intake-') && !busy
+              }
+            />
+          );
+        })}
         {status === 'submitted' && <Typing />}
         {error && (
           <div className="rounded-2xl bg-red-50 px-4 py-2.5 text-sm text-red-800">
