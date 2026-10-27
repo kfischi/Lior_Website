@@ -18,13 +18,11 @@ function has(cmd: string, args: string[] = ['-version']): boolean {
   return !r.error && r.status === 0;
 }
 
+/** Uses curl so it follows the same proxy settings as the shell. 403 and 407 mean a network policy blocked it. */
 async function reach(url: string): Promise<boolean> {
-  try {
-    const res = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(8000) });
-    return res.status < 500 && res.status !== 403 && res.status !== 407;
-  } catch {
-    return false;
-  }
+  const r = spawnSync('curl', ['-sS', '-m', '8', '-o', '/dev/null', '-w', '%{http_code}', url], { encoding: 'utf8' });
+  const code = Number(r.stdout.trim());
+  return r.status === 0 && code > 0 && code < 500 && code !== 403 && code !== 407;
 }
 
 async function main() {
