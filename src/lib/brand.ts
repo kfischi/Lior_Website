@@ -63,8 +63,8 @@ export interface PressArticle {
   title: string;
   /** Name of the publication, e.g. 'דבר ראשון'. */
   outlet: string;
-  /** Publication date, ISO `YYYY-MM-DD`. */
-  date: string;
+  /** Publication date, ISO `YYYY-MM-DD`; leave out while it is not known (shown last, without a date). */
+  date?: string;
   url: string;
   /** Optional one or two sentences quoted from the piece. */
   excerpt?: string;
@@ -557,7 +557,13 @@ export const brand = {
   ] as VideoReview[],
 
   // --- In the press: pieces published elsewhere (shown under the guides, newest first) ---
-  press: [] as PressArticle[],
+  press: [
+    {
+      title: 'כתבה מאת עו״ד ליאור-קלואי ארז',
+      outlet: 'דבר ראשון',
+      url: 'https://www.davar1.co.il/218421/',
+    },
+  ] as PressArticle[],
 
   // --- FAQ (also rendered as FAQPage JSON-LD) ---
   faq: [

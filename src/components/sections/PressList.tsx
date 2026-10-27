@@ -4,7 +4,8 @@ import { formatHebrewDate } from '@/lib/articles';
 
 /** Pieces published on other sites. Renders nothing while `brand.press` is empty. */
 export function PressList({ headingId }: { headingId: string }) {
-  const items = [...brand.press].sort((a, b) => b.date.localeCompare(a.date));
+  // Newest first; pieces without a known date come last.
+  const items = [...brand.press].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
   if (items.length === 0) return null;
 
   return (
@@ -28,7 +29,7 @@ export function PressList({ headingId }: { headingId: string }) {
                 <span className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-ink/70">{p.excerpt}</span>
               )}
               <span className="mt-5 flex items-center justify-between text-xs text-ink/75">
-                <time dateTime={p.date}>{formatHebrewDate(p.date)}</time>
+                {p.date ? <time dateTime={p.date}>{formatHebrewDate(p.date)}</time> : <span />}
                 <span className="flex items-center gap-1 font-medium text-accent">
                   לקריאה באתר {p.outlet}
                   <ArrowUpLeft className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" aria-hidden="true" />
