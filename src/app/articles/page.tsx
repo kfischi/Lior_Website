@@ -7,6 +7,7 @@ import { siteUrl } from '@/lib/utils';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
 import { ArticleCard } from '@/components/sections/ArticleCard';
+import { PressList } from '@/components/sections/PressList';
 
 export const metadata: Metadata = buildMetadata({
   title: 'מדריכים ומאמרים משפטיים',
@@ -71,6 +72,7 @@ export default function ArticlesPage() {
                 </li>
               ))}
             </ul>
+            <PressList headingId="press-hub-title" />
             <p className="mt-12 text-sm text-ink/75">
               {brand.chat.disclaimer} יש לכם שאלה אחרת? <Link href="/faq" className="text-accent underline">לכל השאלות והתשובות</Link>.
             </p>

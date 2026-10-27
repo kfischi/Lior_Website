@@ -56,6 +56,18 @@ export interface Testimonial {
   text: string;
 }
 
+/** An article by the attorney, or about her, published on an outside site. */
+export interface PressArticle {
+  title: string;
+  /** Name of the publication, e.g. 'דבר ראשון'. */
+  outlet: string;
+  /** Publication date, ISO `YYYY-MM-DD`. */
+  date: string;
+  url: string;
+  /** Optional one or two sentences quoted from the piece. */
+  excerpt?: string;
+}
+
 /** A client's letter shown as a scanned image among the reviews (no rating). */
 export interface TestimonialLetter {
   name: string;
@@ -223,7 +235,7 @@ export const brand = {
       },
     ] as { title: string; issuer: string; date: string; image: string; width: number; height: number }[],
     /** Cloudinary public ID for the attorney portrait. Local /public path or Cloudinary ID. Leave empty for a monogram panel. */
-    portraitId: '/images/lior-portrait.webp',
+    portraitId: '/images/lior-about.webp',
   },
 
   // --- Scrolling band under the hero (practice areas are added automatically) ---
@@ -515,6 +527,9 @@ export const brand = {
     { youtubeId: 'WgO6rikPJDQ', label: 'ביקורת וידאו מלקוח', landscape: true },
     { youtubeId: 'y84XQuiUilE', label: 'ביקורת וידאו מלקוח' },
   ] as VideoReview[],
+
+  // --- In the press: pieces published elsewhere (shown under the guides, newest first) ---
+  press: [] as PressArticle[],
 
   // --- FAQ (also rendered as FAQPage JSON-LD) ---
   faq: [

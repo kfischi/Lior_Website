@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { newestArticles } from '@/lib/articles';
 import { ArticleCard } from './ArticleCard';
+import { PressList } from './PressList';
 
 /** Home page teaser for the guides hub. */
 export function Articles() {
@@ -26,6 +27,7 @@ export function Articles() {
             </li>
           ))}
         </ul>
+        <PressList headingId="press-title" />
       </div>
     </section>
   );
