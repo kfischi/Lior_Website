@@ -44,3 +44,6 @@ next-env.d.ts
 /.avatar-work/
 /.avatar-venv/
 /.avatar-models/
+
+# agent worktrees
+/.claude/worktrees/
