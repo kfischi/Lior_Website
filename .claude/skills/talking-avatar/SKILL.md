@@ -41,6 +41,19 @@ npm run avatar -- --tts recorded --recording my-reading.m4a --provider local   #
 - Tested here: setup, the pause-based split, chunking with motion kept continuous across chunks, the join, the
   site playback, and a 12 s run on real Hebrew speech (frames reviewed: natural, subtle movement, no artefacts).
 
+## From a recording of the speaker: text, captions and a talking video in one command
+```
+npm run avatar:setup -- --asr                                   # once: also installs speech-to-text (about 30 s)
+npm run avatar -- --from-voice voice-note.opus                  # transcribe, caption, and animate the photo to that voice
+```
+- The speech model is Whisper small, assembled from npm packages (no Hugging Face needed) and checked against its
+  checksum. It runs on the CPU: a 10 s voice note takes about 7 s.
+- The text becomes the captions, transcript and line start times in `src/lib/avatar-intro.json`; the previous script
+  is saved to `content/avatar/previous-script.json`.
+- Whisper small makes mistakes on Hebrew (names, casual speech). Always have a person read the text against the
+  recording and fix it before publishing; never publish captions that put words in someone's mouth.
+- `python scripts/avatar-local/transcribe.py file --out words.json` gives word times for other uses.
+
 ## Using a video made elsewhere (the most realistic result)
 A web talking-avatar service (D-ID, HeyGen, Hedra and similar; check that it has a Hebrew voice) can make a
 photoreal lip-synced video from the photo and the script without any code. Bring that MP4 in:

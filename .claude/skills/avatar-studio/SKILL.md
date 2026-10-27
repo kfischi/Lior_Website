@@ -13,9 +13,13 @@ The answer decides the route:
 
 | Route | Needs | Result | Status |
 | --- | --- | --- | --- |
-| A. Living portrait, offline | Python, ffmpeg, `npm run avatar:setup` | The photo blinks, breathes, shifts its gaze and moves the mouth with a recording. Stylised, not photoreal | built and tested |
+| A. Living portrait, offline | Python, ffmpeg, `npm run avatar:setup` (add `-- --asr` for speech to text) | The photo blinks, breathes, shifts its gaze and moves the mouth with a recording. Stylised, not photoreal | built and tested |
 | B. Open-source models | `huggingface.co` and `github.com` reachable, ideally a GPU | Voice cloned from a short sample (for example Chatterbox Multilingual) and a neural lip-sync (for example SadTalker or MuseTalk) | not built: weights could not be downloaded in the cloud sandbox. Build it only when `avatar:doctor` shows both hosts reachable, and test each step before claiming it works |
 | C. Paid service | A key and network access | Photoreal lip-sync (fal OmniHuman, D-ID) and a cloned voice (ElevenLabs) | adapters written to the docs, never run live |
+
+Model weights can also come from npm, which is often reachable when Hugging Face is not (the Whisper small speech model
+works this way). When a model is blocked, search the npm registry (`https://registry.npmjs.org/-/v1/search?text=...`) for
+a package that bundles the weights, check its licence and checksum, and test it before relying on it.
 
 Honest points to give the person:
 - Hebrew is the weak spot of open voice models. One informal 2025 test found Chatterbox cloning poor in Hebrew;

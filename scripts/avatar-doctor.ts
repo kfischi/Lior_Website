@@ -33,6 +33,10 @@ async function main() {
     ? ok('animator environment (.avatar-venv)')
     : no('animator environment: run "npm run avatar:setup" (about 40 s)');
 
+  existsSync(join(process.cwd(), '.avatar-models/whisper-small/model.bin'))
+    ? ok('speech-to-text model (Whisper small, from npm)')
+    : no('speech-to-text model: run "npm run avatar:setup -- --asr" (about 30 s, works without Hugging Face)');
+
   console.log('\nCompute');
   const gpu = has('nvidia-smi', ['-L']);
   gpu ? ok('NVIDIA GPU') : note(`no NVIDIA GPU found (${os.cpus().length} CPU cores, ${(os.totalmem() / 2 ** 30).toFixed(0)} GB RAM). Photoreal lip-sync models need a GPU, or are very slow on a CPU.`);

@@ -23,6 +23,11 @@
  *   --gap <seconds>     pause between lines (default 0.45)
  *   --max-chunk <s>     longest piece sent to a provider (default 28)
  *
+ *   --from-voice <file> start from a recording of the speaker (a voice note is fine): it is turned into text
+ *                       (speech model from npm run avatar:setup -- --asr), the text becomes the captions and
+ *                       transcript, and the photo is animated to that voice. Read the text against the
+ *                       recording and correct it in src/lib/avatar-intro.json. The previous script is kept
+ *                       in content/avatar/previous-script.json
  *   --video <file>     skip generation: use a finished video (made in any talking-avatar service) as the
  *                       welcome video. Line start times come from --starts "0,6.4,..." (seconds, one per
  *                       line), or --srt <file> (subtitles from that service), or else from the pauses
@@ -384,6 +389,72 @@ function importVideo(intro: IntroFile, args: Record<string, string>, outName: st
   console.log('Click through the transcript in the chat to check that each line starts in the right place.');
 }
 
+// ---------- from a recording of the speaker ----------
+
+interface Word {
+  start: number;
+  end: number;
+  word: string;
+}
+
+/** Caption lines from timed words: break at punctuation or a pause, and keep lines short. */
+function captionLines(words: Word[]): Segment[] {
+  const out: Segment[] = [];
+  let line: Word[] = [];
+  const flush = () => {
+    if (!line.length) return;
+    out.push({ start: Math.round(line[0].start * 10) / 10, text: line.map((w) => w.word).join(' ') });
+    line = [];
+  };
+  words.forEach((w, i) => {
+    line.push(w);
+    const next = words[i + 1];
+    const endsClause = /[.,!?:;]$/.test(w.word);
+    const longPause = next ? next.start - w.end > 0.6 : true;
+    if (!next || line.length >= 9 || (endsClause && line.length >= 3) || longPause) flush();
+  });
+  return out;
+}
+
+async function fromVoice(intro: IntroFile, args: Record<string, string>, outName: string): Promise<void> {
+  const python = process.env.AVATAR_PYTHON || join(ROOT, '.avatar-venv/bin/python');
+  if (!existsSync(python)) throw new Error('Run "npm run avatar:setup -- --asr" first.');
+  const source = resolve(ROOT, args['from-voice']);
+  rmSync(WORK, { recursive: true, force: true });
+  mkdirSync(WORK, { recursive: true });
+
+  const wav = join(WORK, 'voice.wav');
+  ffmpeg(['-i', source, '-vn', '-ac', '1', '-ar', '44100', wav]);
+  const jsonFile = join(WORK, 'words.json');
+  console.log('transcribing...');
+  const text = run(python, [join(ROOT, 'scripts/avatar-local/transcribe.py'), wav, '--out', jsonFile, '--language', args.language || 'he']).trim();
+  const result = JSON.parse(readFileSync(jsonFile, 'utf8')) as { words: Word[] };
+  if (!result.words.length) throw new Error('No speech was found in the recording.');
+  console.log(`text: ${text}`);
+
+  const photo = join(WORK, 'photo.png');
+  ffmpeg(['-i', resolve(ROOT, args.photo || 'public/images/lior-about.webp'), photo]);
+  const clip = join(WORK, 'clip.mp4');
+  console.log('animating the photo...');
+  await localRender(photo, wav, clip, 0);
+
+  mkdirSync(join(ROOT, 'public/videos'), { recursive: true });
+  const outFile = join(ROOT, 'public/videos', `${outName}.mp4`);
+  ffmpeg(['-i', clip, '-vf', "scale='min(720,iw)':-2", '-c:v', 'libx264', '-crf', '24', '-preset', 'slow', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '96k', '-movflags', '+faststart', outFile]);
+  const posterFile = join(ROOT, 'public/images', `${outName}-poster.webp`);
+  ffmpeg(['-ss', '0.3', '-i', outFile, '-frames:v', '1', '-c:v', 'libwebp', '-quality', '80', posterFile]);
+
+  const backup = join(ROOT, 'content/avatar/previous-script.json');
+  mkdirSync(join(ROOT, 'content/avatar'), { recursive: true });
+  if (!existsSync(backup)) writeFileSync(backup, `${JSON.stringify(intro, null, 2)}\n`);
+  intro.src = `/videos/${outName}.mp4`;
+  intro.poster = `/images/${outName}-poster.webp`;
+  intro.segments = captionLines(result.words);
+  writeFileSync(INTRO_JSON, `${JSON.stringify(intro, null, 2)}\n`);
+  console.log(`Done: public/videos/${outName}.mp4 · ${duration(outFile).toFixed(1)} s · ${(statSync(outFile).size / 1_048_576).toFixed(1)} MB`);
+  console.log('Captions written to src/lib/avatar-intro.json. Whisper small is not perfect on Hebrew: correct the text against the recording.');
+}
+
 // ---------- main ----------
 
 async function main() {
@@ -398,6 +469,10 @@ async function main() {
   if (!render) throw new Error(`Unknown --provider "${providerName}". Use preview, fal or did.`);
 
   const intro = JSON.parse(readFileSync(INTRO_JSON, 'utf8')) as IntroFile;
+  if (args['from-voice']) {
+    await fromVoice(intro, args, outName);
+    return;
+  }
   if (args.video) {
     importVideo(intro, args, outName);
     return;
