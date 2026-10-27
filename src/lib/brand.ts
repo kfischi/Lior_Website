@@ -101,10 +101,25 @@ export interface TestimonialLetter {
   alt: string;
 }
 
+/** One spoken line of a client video, with its times in seconds. */
+export interface VideoTranscriptLine {
+  start: number;
+  end: number;
+  text: string;
+}
+
 /** A client video: a local file, or a YouTube video played only after a click. */
 export type VideoReview = { label: string; landscape?: boolean } & (
-  | { src: string; poster: string; captions?: string; youtubeId?: undefined }
-  | { youtubeId: string; poster?: string; src?: undefined; captions?: undefined }
+  | {
+      src: string;
+      poster: string;
+      /** What is said, line by line (see video-transcripts.json). Shown as captions and as a transcript. */
+      transcript?: VideoTranscriptLine[];
+      /** A short description under the video. Only text the attorney approved. */
+      note?: string;
+      youtubeId?: undefined;
+    }
+  | { youtubeId: string; poster?: string; src?: undefined; transcript?: undefined; note?: undefined }
 );
 
 /** The year she began practising (from her own "21 years" in 2026). The years-of-experience figure counts from it. */
