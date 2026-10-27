@@ -72,7 +72,10 @@ export function Hero() {
 
       <div className="shell relative z-10 pb-64 pt-32 md:pb-28">
         <div className="max-w-4xl">
-          <motion.p {...fade(0.1)} className="eyebrow mb-4 text-accent-light">
+          <motion.p
+            {...fade(0.1)}
+            className="eyebrow mb-5 text-lg font-bold tracking-normal text-cream max-sm:before:hidden max-sm:after:hidden md:text-2xl md:tracking-[0.05em]"
+          >
             {brand.firmName}
           </motion.p>
 
