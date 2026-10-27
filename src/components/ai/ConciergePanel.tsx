@@ -33,6 +33,8 @@ const PLACEHOLDER: Record<IntakeStep, string> = {
   topic: 'או כתבו תחום במילים שלכם',
   urgency: 'בחרו אחת מהאפשרויות',
   phone: '050-0000000',
+  meeting: 'בחרו אחת מהאפשרויות',
+  time: 'בחרו אחת מהאפשרויות',
   note: 'משפט אחד על העניין (לא חובה)',
   confirm: 'לחצו על אחת האפשרויות',
 };

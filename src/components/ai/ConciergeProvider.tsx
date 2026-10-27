@@ -17,9 +17,9 @@ import { submitLead } from '@/lib/actions/lead';
  * messages are never sent to the model.
  */
 
-export type IntakeStep = 'name' | 'topic' | 'urgency' | 'phone' | 'note' | 'confirm';
+export type IntakeStep = 'name' | 'topic' | 'urgency' | 'phone' | 'meeting' | 'time' | 'note' | 'confirm';
 
-export const INTAKE_STEPS: IntakeStep[] = ['name', 'topic', 'urgency', 'phone', 'note', 'confirm'];
+export const INTAKE_STEPS: IntakeStep[] = ['name', 'topic', 'urgency', 'phone', 'meeting', 'time', 'note', 'confirm'];
 
 export interface Chip {
   label: string;
@@ -38,10 +38,25 @@ interface IntakeData {
   matter: string;
   urgency: string;
   phone: string;
+  meeting: string;
+  time: string;
   note: string;
 }
 
-const EMPTY: IntakeData = { name: '', matter: '', urgency: '', phone: '', note: '' };
+const EMPTY: IntakeData = { name: '', matter: '', urgency: '', phone: '', meeting: '', time: '', note: '' };
+
+/** Where and when the visitor would like to talk: the office is in Harish and also meets over Zoom. */
+const MEETING: Chip[] = [
+  { value: 'office', label: 'במשרד בחריש' },
+  { value: 'zoom', label: 'בזום' },
+  { value: 'any', label: 'לא משנה' },
+];
+const TIME: Chip[] = [
+  { value: 'morning', label: 'בבוקר' },
+  { value: 'noon', label: 'בצהריים' },
+  { value: 'evening', label: 'אחר הצהריים או בערב' },
+  { value: 'any', label: 'לא משנה' },
+];
 
 const URGENCY: Chip[] = [
   { value: 'urgent', label: 'דחוף, יש מועד קרוב' },
@@ -171,6 +186,7 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
   const topicChips = React.useMemo<Chip[]>(
     () => [
       ...brand.practiceAreas.map((a) => ({ value: a.title, label: a.title })),
+      ...brand.about.additionalAreas.filter((a) => a.topic).map((a) => ({ value: a.topic, label: a.topic })),
       { value: 'לא בטוח/ת', label: 'לא בטוח/ת' },
     ],
     [],
@@ -186,7 +202,12 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
         fd.set('matter', data.matter);
         fd.set(
           'message',
-          [`דחיפות: ${URGENCY.find((u) => u.value === data.urgency)?.label ?? ''}`, data.note]
+          [
+            `דחיפות: ${URGENCY.find((u) => u.value === data.urgency)?.label ?? ''}`,
+            data.meeting ? `פגישה: ${MEETING.find((m) => m.value === data.meeting)?.label ?? ''}` : '',
+            data.time ? `זמן נוח: ${TIME.find((t) => t.value === data.time)?.label ?? ''}` : '',
+            data.note,
+          ]
             .filter(Boolean)
             .join(' | ')
             .slice(0, 1000),
@@ -278,12 +299,28 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
           say('assistant', 'המספר לא נראה לי תקין. אפשר לכתוב אותו שוב, למשל 050-0000000?');
           return;
         }
+        say('assistant', 'איך נוח לך לדבר עם עורכת הדין, במשרד בחריש או בזום?', { chips: MEETING });
+        setIntake({ step: 'meeting', data: { ...data, phone: parsed.data } });
+        return;
+      }
+
+      if (step === 'meeting') {
+        const known = MEETING.find((m) => m.value === value || m.label === text);
+        say('user', shown ?? known?.label ?? text);
+        say('assistant', 'ובאיזו שעה בדרך כלל נוח לך שיחזרו אליך?', { chips: TIME });
+        setIntake({ step: 'time', data: { ...data, meeting: known?.value ?? 'any' } });
+        return;
+      }
+
+      if (step === 'time') {
+        const known = TIME.find((t) => t.value === value || t.label === text);
+        say('user', shown ?? known?.label ?? text);
         say(
           'assistant',
           'רוצה להוסיף משפט על העניין? אין צורך לפרט את האירוע, ואפשר לדלג.',
           { chips: [{ value: SKIP, label: 'דלג' }] },
         );
-        setIntake({ step: 'note', data: { ...data, phone: parsed.data } });
+        setIntake({ step: 'note', data: { ...data, time: known?.value ?? 'any' } });
         return;
       }
 
@@ -299,6 +336,8 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
             `תחום: ${data.matter}`,
             `דחיפות: ${urgencyLabel}`,
             `טלפון: ${data.phone}`,
+            `פגישה: ${MEETING.find((m) => m.value === data.meeting)?.label ?? ''}`,
+            `זמן נוח: ${TIME.find((t) => t.value === data.time)?.label ?? ''}`,
             note ? `הערה: ${note}` : '',
             '',
             'מאשר/ת שאעביר את הפרטים האלה למשרד?',

@@ -283,21 +283,30 @@ export const brand = {
     additionalAreas: [
       {
         title: 'רשלנות רפואית',
+        topic: 'רשלנות רפואית',
         text: 'ייצוג נפגעי רשלנות רפואית, ובהם נפגעי חיסונים ומשפחותיהם.',
       },
       {
         title: 'דיני עבודה ונזיקין',
+        topic: 'נזיקין, ביטוח לאומי ולשון הרע',
         text: 'דיני עבודה, נזיקין (גם ללא הוכחת נזק), ביטוח לאומי, לשון הרע וצווי הטרדה מאיימת.',
       },
       {
         title: 'ירושה, צוואות ואפוטרופסות',
+        topic: 'ירושה וצוואות',
         text: 'צווי ירושה וצוואות, אפוטרופסות, הצהרות מוות, ייפוי כוח מתמשך וצווי הרחקה. המשרד אינו עוסק בנישואין ובגירושין.',
       },
       {
         title: 'משפט פלילי: מהחקירה ועד הערכאות',
+        topic: '',
         text: 'ייצוג לפני חקירה, במעצרי ימים ובמעצרי תום הליכים, ובכל ההליך הפלילי בכל הערכאות, כולל עתירות נגד שוטרים.',
       },
-    ] as { title: string; text: string }[],
+    ] as {
+      title: string;
+      text: string;
+      /** Short label for the chat's intake chips; empty = already covered by the main areas. */
+      topic: string;
+    }[],
     /** Photos shown in a row under the text (images in /public/images). Empty caption = no caption. */
     gallery: [
       {
