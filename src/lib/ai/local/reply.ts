@@ -40,7 +40,11 @@ const PERSONAL = /(?:^|\s)(?:אותי|אליי|אלי|עליי|עלי|שלי|ל�
 
 /** When nothing matches well, a clearly named topic still gets that topic's answer. */
 const TOPIC_FALLBACKS: [concept: string, docId: string][] = [
+  ['#גירושין', 'k:not-divorce'],
   ['#אחר', 'k:other-areas'],
+  ['#ירושה', 'k:estates'],
+  ['#רפואית', 'k:medical-negligence'],
+  ['#נזיקין', 'k:torts'],
   ['#סיכוי', 'k:what-we-dont-do'],
   ['#הריון', 'k:workplace-discrimination'],
   ['#גיל', 'k:workplace-discrimination'],

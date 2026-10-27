@@ -30,7 +30,10 @@ export const chatTools = {
     description: 'החזר את רשימת תחומי העיסוק של המשרד עם תיאור קצר לכל תחום.',
     inputSchema: z.object({}),
     execute: async () =>
-      brand.practiceAreas.map((a) => ({ title: a.title, description: a.description })),
+      [
+        ...brand.practiceAreas.map((a) => ({ title: a.title, description: a.description })),
+        ...brand.about.additionalAreas.map((a) => ({ title: a.title, description: a.text })),
+      ],
   }),
 
   flagUnknownQuestion: tool({

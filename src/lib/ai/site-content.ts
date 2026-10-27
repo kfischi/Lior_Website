@@ -38,10 +38,14 @@ function articleText(): string {
     .join('\n\n');
 }
 
+function additionalAreasText(): string {
+  return brand.about.additionalAreas.map((a) => `### ${a.title}\n${a.text}`).join('\n\n');
+}
+
 export function siteContentAsPrompt(): string {
-  return `## תחומי העיסוק\n${practiceAreaText()}\n\n## מדריכים באתר\nכשהנושא רלוונטי, הפנה את המשתמש למדריך המתאים בכתיבת הנתיב (למשל /articles/hearing-before-dismissal).\n${articleText()}`;
+  return `## תחומי העיסוק\n${practiceAreaText()}\n\n## תחומים נוספים\n${additionalAreasText()}\n\n## מדריכים באתר\nכשהנושא רלוונטי, הפנה את המשתמש למדריך המתאים בכתיבת הנתיב (למשל /articles/hearing-before-dismissal).\n${articleText()}`;
 }
 
 export function siteContentAsMarkdown(): string {
-  return `${practiceAreaText()}\n\n${articleText()}`;
+  return `${practiceAreaText()}\n\n## תחומים נוספים\n\n${additionalAreasText()}\n\n${articleText()}`;
 }

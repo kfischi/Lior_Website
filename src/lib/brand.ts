@@ -107,6 +107,9 @@ export type VideoReview = { label: string; landscape?: boolean } & (
   | { youtubeId: string; poster?: string; src?: undefined; captions?: undefined }
 );
 
+/** The year she began practising (from her own "21 years" in 2026). The years-of-experience figure counts from it. */
+const PRACTISING_SINCE = 2005;
+
 export const brand = {
   // --- Identity ---
   firmName: 'משרד עורכת דין ליאור-קלואי ארז',
@@ -115,8 +118,8 @@ export const brand = {
   attorneyName: 'עו״ד ליאור-קלואי ארז',
   /** Short legal-services description — used in meta + JSON-LD. */
   description:
-    'משרד עורכת דין ליאור-קלואי ארז בחריש: אפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי. ' +
-    'ליווי אישי, מקצועי ודיסקרטי מהשיחה הראשונה.',
+    'משרד עורכת דין ליאור-קלואי ארז בחריש ובזום: משפט פלילי, דיני עבודה, הטרדה מינית, רשלנות רפואית, ירושה וצוואות. ' +
+    'בוגרת הפרקליטות הפלילית, ליווי אישי ודיסקרטי מהשיחה הראשונה.',
   /** Public website address. */
   website: 'https://www.liorerezadv.com',
   /**
@@ -145,7 +148,7 @@ export const brand = {
     postalCode: '3786100',
     country: 'IL',
   },
-  hours: 'בתיאום מראש',
+  hours: 'בתיאום מראש, במשרד בחריש או בזום',
   /** Maps embed/link target. */
   mapUrl: 'https://maps.google.com/?q=%D7%A8%D7%99%D7%9E%D7%95%D7%9F+5+%D7%97%D7%A8%D7%99%D7%A9',
 
@@ -236,20 +239,25 @@ export const brand = {
   // --- Trust strip (E-E-A-T) ---
   // Shown only when it has items. Add verified numbers only (years of
   // experience, cases, etc.) — never placeholders.
-  trustStats: [] as { value: string; label: string }[],
+  trustStats: [{ value: String(new Date().getFullYear() - PRACTISING_SINCE), label: 'שנות ניסיון' }] as {
+    value: string;
+    label: string;
+  }[],
 
   // --- About ---
   about: {
     heading: 'אודות המשרד',
     body:
-      'עו״ד ליאור-קלואי ארז מנהלת משרד המתמחה באפליה והתעמרות בעבודה, בהטרדה מינית ובמשפט פלילי. ' +
+      'עו״ד ליאור-קלואי ארז מנהלת משרד המתמחה בהגנה על זכויות אדם: משפט פלילי, דיני עבודה, הטרדה מינית ועוד. ' +
       'אלה עניינים שבהם אדם נמצא לא פעם בנקודה קשה ורגישה בחייו, ולכן הדגש במשרד הוא על הקשבה, ' +
       'דיסקרטיות והסבר ברור של האפשרויות, כך שתוכלו לקבל החלטות בביטחון.',
     /** Pull quote, taken from the approach described in `body`. */
     quote: 'הקשבה, דיסקרטיות והסבר ברור של האפשרויות, כדי שתוכלו לקבל החלטות בביטחון.',
     credentials: [
       'עורכת דין, חברה בלשכת עורכי הדין בישראל',
-      'התמחות באפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי',
+      'בוגרת הפרקליטות הפלילית בתל אביב',
+      'תובעת במשרד הכלכלה לשעבר',
+      'התמחות בהגנה על זכויות אדם',
     ],
     /** Certificates shown under the credentials (images in /public/images). */
     certificates: [
@@ -265,7 +273,31 @@ export const brand = {
     /** Cloudinary public ID for the attorney portrait. Local /public path or Cloudinary ID. Leave empty for a monogram panel. */
     portraitId: '/images/lior-about.webp',
     /** More about the attorney: short paragraphs shown after the main text. Only approved text; leave empty until then. */
-    more: [] as string[],
+    more: [
+      'עו״ד ליאור-קלואי ארז היא בוגרת הפרקליטות הפלילית בתל אביב ותובעת במשרד הכלכלה לשעבר. ' +
+        'את הניסיון הזה היא מביאה גם לייצוג ברשלנות רפואית, בנזיקין ובענייני ירושה וצוואות.',
+      'המשרד בחריש, ואפשר לקיים פגישות גם בזום.',
+    ] as string[],
+    practisingSince: PRACTISING_SINCE,
+    /** Other areas she works in, in her words (the three main areas have their own pages above). */
+    additionalAreas: [
+      {
+        title: 'רשלנות רפואית',
+        text: 'ייצוג נפגעי רשלנות רפואית, ובהם נפגעי חיסונים ומשפחותיהם.',
+      },
+      {
+        title: 'דיני עבודה ונזיקין',
+        text: 'דיני עבודה, נזיקין (גם ללא הוכחת נזק), ביטוח לאומי, לשון הרע וצווי הטרדה מאיימת.',
+      },
+      {
+        title: 'ירושה, צוואות ואפוטרופסות',
+        text: 'צווי ירושה וצוואות, אפוטרופסות, הצהרות מוות, ייפוי כוח מתמשך וצווי הרחקה. המשרד אינו עוסק בנישואין ובגירושין.',
+      },
+      {
+        title: 'משפט פלילי: מהחקירה ועד הערכאות',
+        text: 'ייצוג לפני חקירה, במעצרי ימים ובמעצרי תום הליכים, ובכל ההליך הפלילי בכל הערכאות, כולל עתירות נגד שוטרים.',
+      },
+    ] as { title: string; text: string }[],
     /** Photos shown in a row under the text (images in /public/images). Empty caption = no caption. */
     gallery: [
       {
@@ -317,8 +349,8 @@ export const brand = {
       icon: 'HeartHandshake',
     },
     {
-      title: 'התמחות ממוקדת',
-      description: 'המשרד מתמקד בשלושה תחומים: עבודה, הטרדה מינית ופלילי.',
+      title: 'ניסיון מהצד השני של השולחן',
+      description: 'בוגרת הפרקליטות הפלילית בתל אביב ותובעת לשעבר במשרד הכלכלה, עם ניסיון של שנים רבות.',
       icon: 'Award',
     },
     {
@@ -613,7 +645,8 @@ export const brand = {
     {
       question: 'באילו תחומים עוסק המשרד?',
       answer:
-        'המשרד מתמקד בשלושה תחומים: אפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי. ' +
+        'משפט פלילי, אפליה והתעמרות בעבודה, הטרדה מינית ודיני עבודה, וכן רשלנות רפואית, נזיקין, ביטוח לאומי, לשון הרע, ' +
+        'ירושה וצוואות, אפוטרופסות וייפוי כוח מתמשך. המשרד אינו עוסק בנישואין ובגירושין. ' +
         'אם העניין שלכם בתחום אחר, אפשר לפנות ולברר, ונאמר בכנות אם הוא מחוץ להתמחות המשרד.',
     },
     {
@@ -670,6 +703,14 @@ export const brand = {
       'הטרדה מינית',
       'משפט פלילי',
       'חקירה במשטרה',
+      'מעצרים',
+      'רשלנות רפואית',
+      'דיני עבודה',
+      'ביטוח לאומי',
+      'לשון הרע',
+      'צוואות וירושה',
+      'אפוטרופסות',
+      'ייפוי כוח מתמשך',
     ],
   },
 

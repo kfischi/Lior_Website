@@ -18,3 +18,22 @@ the same answer, "the police called me" goes to the investigation answer, "I wan
 
 The chat now also moves around the site: "show me the reviews" scrolls to them and lights them up; "take me to the
 criminal law page" opens it. Targets are in `src/lib/site-actions.ts`.
+
+## Round 2: Lior's own description of her practice (to approve)
+
+Added from her message to colleagues (21 years; graduate of the Tel Aviv criminal prosecution; former prosecutor at the
+Ministry of Economy; medical negligence, employment, torts, National Insurance, defamation, harassment/restraining orders,
+probate/wills/guardianship/death declarations/continuing power of attorney; criminal from before the investigation to all
+courts; Harish and Zoom; referrals welcome). Shown in: About (text, credentials, "21 years" figure), the practice section
+("ובתחומים נוספים"), FAQ, meta description, JSON-LD `knowsAbout`, and the assistant's knowledge and instructions.
+
+Please check, in particular:
+1. **"Families of the murdered" (משפחות הנרצחים)** from her text about vaccine injuries was NOT published. The site says
+   "ייצוג נפגעי רשלנות רפואית, ובהם נפגעי חיסונים ומשפחותיהם". Attributing a death to a medical product is a serious factual
+   claim under the Bar's advertising rules and defamation law; she should decide the exact wording with the Bar rules in mind.
+2. **"21 years"** is computed from `practisingSince: 2005` in `brand.ts` (her "21 years" in 2026). Confirm the start year.
+3. "מתמחה" (specialises) is used for areas she listed. The Bar restricts "מומחית"; the assistant is told not to use it.
+4. **Divorce**: she does not handle marriage and divorce; the assistant also says to check custody/alimony with the office.
+5. **Referrals from colleagues**: the assistant says she is glad to receive them. Add a visible line on the site if she wants.
+6. Her original text lists employment, torts, etc. but not sexual harassment or workplace bullying pages that already exist;
+   those stay. Say if any area should be removed or get its own page.
