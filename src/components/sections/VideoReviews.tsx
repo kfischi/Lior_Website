@@ -10,7 +10,7 @@ function Row({ items, offset, wide }: { items: VideoReview[]; offset: number; wi
       {items.map((v, i) => (
         <li
           key={v.youtubeId ?? v.src}
-          className={`shrink-0 snap-center ${wide ? 'w-[88%] md:w-[26rem]' : 'w-[72%] md:w-64'}`}
+          className={`shrink-0 snap-center ${wide ? 'w-[88%] md:w-[26rem]' : 'w-[72%] md:w-52'}`}
         >
           {v.youtubeId !== undefined ? (
             <YouTubeCard
@@ -59,6 +59,9 @@ export function VideoReviews() {
         </div>
         <p className="mt-8 text-center text-sm text-cream/70">
           חוות דעת אישיות של לקוחות. אין בהן הבטחה או הערכה לתוצאה במקרה אחר.
+        </p>
+        <p className="mt-2 text-center text-sm text-cream/70">
+          התמלולים נוצרו אוטומטית וייתכנו בהם אי-דיוקים. מקומות שלא נשמעו בבירור מסומנים.
         </p>
       </div>
     </section>

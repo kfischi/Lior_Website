@@ -19,6 +19,7 @@
  */
 
 import introConfig from './avatar-intro.json';
+import videoTranscripts from './video-transcripts.json';
 
 export interface FaqItem {
   question: string;
@@ -632,15 +633,23 @@ export const brand = {
   // videos; leave it off for Shorts and vertical videos. Nothing from YouTube loads until
   // a visitor presses play.
   videoReviews: [
-    { src: '/videos/review-6.mp4', poster: '/videos/review-6.webp', label: 'ביקורת וידאו מלקוחה' },
     { src: '/videos/review-1.mp4', poster: '/videos/review-1.webp', label: 'ביקורת וידאו מלקוח' },
     { src: '/videos/review-2.mp4', poster: '/videos/review-2.webp', label: 'ביקורת וידאו מלקוח' },
     { src: '/videos/review-3.mp4', poster: '/videos/review-3.webp', label: 'ביקורת וידאו מלקוח' },
-    { src: '/videos/review-4.mp4', poster: '/videos/review-4.webp', label: 'ביקורת וידאו מלקוחה' },
+    {
+      src: '/videos/review-4.mp4',
+      poster: '/videos/review-4.webp',
+      label: 'ביקורת וידאו מלקוחה',
+      // The attorney's own description, without the court, the client's background or what the other side was accused of.
+      note: 'מפי עו״ד ליאור: תיק פלילי מורכב שנמשך כארבע שנים, שבסופו זוכו הלקוחה ובן זוגה מעבירות חמורות, והעונש בעבירה נוספת הופחת.',
+    },
     { src: '/videos/review-5.mp4', poster: '/videos/review-5.webp', label: 'ביקורת וידאו מלקוחה', landscape: true },
     { youtubeId: 'WgO6rikPJDQ', label: 'ביקורת וידאו מלקוח', landscape: true },
     { youtubeId: 'y84XQuiUilE', label: 'ביקורת וידאו מלקוח' },
-  ] as VideoReview[],
+  ].map((v) => {
+    const transcript = 'src' in v && v.src ? (videoTranscripts as Record<string, VideoTranscriptLine[]>)[v.src] : undefined;
+    return transcript ? { ...v, transcript } : v;
+  }) as VideoReview[],
 
   // --- In the press: pieces published elsewhere (shown under the guides, newest first) ---
   press: [
