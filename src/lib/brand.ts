@@ -1,0 +1,561 @@
+/**
+ * =============================================================================
+ *  WHITE-LABEL BRAND CONFIG  —  THE ONLY FILE YOU EDIT FOR A NEW CLIENT
+ * =============================================================================
+ *
+ *  Every piece of client-specific data (name, contact, colors, fonts, content)
+ *  is read from this object. To launch a new law firm:
+ *    1. Edit the values below.
+ *    2. Swap the Cloudinary image IDs.
+ *    3. Update the chatbot system prompt (src/app/api/chat/route.ts metadata).
+ *    4. Deploy.
+ *
+ *  Colors are injected as CSS variables in src/app/layout.tsx, so changing them
+ *  here re-themes the entire site — no component edits required.
+ *
+ *  PALETTE: matched to the firm logo. Contrast checked (WCAG AA). Replace per
+ *  client; keep `accent` readable on `cream` and `accentLight` on `navy`.
+ * =============================================================================
+ */
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+/** Content of the dedicated page /practice-areas/[slug]. General information only. */
+export interface PracticeAreaPage {
+  /** Short title tag text (the firm name is appended). */
+  seoTitle: string;
+  /** Meta description, about 120-160 characters. */
+  seoDescription: string;
+  /** Opening paragraphs. */
+  intro: string[];
+  /** What the office helps with. */
+  handles: string[];
+  /** General first steps. Educational, never advice on a specific case. */
+  steps: string[];
+  faq: FaqItem[];
+}
+
+export interface PracticeArea {
+  /** Stable slug used for the route /practice-areas/[slug] and anchors. */
+  slug: string;
+  title: string;
+  description: string;
+  /** lucide-react icon name (see src/components/sections/PracticeAreas.tsx). */
+  icon: string;
+  page: PracticeAreaPage;
+}
+
+export interface Testimonial {
+  name: string;
+  role?: string;
+  rating: number; // 1–5
+  text: string;
+}
+
+export const brand = {
+  // --- Identity ---
+  firmName: 'משרד עורכת דין ליאור-קלואי ארז',
+  firmNameShort: 'ליאור-קלואי ארז, עו״ד',
+  tagline: 'ליווי משפטי ברגישות, בנחישות ובדיסקרטיות',
+  attorneyName: 'עו״ד ליאור-קלואי ארז',
+  /** Short legal-services description — used in meta + JSON-LD. */
+  description:
+    'משרד עורכת דין ליאור-קלואי ארז בחריש: אפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי. ' +
+    'ליווי אישי, מקצועי ודיסקרטי מהשיחה הראשונה.',
+  /** Public website address. */
+  website: 'https://www.liorerezadv.com',
+  /**
+   * Logo files (transparent WebP, in /public/images). `lockup` is the full
+   * white mark for dark backgrounds; the icon comes in a light and a dark
+   * version for the header over the hero and over the cream page.
+   */
+  logo: {
+    lockup: '/images/logo-lockup-white.webp',
+    lockupSize: { width: 588, height: 258 },
+    iconLight: '/images/logo-icon-white.webp',
+    iconDark: '/images/logo-icon-navy.webp',
+    iconSize: { width: 159, height: 258 },
+  },
+
+  // --- Contact ---
+  phone: '052-469-4158',
+  /** International format, digits only — for tel: and WhatsApp links. */
+  phoneE164: '972524694158',
+  whatsapp: '972524694158',
+  fax: '077-4702353',
+  email: 'Lioraere@gmail.com',
+  address: {
+    street: 'רח׳ רימון 5',
+    city: 'חריש',
+    postalCode: '3786100',
+    country: 'IL',
+  },
+  hours: 'בתיאום מראש',
+  /** Maps embed/link target. */
+  mapUrl: 'https://maps.google.com/?q=%D7%A8%D7%99%D7%9E%D7%95%D7%9F+5+%D7%97%D7%A8%D7%99%D7%A9',
+
+  // --- Social ---
+  social: {
+    facebook: '',
+    linkedin: '',
+    instagram: '',
+  },
+
+  // --- Colors: matched to the firm logo (dusty steel blue + silver) ---
+  colors: {
+    navy: '#1A3742', // deep teal-slate — primary, dark sections
+    cream: '#F4F6F6', // cool off-white — page background
+    accent: '#3C7186', // steel blue from the logo — buttons, links on light
+    accentLight: '#8DB5C4', // light steel blue — accent on dark sections
+    ink: '#17242B', // blue-black body text
+  },
+
+  // --- Fonts (next/font keys; see src/app/layout.tsx) ---
+  fonts: {
+    headingName: 'Frank Ruhl Libre',
+    bodyName: 'Heebo',
+  },
+
+  // --- Hero ---
+  hero: {
+    title: 'ליווי משפטי ברגישות ובנחישות',
+    subtitle:
+      'אפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי. ליווי אישי ודיסקרטי מהשיחה הראשונה, ' +
+      'כדי שתדעו מה האפשרויות שלכם ותוכלו לפעול בביטחון.',
+    primaryCta: 'לקביעת ייעוץ',
+    secondaryCta: 'וואטסאפ',
+    /**
+     * Hero background video. Provide EITHER:
+     *  - videoUrl: a direct absolute URL to an .mp4/.webm (e.g. Cloudinary
+     *    delivery URL), or
+     *  - leave videoUrl empty to fall back to the poster image only.
+     * posterId is a Cloudinary public ID shown before/while the video loads and
+     * whenever motion is reduced or the video is unavailable.
+     */
+    videoUrl: 'https://res.cloudinary.com/dptyfvwyo/video/upload/v1793048459/HERO_qpewzw.mp4',
+    // First frame of the video, served by Cloudinary as a JPG (absolute URLs
+    // pass straight through the custom image loader).
+    posterId:
+      'https://res.cloudinary.com/dptyfvwyo/video/upload/so_0,f_jpg,q_auto,w_1920/v1793048459/HERO_qpewzw.jpg',
+    /** Fallback still background (Cloudinary public ID). */
+    imageId: 'lawyer-os/hero-placeholder',
+    /**
+     * Framing of the hero media. The picture is enlarged by `zoom` around
+     * `origin`, which trims the edges furthest from it — used to crop out the
+     * AI-generator watermark in the bottom corners. 1 = no crop.
+     */
+    mediaFrame: { zoom: 1.16, origin: '50% 0%' },
+    /**
+     * Seconds cut from the end of the loop. The clip restarts this early to hide
+     * a glitch in its last frames (the duplicated figure). 0 = play to the end.
+     */
+    videoTrimEnd: 2,
+  },
+
+  // --- AI chatbot ---
+  chat: {
+    /** Shown in the chat header and used by the model as its name. */
+    assistantName: 'העוזר הדיגיטלי של ליאור',
+    /** Round avatar in the chat (a local /public path or a Cloudinary ID). */
+    avatar: '/images/lior-avatar.webp',
+    greeting:
+      'שלום, אני העוזר הדיגיטלי של המשרד של ליאור. אפשר לספר לי במה מדובר, ואכוון אתכם ' +
+      'לתחום הנכון, אענה על שאלות כלליות ואעזור לקבוע פגישת ייעוץ.',
+    /** Quick-start suggestions shown as chips. */
+    suggestedPrompts: [
+      'נפגעתי בעבודה, מה אפשר לעשות?',
+      'כמה עולה ייעוץ ראשוני?',
+      'איך קובעים פגישה?',
+    ],
+    disclaimer: 'המידע כללי ואינו מהווה ייעוץ משפטי.',
+  },
+
+  // --- Trust strip (E-E-A-T) ---
+  // Shown only when it has items. Add verified numbers only (years of
+  // experience, cases, etc.) — never placeholders.
+  trustStats: [] as { value: string; label: string }[],
+
+  // --- About ---
+  about: {
+    heading: 'אודות המשרד',
+    body:
+      'עו״ד ליאור-קלואי ארז מנהלת משרד המתמחה באפליה והתעמרות בעבודה, בהטרדה מינית ובמשפט פלילי. ' +
+      'אלה עניינים שבהם אדם נמצא לא פעם בנקודה קשה ורגישה בחייו, ולכן הדגש במשרד הוא על הקשבה, ' +
+      'דיסקרטיות והסבר ברור של האפשרויות, כך שתוכלו לקבל החלטות בביטחון.',
+    /** Pull quote, taken from the approach described in `body`. */
+    quote: 'הקשבה, דיסקרטיות והסבר ברור של האפשרויות, כדי שתוכלו לקבל החלטות בביטחון.',
+    credentials: [
+      'עורכת דין, חברה בלשכת עורכי הדין בישראל',
+      'התמחות באפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי',
+      'השתלמות בנושא "החקירה הפלילית בראי הסנגור", קבוצת פרקטיקל (Practical Law), יוני 2024',
+    ],
+    /** Cloudinary public ID for the attorney portrait. Local /public path or Cloudinary ID. Leave empty for a monogram panel. */
+    portraitId: '/images/lior-portrait.webp',
+  },
+
+  // --- Scrolling band under the hero (practice areas are added automatically) ---
+  marquee: ['רגישות', 'נחישות', 'דיסקרטיות'],
+
+  // --- How it works ---
+  process: {
+    eyebrow: 'איך זה עובד',
+    heading: 'שלושה צעדים פשוטים',
+    steps: [
+      {
+        title: 'שיחה קצרה',
+        text: 'מספרים לנו במה מדובר, בצ׳אט, בטלפון או בוואטסאפ. אין צורך לפרט את האירוע.',
+      },
+      {
+        title: 'פגישת ייעוץ',
+        text: 'מבינים את התמונה המלאה, והאפשרויות והסיכונים מוסברים בפשטות.',
+      },
+      {
+        title: 'מחליטים ופועלים',
+        text: 'בונים יחד את הצעד הבא, ועורכת הדין מלווה אתכם לאורך הדרך.',
+      },
+    ],
+  },
+
+  // --- Why us ---
+  whyUs: [
+    {
+      title: 'יחס אישי',
+      description: 'ליווי צמוד של עורכת הדין עצמה, מהשיחה הראשונה ועד סיום הטיפול.',
+      icon: 'HeartHandshake',
+    },
+    {
+      title: 'התמחות ממוקדת',
+      description: 'המשרד מתמקד בשלושה תחומים: עבודה, הטרדה מינית ופלילי.',
+      icon: 'Award',
+    },
+    {
+      title: 'רגישות ודיסקרטיות',
+      description: 'כל פנייה נשארת חסויה, ומטופלת בזהירות ובכבוד.',
+      icon: 'ShieldCheck',
+    },
+    {
+      title: 'שקיפות מלאה',
+      description: 'הסבר ברור על האפשרויות, הסיכונים והעלויות מראש.',
+      icon: 'Eye',
+    },
+  ],
+
+  // --- Practice areas ---
+  // `page` feeds /practice-areas/[slug]. General information only: no advice on
+  // a specific case, no promises, no results. Needs the attorney's approval.
+  practiceAreas: [
+    {
+      slug: 'workplace-discrimination',
+      title: 'אפליה והתעמרות בעבודה',
+      description:
+        'ליווי עובדות ועובדים שנפגעו באפליה, בהתעמרות או בפגיעה בזכויותיהם במקום העבודה.',
+      icon: 'Briefcase',
+      page: {
+        seoTitle: 'אפליה והתעמרות בעבודה: ליווי משפטי',
+        seoDescription:
+          'נפגעתם באפליה או בהתעמרות במקום העבודה? מה כדאי לתעד, מה האפשרויות ומתי לפנות לעורכת דין. עו״ד ליאור-קלואי ארז, חריש.',
+        intro: [
+          'אפליה והתעמרות בעבודה פוגעות לא רק בשכר ובקידום, אלא גם בתחושת הביטחון והכבוד של העובדת או העובד. אם אתם חווים יחס כזה, חשוב לדעת שיש דרכים לפעול ושאין חובה להתמודד לבד.',
+          'אפליה היא יחס פוגעני או לא שוויוני בשל מאפיין אישי, כמו מין, גיל, הריון, הורות, מוצא, דת, נטייה מינית או מוגבלות. התעמרות היא התנהגות חוזרת של השפלה, התנכלות או הדרה במקום העבודה. בתי הדין לעבודה בישראל דנים בתלונות מסוג זה.',
+        ],
+        handles: [
+          'בירור המצב והסבר ברור על האפשרויות העומדות בפניכם',
+          'ליווי בהגשת תלונה למעסיק ובהליכים הפנימיים בארגון',
+          'ייצוג מול המעסיק, כולל במשא ומתן',
+          'ליווי לקראת שימוע או לפני חתימה על מסמכים מטעם המעסיק',
+          'ייצוג בהליכים משפטיים, כשנדרש',
+        ],
+        steps: [
+          'לתעד: לרשום תאריכים, מה נאמר או נעשה ומי נכח, ולשמור הודעות, מיילים ומסמכים שנשלחו אליכם.',
+          'להימנע מהעתקת מסמכים סודיים של המעסיק לפני שהתייעצתם.',
+          'לבדוק אם בארגון יש נוהל לפנייה בנושא, ולפנות בכתב כשאפשר.',
+          'להתייעץ לפני שמגישים תלונה, חותמים על מסמך או מסכימים להצעה, כדי להבין את ההשלכות.',
+          'לא לחכות זמן רב, כי יש מועדים להגשת תביעות.',
+        ],
+        faq: [
+          {
+            question: 'מה ההבדל בין אפליה להתעמרות?',
+            answer:
+              'אפליה היא יחס שונה ופוגעני בשל מאפיין אישי של העובד, כמו מין, גיל או הריון. התעמרות היא התנהגות חוזרת ופוגענית, כמו השפלה או הדרה, גם אם אינה קשורה למאפיין כזה. לפעמים השתיים מתקיימות יחד.',
+          },
+          {
+            question: 'מה כדאי לתעד?',
+            answer:
+              'תאריכים, מה נאמר או נעשה, מי נכח והודעות כתובות. תיעוד שוטף ומדויק עוזר להבין את התמונה כבר בשלב מוקדם.',
+          },
+          {
+            question: 'אפשר לפנות לפני שהתפטרתי או פוטרתי?',
+            answer:
+              'כן, ואף מומלץ. התייעצות מוקדמת עוזרת להחליט איך לפעול לפני שמקבלים החלטות שקשה לחזור מהן, כמו התפטרות או חתימה על הסכם.',
+          },
+        ],
+      },
+    },
+    {
+      slug: 'sexual-harassment',
+      title: 'הטרדה מינית',
+      description: 'ייצוג וליווי בעניינים של הטרדה מינית, ברגישות ובדיסקרטיות מלאה.',
+      icon: 'ShieldCheck',
+      page: {
+        seoTitle: 'הטרדה מינית: ליווי משפטי ודיסקרטי',
+        seoDescription:
+          'פנייה בנושא הטרדה מינית דורשת רגישות. מה האפשרויות, איך פועלים ולמה כדאי להתייעץ. עו״ד ליאור-קלואי ארז, חריש.',
+        intro: [
+          'הטרדה מינית היא פגיעה קשה, והפנייה לעזרה היא צעד משמעותי. כאן אפשר להבין בקצרה מה האפשרויות, בלי צורך לתאר את האירוע.',
+          'הטרדה מינית מוסדרת בישראל בחוק למניעת הטרדה מינית. החוק חל במקום העבודה ובהקשרים נוספים, ומטיל חובות על מעסיקים, כמו הנחיות ונוהל לטיפול בתלונות. הדרך המתאימה תלויה בנסיבות: לעיתים תלונה במקום העבודה, לעיתים הליך משפטי, ובמקרים מסוימים תלונה במשטרה.',
+        ],
+        handles: [
+          'שיחה דיסקרטית שבה מבררים מה האפשרויות, בקצב שלכם',
+          'ליווי בתלונה במקום העבודה',
+          'ייצוג בהליכים משפטיים, כשבוחרים לפעול בדרך זו',
+          'ליווי בפנייה לגורמי האכיפה, כשזה רלוונטי',
+        ],
+        steps: [
+          'אם אתם בסכנה מיידית, להתקשר למשטרה בטלפון 100.',
+          'לשמור הודעות, תמונות ומסמכים הקשורים לאירוע, ולא למחוק כלום.',
+          'אין חובה להחליט מיד. אפשר לקבל מידע ולהתלבט.',
+          'אפשר גם לפנות לאדם קרוב או לגורם מקצועי לתמיכה נפשית.',
+          'להתייעץ לפני שמגישים תלונה או חותמים על מסמך.',
+        ],
+        faq: [
+          {
+            question: 'צריך לספר את כל הפרטים כבר בפנייה הראשונה?',
+            answer:
+              'לא. אפשר להתחיל בשיחה כללית, ולמסור פרטים בשיחה ישירה ודיסקרטית כשתרגישו מוכנים.',
+          },
+          {
+            question: 'האם הפנייה חסויה?',
+            answer:
+              'עורכת דין חבה בחובת סודיות כלפי לקוחותיה. ובכל זאת מומלץ לא לפרט את האירוע בהודעות באתר או בצ׳אט, ולהשאיר זאת לשיחה ישירה.',
+          },
+          {
+            question: 'אפשר לפעול גם אם האירוע היה לפני זמן?',
+            answer:
+              'ייתכן, וזה תלוי בנסיבות ובמועדים החלים על כל הליך. כדאי להתייעץ בהקדם כדי לברר.',
+          },
+        ],
+      },
+    },
+    {
+      slug: 'criminal-law',
+      title: 'משפט פלילי',
+      description: 'ייצוג וליווי בהליכים פליליים, משלב החקירה ועד סיום ההליך.',
+      icon: 'Gavel',
+      page: {
+        seoTitle: 'משפט פלילי: ייצוג וליווי משפטי',
+        seoDescription:
+          'הוזמנתם לחקירה או נפתח הליך פלילי? מה חשוב לדעת על הזכויות ועל שלבי ההליך, ולמה כדאי להתייעץ מוקדם. עו״ד ליאור-קלואי ארז, חריש.',
+        intro: [
+          'הזמנה לחקירה או הליך פלילי הם מצב מלחיץ, והצעדים הראשונים חשובים. מידע ברור על הזכויות ועל שלבי ההליך עוזר לקבל החלטות ברוגע.',
+          'הליך פלילי כולל בדרך כלל כמה שלבים: חקירה, לעיתים מעצר, החלטה אם להגיש כתב אישום, ניהול ההליך בבית המשפט, וגזר דין במקרה של הרשעה. בכל שלב יש החלטות שמשפיעות על ההמשך.',
+        ],
+        handles: [
+          'ליווי לפני חקירה ובמהלכה',
+          'ייצוג בהליכי מעצר',
+          'ייצוג בבית המשפט, בשלבי ההליך השונים',
+          'בחינת האפשרויות והסבר ברור של הסיכונים בכל שלב',
+        ],
+        steps: [
+          'לזכור שיש לכם זכות להיוועץ בעורך דין לפני חקירה.',
+          'לפני שמוסרים גרסה או חותמים על הודעה, להבין מה ההשלכות.',
+          'לא למחוק הודעות או חומרים הקשורים לעניין.',
+          'לשמור את כל המסמכים שקיבלתם, כמו הזמנה לחקירה או כתב אישום.',
+          'לא לתאר את העובדות בהודעות באתר או בצ׳אט. את זה עושים בשיחה ישירה.',
+        ],
+        faq: [
+          {
+            question: 'חייבים להגיע לחקירה בעקבות הזמנה?',
+            answer:
+              'זה תלוי בנסיבות ובסוג ההזמנה, ולכן כדאי להתייעץ לפני שמגיעים או מחליטים לא להגיע.',
+          },
+          {
+            question: 'מהי זכות השתיקה?',
+            answer:
+              'לחשוד יש זכות שלא להפליל את עצמו. איך ומתי כדאי להשתמש בה תלוי בנסיבות, ולכן מומלץ להתייעץ לפני החקירה.',
+          },
+          {
+            question: 'מתי כדאי לפנות לעורכת דין?',
+            answer:
+              'הכי טוב לפני החקירה, כי מה שנאמר בה משפיע על המשך ההליך. אבל גם בשלבים מאוחרים יותר אפשר לברר מה האפשרויות.',
+          },
+        ],
+      },
+    },
+  ] satisfies PracticeArea[],
+
+  // --- Testimonials ---
+  // Real client reviews only, quoted word for word (spacing normalised), with the
+  // reviewer's first name or initial and city as shown at the source. The section
+  // stays hidden while this is empty.
+  //
+  // Selection rule: nothing that claims an outcome ("won", "got what I wanted"),
+  // describes the client's case or health, or uses the word "specialist", and no
+  // quotes with typos. Excluded reviews are listed in docs/seo/backlog.md.
+  // Do not add an aggregate rating or review markup: Google treats self-published
+  // ratings as ineligible, and the Bar's rules on advertising apply.
+  testimonialsSource: 'ביקורות שפורסמו באתר LawReviews',
+  testimonials: [
+    {
+      name: 'ט.',
+      role: 'ינואר 2024',
+      rating: 5,
+      text: 'ממליצה על עו"ד ליאור ארז! עו"ד איכפתית, מקצועית, חריפה וזמינה. היא תהיה שם בשבילך לכל שאלה ותמצא דרך יצירתית לפתרון המיטבי עבורך.',
+    },
+    {
+      name: 'אלה, אשדוד',
+      role: 'ינואר 2024',
+      rating: 5,
+      text: 'עורכת דין מצוינת, נותנת ייעוץ וייצוג מעולה. תמיד זמינה וקשובה. בקיאה בדיני החוקים ויודעת לתת את המקסימום לכל מקרה ולקוח. ממליצה מאוד.',
+    },
+    {
+      name: 'שולי, רחובות',
+      role: 'ינואר 2024',
+      rating: 5,
+      text: 'ליאור עו"ד מוכשרת ומיומנת, הוכיחה מקצועיות, חדות מחשבה וחשיבה מחוץ לקופסא. קיבלתי יחס אישי ואדיב, שירות איכותי ובזכות ליאור תהליך המשפט הפך לפשוט. ממליצה בחום!!',
+    },
+    {
+      name: 'הילה ק., מודיעין',
+      role: 'ינואר 2024',
+      rating: 5,
+      text: 'קיבלתי מעורכת הדין ליאור ארז שירות ראוי לציון, מקצועיות, רצינות, עניינית מאוד, עזרה לי בנושא הרשויות. היחס של ליאור יוצא מגדר הרגיל ועשתה כל שביכולתה להשביע את רצוני.',
+    },
+    {
+      name: 'ד.',
+      role: 'פברואר 2024',
+      rating: 5,
+      text: 'עו"ד ליאור ארז, אשה מקסימה, אנושית הוגנת, ומאוד מקצועית, תמיד נמצאת גם בשעות לא שגרתיות בזמן דחיפות ומצוקה, מוכיחה בעשיה אכפתית ועקבית תמיד מחוברת לרעיון קידום והגנה על אזרחים ודאגה על זכויותיהם.',
+    },
+  ] satisfies Testimonial[],
+
+  // --- Video reviews (files in /public/videos; add a `captions` .vtt path to show subtitles) ---
+  videoReviews: [
+    { src: '/videos/review-1.mp4', poster: '/videos/review-1.webp', label: 'ביקורת וידאו מלקוח' },
+    { src: '/videos/review-2.mp4', poster: '/videos/review-2.webp', label: 'ביקורת וידאו מלקוח' },
+    { src: '/videos/review-3.mp4', poster: '/videos/review-3.webp', label: 'ביקורת וידאו מלקוח' },
+  ] as { src: string; poster: string; label: string; captions?: string }[],
+
+  // --- FAQ (also rendered as FAQPage JSON-LD) ---
+  faq: [
+    {
+      question: 'כמה עולה פגישת ייעוץ ראשונית?',
+      answer:
+        'פגישת הייעוץ הראשונה נועדה להבין את עניינכם ולהציג את האפשרויות. ' +
+        'עלות הפגישה תימסר מראש ובשקיפות מלאה בעת קביעת התור.',
+    },
+    {
+      question: 'האם הפנייה למשרד חסויה?',
+      answer:
+        'כן. עורכת דין חבה בחובת סודיות כלפי לקוחותיה, ופניות מטופלות בדיסקרטיות מלאה. ' +
+        'עם זאת, מומלץ לא למסור פרטים רגישים בהודעות באתר, ולהשאיר אותם לשיחה ישירה.',
+    },
+    {
+      question: 'נפגעתי בעבודה. מה כדאי לעשות כבר עכשיו?',
+      answer:
+        'כדאי לתעד מה קרה: תאריכים, מה נאמר, מי נכח, והודעות כתובות. ' +
+        'מומלץ להתייעץ לפני שמגישים תלונה או חותמים על מסמך כלשהו, כדי שתדעו מה האפשרויות לפני שמקבלים החלטה.',
+    },
+    {
+      question: 'תוך כמה זמן אקבל מענה?',
+      answer:
+        'אנו משתדלים לחזור לכל פנייה בהקדם. בפניות דחופות ניתן ליצור קשר טלפוני ' +
+        'או בוואטסאפ לקבלת מענה מהיר יותר.',
+    },
+    {
+      question: 'באילו תחומים עוסק המשרד?',
+      answer:
+        'המשרד מתמקד בשלושה תחומים: אפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי. ' +
+        'אם העניין שלכם בתחום אחר, אפשר לפנות ולברר, ונאמר בכנות אם הוא מחוץ להתמחות המשרד.',
+    },
+    {
+      question: 'האם אפשר לפנות בלי לפרט את האירוע?',
+      answer:
+        'כן. בפנייה הראשונה מספיק לציין את התחום ואיך אפשר ליצור קשר. את הפרטים אפשר למסור בשיחה ישירה ודיסקרטית, ' +
+        'כשתרגישו מוכנים.',
+    },
+    {
+      question: 'מה ההבדל בין ייעוץ לייצוג?',
+      answer:
+        'ייעוץ הוא פגישה שבה מבינים את התמונה ואת האפשרויות. ייצוג הוא ליווי מלא בהליך, כמו מו״מ, תלונה או משפט. ' +
+        'אפשר להתחיל בייעוץ בלי להתחייב לשום המשך.',
+    },
+    {
+      question: 'האם הצ׳אט באתר נותן ייעוץ משפטי?',
+      answer:
+        'לא. הצ׳אט הוא עוזר דיגיטלי מבוסס בינה מלאכותית שנותן מידע כללי, עונה על שאלות נפוצות ומסדר פנייה למשרד. ' +
+        'ייעוץ משפטי אישי ניתן רק בפגישה עם עורכת הדין.',
+    },
+    {
+      question: 'מה לעשות אם קיבלתי הזמנה לחקירה במשטרה?',
+      answer:
+        'כדאי להתייעץ עם עורכת דין לפני החקירה. לחשוד יש זכות להיוועץ בעורך דין וזכות שתיקה, ' +
+        'ומומלץ לא לחתום על שום דבר שלא הבנתם. יש על כך מדריך באתר.',
+    },
+    {
+      question: 'הוזמנתי לשימוע לפני פיטורים. מה עושים?',
+      answer:
+        'שימוע הוא הזדמנות להשמיע טענות לפני ההחלטה. כדאי לקרוא את הטענות, להתכונן, להתייעץ מראש, ' +
+        'ולא לחתום על מכתב התפטרות או הסכם סיום בלי להבין אותם.',
+    },
+    {
+      question: 'איפה נמצא המשרד?',
+      answer: 'המשרד נמצא ברחוב רימון 5 בחריש. מומלץ לתאם פגישה מראש בטלפון, בוואטסאפ או דרך הצ׳אט.',
+    },
+  ] satisfies FaqItem[],
+
+  // --- SEO ---
+  seo: {
+    /** Absolute <title> of the home page. Aim for about 50-60 characters. */
+    homeTitle: 'עורכת דין בחריש: אפליה בעבודה, הטרדה מינית, פלילי',
+    homeDescription:
+      'משרד עורכת דין ליאור-קלואי ארז בחריש: ליווי אישי ודיסקרטי באפליה והתעמרות בעבודה, בהטרדה מינית ובמשפט פלילי. אפשר לקבוע שיחת ייעוץ.',
+    /** Appended to inner-page titles. */
+    titleSuffix: 'ליאור-קלואי ארז',
+    /** Update when public content changes; feeds sitemap lastmod. */
+    lastModified: '2026-10-26',
+    /** What the firm is an authority on; feeds JSON-LD `knowsAbout` (confirmed topics only). */
+    knowsAbout: [
+      'אפליה בעבודה',
+      'התעמרות בעבודה',
+      'שימוע לפני פיטורים',
+      'הטרדה מינית',
+      'משפט פלילי',
+      'חקירה במשטרה',
+    ],
+  },
+
+  // --- Legal pages ---
+  legal: {
+    /** Date the privacy/terms/accessibility statements were last updated. */
+    lastUpdated: '2026-10-26',
+    /** Accessibility coordinator (Israeli standard 5568 / accessibility regulations). */
+    accessibilityCoordinator: 'עו״ד ליאור-קלואי ארז',
+    accessibilityContact: 'Lioraere@gmail.com',
+    /** Date of the last accessibility review of the site. */
+    accessibilityReviewed: '2026-10-26',
+    /**
+     * Court area that hears disputes about the site's terms of use.
+     * OWNER TO CONFIRM with the attorney.
+     */
+    jurisdiction: 'חדרה',
+    /** Business identification shown in the footer. Leave '' to hide. OWNER TO PROVIDE. */
+    licenseNumber: '',
+    businessId: '',
+    /** Third parties that may process visitor data; listed in the privacy policy. */
+    processors: [
+      'Netlify (אחסון האתר)',
+      'Cloudinary (שירות תמונות וסרטונים)',
+      'Google או Anthropic (עיבוד שיחות בצ׳אט באמצעות בינה מלאכותית, לפי ההגדרות)',
+      'Meta WhatsApp Business (העברת פנייה בוואטסאפ, כשהאפשרות מופעלת)',
+    ],
+  },
+} as const;
+
+export type Brand = typeof brand;
+
+/** Convenience helpers used across the app. */
+export const telHref = `tel:+${brand.phoneE164}`;
+export const whatsappHref = `https://wa.me/${brand.whatsapp}`;
+export const mailHref = `mailto:${brand.email}`;
