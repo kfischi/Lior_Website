@@ -9,9 +9,8 @@ export function VideoReviews() {
     <section id="video-reviews" aria-labelledby="video-reviews-title" className="section bg-navy text-cream">
       <div className="shell">
         <div className="mb-12 text-center">
-          <p className="eyebrow mb-3 text-accent-light">ביקורות וידאו</p>
           <h2 id="video-reviews-title" className="text-4xl text-cream md:text-5xl">
-            בדבריהם של לקוחות
+            לקוחות מספרים
           </h2>
         </div>
         <ul className="mx-auto flex max-w-5xl snap-x snap-mandatory gap-5 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:overflow-visible">
