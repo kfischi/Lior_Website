@@ -24,7 +24,19 @@ const INTENT_BOOSTS: [concept: string, docId: string, factor: number][] = [
   ['#טלפון', 'k:contact', 3],
   ['#וואטסאפ', 'k:contact', 3],
   ['#שעות', 'k:response-time', 2.5],
+  ['#נציג', 'k:talk-to-lawyer', 4],
 ];
+
+/** Topics where a person describing their own situation first gets one human sentence. */
+const EMPATHY: Record<string, string> = {
+  'k:workplace-discrimination': 'זה נשמע מצב קשה, ואני שמחה שפניתם.',
+  'k:unpaid-wages': 'זה מצב מתסכל, ואני שמחה שפניתם.',
+  'k:sexual-harassment': 'תודה שפניתם, אני מבינה שזה לא פשוט.',
+  'k:criminal-law': 'זה בטח מלחיץ, ואני שמחה שפניתם לפני שמוסרים גרסה.',
+  'k:urgent': 'זה מצב שדורש מהירות, אז אכוון אתכם ישר לצעד הנכון.',
+};
+/** First-person cues: the visitor is describing something that happened to them. */
+const PERSONAL = /(?:^|\s)(?:אותי|אליי|אלי|עליי|עלי|שלי|לי|אצלי|פיטרו|פוטרתי|הטרידו|הוזמנתי|זימנו|נעצר|נעצרתי|מפחד|מפחדת|חושש|חוששת|מקלל|משפיל|מתעמר)/;
 
 /** When nothing matches well, a clearly named topic still gets that topic's answer. */
 const TOPIC_FALLBACKS: [concept: string, docId: string][] = [
@@ -36,10 +48,14 @@ const TOPIC_FALLBACKS: [concept: string, docId: string][] = [
   ['#אפליה', 'k:workplace-discrimination'],
 ];
 
+/** Broad overview answers. A specific published answer that fits the question about as well should win over them. */
+const BROAD = new Set(['k:workplace-discrimination', 'k:sexual-harassment', 'k:criminal-law']);
+
 const CONFIDENT = { score: 1.3, coverage: 0.5 };
 const CLOSE = { score: 1.6, coverage: 0.34 };
 
 function chipFor(hit: Hit): string | null {
+  if (hit.doc.chip) return hit.doc.chip;
   const t = hit.doc.title.trim();
   if (t.length > 60 || t.length < 4) return null;
   if (hit.doc.kind === 'knowledge') return t.endsWith('?') ? t : `${t}?`;
@@ -67,7 +83,9 @@ function compose(hit: Hit, hits: Hit[], asked: string, hedge: boolean): string {
   const { doc } = hit;
   const parts: string[] = [];
   if (hedge) parts.push('נראה לי שזה מה ששאלתם:');
-  parts.push(doc.answer);
+  const empathy = EMPATHY[doc.id];
+  const opener = empathy && !hedge && PERSONAL.test(` ${asked}`) ? `${empathy} ` : '';
+  parts.push(`${opener}${doc.answer}`);
   if (doc.followUp) parts.push(doc.followUp);
   if (doc.link && doc.kind !== 'taught') parts.push(`קראו עוד: ${doc.link}`);
   return withSuggestions(parts.join('\n\n'), chips(hits, hit, asked));
@@ -78,6 +96,24 @@ function sensitive(): string {
     'תודה ששיתפתם, ואני מבינה שזה לא פשוט. אין צורך לפרט את האירוע כאן. ' +
       'עורכת הדין תשמע אתכם בשיחה ישירה ודיסקרטית, ותסביר מה האפשרויות. אפשר להשאיר פרטים קצרים ונחזור אליכם.',
     ['קביעת ייעוץ', 'האם הפנייה חסויה?'],
+  );
+}
+
+/** The same answer twice in a row helps nobody: ask for the one detail that would change it. */
+function moreSpecific(): string {
+  return withSuggestions(
+    'כדי לכוון אתכם בצורה מדויקת יותר, כדאי שאדע באיזה שלב אתם נמצאים: האם קיבלתם מכתב או זימון, האם כבר הוגשה תלונה, ' +
+      'ומה הכי דחוף לכם עכשיו. אין צורך לפרט את האירוע. ואם נוח יותר, אפשר לדבר ישירות עם המשרד.',
+    ['קביעת ייעוץ', 'מה להביא לפגישה?', 'האם הפנייה חסויה?'],
+  );
+}
+
+function english(): string {
+  return withSuggestions(
+    `Thank you for reaching out. I'm the virtual assistant of the law firm. This chat works best in Hebrew, ` +
+      `and for anything urgent please call or message the office on WhatsApp at ${brand.phone}. ` +
+      'Which languages the office can serve you in is best confirmed with them directly.',
+    ['קביעת ייעוץ'],
   );
 }
 
@@ -105,6 +141,7 @@ export async function localReply(question: string, previousQuestion?: string): P
   }
   if (BYE.has(norm)) return 'להתראות, ובהצלחה. אפשר לחזור בכל עת.';
   if (question.length > 260) return sensitive();
+  if (/[A-Za-z]{3}/.test(question) && !/[\u0590-\u05FF]/.test(question)) return english();
 
   const notes = await withTimeout(listNotes(), 1500, []);
   let q = question;
@@ -113,7 +150,14 @@ export async function localReply(question: string, previousQuestion?: string): P
   let hits = search(q, notes);
   // Clear intents go to their dedicated answer (urgent: phone first; contact; hours).
   const present = new Set(tokens(q));
-  const boosts = INTENT_BOOSTS.filter(([concept]) => present.has(concept));
+  // "The police called me" is an investigation, not a request for our phone number.
+  const investigation = present.has('#חקירה') || present.has('#פלילי');
+  const boosts: [string, string, number][] = INTENT_BOOSTS.filter(
+    ([concept, docId]) => present.has(concept) && !(investigation && docId === 'k:contact'),
+  );
+  if (investigation && /(?:^|\s)(?:נעצר|נעצרה|נעצרתי|עצרו|לתחנה|עכשיו)/.test(` ${normalizeText(q)}`)) {
+    boosts.push(['#חקירה', 'k:urgent', 3]);
+  }
   if (boosts.length > 0) {
     hits = hits
       .map((h) => {
@@ -121,6 +165,27 @@ export async function localReply(question: string, previousQuestion?: string): P
         return b ? { ...h, score: h.score * b[2], coverage: Math.max(h.coverage, 0.6) } : h;
       })
       .sort((a, b) => b.score - a.score);
+  }
+
+  // Never repeat the previous answer word for word: use the next relevant passage, or ask for a detail.
+  if (previousQuestion && hits[0]) {
+    const prevTop = search(previousQuestion, notes)[0]?.doc.id;
+    if (prevTop && prevTop === hits[0].doc.id && hits[0].doc.kind === 'knowledge') {
+      const next = hits.find((h) => h.doc.id !== prevTop && h.score >= CLOSE.score && h.coverage >= CLOSE.coverage);
+      if (!next) return moreSpecific();
+      hits = [next, ...hits.filter((h) => h.doc.id !== next.doc.id)];
+    }
+  }
+
+  if (hits[0] && BROAD.has(hits[0].doc.id)) {
+    const first = hits[0];
+    const specific = hits.find(
+      (h) =>
+        (h.doc.kind === 'faq' || h.doc.kind === 'taught') &&
+        h.coverage >= first.coverage * 0.9 &&
+        h.score >= first.score * 0.7,
+    );
+    if (specific) hits = [specific, ...hits.filter((h) => h.doc.id !== specific.doc.id)];
   }
 
   const top = hits[0];

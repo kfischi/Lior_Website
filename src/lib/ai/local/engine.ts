@@ -23,6 +23,8 @@ export interface Doc {
   link?: string;
   suggestions?: string[];
   followUp?: string;
+  /** A tappable question for this topic (knowledge entries). */
+  chip?: string;
   boost: number;
   tf: Map<string, number>;
   len: number;
@@ -73,6 +75,7 @@ function buildStatic(): Doc[] {
           answer: k.answer,
           followUp: k.followUp,
           suggestions: k.suggestions,
+          chip: k.chip,
           boost: Math.sqrt(k.weight ?? 1),
         },
         [
