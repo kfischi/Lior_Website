@@ -31,8 +31,11 @@ npm run avatar -- --tts recorded --recording my-reading.m4a --provider local   #
 - Honest quality: a stylised living portrait. Small, soft speech movements look natural at the size of the chat
   window. It has no lip rounding for "o/u", the teeth are a simple shaded band, and it looks synthetic when enlarged.
   Photoreal lip-sync needs a neural model on a GPU or a paid service (below). Say so to the person asking.
-- Tested here: setup, the pause-based split, chunking with motion kept continuous across chunks, the join, and
-  the site playback, all with a synthetic tone recording. Not yet tried with real Hebrew speech.
+- What it models: mouth opening from loudness, vowel shape from the first two formants (rounded "o/u" draws the
+  lips together, spread "i/e" pulls the corners out, an open "a" opens wider), blinks, small gaze shifts, brow
+  lifts on emphasis, head movement and breathing. The photo is cropped inside its own borders (no invented pixels).
+- Tested here: setup, the pause-based split, chunking with motion kept continuous across chunks, the join, the
+  site playback, and a 12 s run on real Hebrew speech (frames reviewed: natural, subtle movement, no artefacts).
 
 ## Inputs
 - Photo: front-facing, sharp, neutral expression, head and shoulders, plain lighting

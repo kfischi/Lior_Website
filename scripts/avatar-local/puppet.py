@@ -21,6 +21,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 from scipy.interpolate import RBFInterpolator
+from scipy.linalg import solve_toeplitz
 
 # ---------- MediaPipe face-mesh index sets ----------
 INNER_LIPS = [78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308, 415, 310, 311, 312, 13, 82, 81, 80, 191]
@@ -35,6 +36,7 @@ FACE_OVAL = [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365
 R_UP, R_LO = [246, 161, 160, 159, 158, 157, 173], [7, 163, 144, 145, 153, 154, 155]
 L_UP, L_LO = [466, 388, 387, 386, 385, 384, 398], [249, 390, 373, 374, 380, 381, 382]
 BROWS = [70, 63, 105, 66, 107, 336, 296, 334, 293, 300]
+IRIS = [468, 469, 470, 471, 472, 473, 474, 475, 476, 477]
 ANCHORS = [1, 4, 5, 6, 168, 197, 195, 33, 133, 263, 362, 129, 358, 98, 327]
 
 
@@ -47,7 +49,7 @@ def read_audio(path: str, rate: int = 16000) -> np.ndarray:
 
 
 def speech_curves(audio: np.ndarray, fps: int, rate: int = 16000):
-    """Per video frame: mouth opening 0..1, mouth width -1..1 (round to spread), emphasis 0..1."""
+    """Per video frame: mouth opening, vowel openness, lip rounding, lip spread and emphasis, each 0..1."""
     hop, win = rate // fps, 1024
     n = max(1, int(len(audio) / hop))
     rms = np.zeros(n)
@@ -64,19 +66,58 @@ def speech_curves(audio: np.ndarray, fps: int, rate: int = 16000):
     db = 20 * np.log10(rms + 1e-9)
     floor, top = np.percentile(db, 12), np.percentile(db, 96)
     raw = np.clip((db - (floor + 4)) / max(6.0, top - floor - 4), 0, 1)
-    # Fast attack, slower release, then a touch of smoothing: it reads as syllables, not jitter.
+    # Fast attack, slower release: it reads as syllables, not jitter.
     out = np.zeros(n)
     for i in range(n):
         prev = out[i - 1] if i else 0.0
         out[i] = prev + (raw[i] - prev) * (0.75 if raw[i] > prev else 0.35)
     opening = np.clip(out**0.8 * 1.05, 0, 1)
-    voiced = opening > 0.15
-    c_med = np.median(cen[voiced]) if voiced.any() else 1500.0
-    width = np.clip((cen - c_med) / 1200.0, -1, 1) * opening
-    width = np.convolve(width, np.ones(3) / 3, mode="same")
+
+    # Vowel colour from the first two formants (LPC): a low second formant is a rounded "o/u" (lips
+    # pushed together), a high one a spread "i/e" (corners out), a high first formant an open "a".
+    f1 = np.full(n, 550.0)
+    f2 = np.full(n, 1500.0)
+    win_f = int(0.032 * rate)
+    for i in range(n):
+        if opening[i] < 0.2:
+            continue
+        c = i * hop + hop // 2
+        seg = audio[max(0, c - win_f // 2) : c + win_f // 2]
+        if len(seg) < win_f:
+            continue
+        got = formants(seg, rate)
+        if got:
+            f1[i], f2[i] = got
+    for arr in (f1, f2):  # hold through silence, then smooth
+        for i in range(1, n):
+            if opening[i] < 0.2:
+                arr[i] = arr[i - 1]
+        arr[:] = np.convolve(np.pad(arr, 2, mode="edge"), np.ones(5) / 5, mode="valid")
+    open_scale = np.clip((f1 - 350) / 450, 0, 1)
+    rounded = np.clip((1450 - f2) / 600, 0, 1) * np.clip(opening * 1.6, 0, 1)
+    spread = np.clip((f2 - 1750) / 550, 0, 1) * np.clip(opening * 1.6, 0, 1)
     emph = np.clip(np.maximum(0, np.gradient(opening)) * 4, 0, 1)
     emph = np.convolve(emph, np.ones(5) / 5, mode="same")
-    return opening, width, emph
+    return opening, open_scale, rounded, spread, emph
+
+
+def formants(seg: np.ndarray, rate: int):
+    """First two formants of a short voiced frame by linear prediction, or None."""
+    x = np.append(seg[0], seg[1:] - 0.97 * seg[:-1]) * np.hamming(len(seg))
+    order = 12
+    r = np.correlate(x, x, mode="full")[len(x) - 1 : len(x) + order]
+    if r[0] < 1e-9:
+        return None
+    try:
+        a = solve_toeplitz(r[:order], r[1 : order + 1])
+    except Exception:  # singular frame
+        return None
+    roots = np.roots(np.concatenate(([1.0], -a)))
+    roots = roots[np.imag(roots) > 0.01]
+    freqs = np.angle(roots) * rate / (2 * np.pi)
+    bw = -0.5 * rate / (2 * np.pi) * np.log(np.abs(roots)) * 2
+    good = sorted(f for f, b in zip(freqs, bw) if 250 < f < 3200 and b < 400)
+    return (good[0], good[1]) if len(good) >= 2 else None
 
 
 def detect(img_bgr: np.ndarray) -> np.ndarray:
@@ -89,11 +130,14 @@ def detect(img_bgr: np.ndarray) -> np.ndarray:
 
 
 def crop_square(img: np.ndarray, pts: np.ndarray, size: int):
+    """A square around the face, kept inside the photo (no invented borders), face in the upper half."""
+    ih, iw = img.shape[:2]
     fw = pts[:, 0].max() - pts[:, 0].min()
-    side = fw * 3.0
+    side = min(fw * 3.0, iw, ih)
     cx = (pts[:, 0].max() + pts[:, 0].min()) / 2
-    cy = (pts[:, 1].max() + pts[:, 1].min()) / 2 + side * 0.12  # face centre sits at 38% of the height
-    x0, y0 = cx - side / 2, cy - side / 2
+    cy = (pts[:, 1].max() + pts[:, 1].min()) / 2
+    x0 = min(max(cx - side / 2, 0), iw - side)
+    y0 = min(max(cy - side * 0.38, 0), ih - side)
     scale = size / side
     m = np.array([[scale, 0, -x0 * scale], [0, scale, -y0 * scale]], dtype=np.float64)
     out = cv2.warpAffine(img, m, (size, size), flags=cv2.INTER_AREA if scale < 1 else cv2.INTER_CUBIC,
@@ -113,7 +157,7 @@ class Puppet:
         self.fh = pts[152][1] - pts[10][1]
         self.mw = abs(pts[291][0] - pts[61][0])
         self.pairs = {**nearest_pairs(pts, R_UP, R_LO), **nearest_pairs(pts, L_UP, L_LO)}
-        moving = set(INNER_LIPS + OUTER_LOWER + OUTER_UPPER + JAW + R_UP + R_LO + L_UP + L_LO + BROWS + CORNERS)
+        moving = set(INNER_LIPS + OUTER_LOWER + OUTER_UPPER + JAW + R_UP + R_LO + L_UP + L_LO + BROWS + CORNERS + IRIS)
         ring = [p for p in FACE_OVAL if p not in moving]
         # Control points: everything that moves plus anchors that stay put, plus the picture's border.
         s = self.size
@@ -132,6 +176,12 @@ class Puppet:
         while t < 600:
             self.blink_at.append(t)
             t += rng.uniform(2.4, 5.2)
+        # Gaze: stays near the camera, with small quick shifts every second or two.
+        self.gaze = []
+        t = 0.0
+        while t < 600:
+            self.gaze.append((t, rng.normal(0, 0.55), rng.normal(0, 0.4)))
+            t += rng.uniform(0.9, 2.6)
 
     def blink(self, t: float) -> float:
         for b in self.blink_at:
@@ -142,11 +192,21 @@ class Puppet:
                 break
         return 0.0
 
-    def displacement(self, t, opening, width, emph):
+    def gaze_at(self, t: float):
+        for k in range(len(self.gaze) - 1, -1, -1):
+            t0, gx, gy = self.gaze[k]
+            if t >= t0:
+                prev = self.gaze[k - 1] if k else (0.0, 0.0, 0.0)
+                m = min(1.0, (t - t0) / 0.09)
+                m = m * m * (3 - 2 * m)
+                return prev[1] + (gx - prev[1]) * m, prev[2] + (gy - prev[2]) * m
+        return 0.0, 0.0
+
+    def displacement(self, t, opening, open_scale, rounded, spread, emph):
         d = np.zeros((len(self.src), 2))
         k = self.index
         fh, mw = self.fh, self.mw
-        o = opening * 0.055 * fh
+        o = opening * (0.032 + 0.034 * open_scale) * fh
 
         def add(i, dx, dy):
             if i in k:
@@ -168,7 +228,15 @@ class Puppet:
         for i, wgt in zip(JAW, [0.75, 0.7, 0.7, 0.65, 0.55, 0.7, 0.7, 0.65, 0.55, 0.7, 0.6, 0.6, 0.5, 0.35, 0.4, 0.5, 0.35, 0.3]):
             add(i, 0, o * wgt * 0.7)
         for i in CORNERS:
-            add(i, width * 0.03 * mw * (1 if self.base[i][0] > self.base[1][0] else -1), o * 0.06)
+            side = 1 if self.base[i][0] > self.base[1][0] else -1
+            add(i, side * (spread * 0.05 - rounded * 0.13) * mw, o * 0.06 - spread * fh * 0.006)
+        # Rounded vowels draw all the lip points toward the middle; spread ones pull them out a little.
+        cx = self.base[13][0]
+        for i in INNER_LIPS + OUTER_LOWER + OUTER_UPPER:
+            add(i, -(self.base[i][0] - cx) * (rounded * 0.20 - spread * 0.05), 0)
+        gx, gy = self.gaze_at(t)
+        for i in IRIS:
+            add(i, gx * fh * 0.0075, gy * fh * 0.0055)
         # Blink
         b = self.blink(t)
         for up, lo in self.pairs.items():
@@ -194,9 +262,9 @@ class Puppet:
         off = pivot - a @ pivot + (tx, ty)
         return a, off
 
-    def frame(self, t, opening, width, emph):
+    def frame(self, t, opening, open_scale, rounded, spread, emph):
         s = self.size
-        d = self.displacement(t, opening, width, emph)
+        d = self.displacement(t, opening, open_scale, rounded, spread, emph)
         a, off = self.head_matrix(t, opening, emph)
         a_inv = np.linalg.inv(a)
         # Displacement field on a coarse grid, then smoothly enlarged.
@@ -281,7 +349,7 @@ def main() -> None:
     crop, cpts = crop_square(img, pts, args.size)
     puppet = Puppet(crop, cpts)
     audio = read_audio(args.audio)
-    opening, width, emph = speech_curves(audio, args.fps)
+    opening, open_scale, rounded, spread, emph = speech_curves(audio, args.fps)
     frames = len(opening)
 
     enc = subprocess.Popen(
@@ -292,7 +360,7 @@ def main() -> None:
     )
     for i in range(frames):
         t = args.start + i / args.fps
-        enc.stdin.write(puppet.frame(t, float(opening[i]), float(width[i]), float(emph[i])).tobytes())
+        enc.stdin.write(puppet.frame(t, float(opening[i]), float(open_scale[i]), float(rounded[i]), float(spread[i]), float(emph[i])).tobytes())
     enc.stdin.close()
     if enc.wait() != 0:
         sys.exit("ffmpeg failed")
