@@ -14,6 +14,7 @@ import { chatTools } from '@/lib/ai/tools';
 import { localReply } from '@/lib/ai/local/reply';
 import { splitSuggestions } from '@/lib/ai/suggestions';
 import { splitSiteAction } from '@/lib/site-actions';
+import { redactPersonalDetails } from '@/lib/privacy/redact';
 import { brand } from '@/lib/brand';
 import { getLearnedPrompt } from '@/lib/learning/store';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
@@ -29,6 +30,10 @@ export const runtime = 'nodejs';
 let modelDownUntil = 0;
 const MODEL_COOLDOWN_MS = 60_000;
 export const maxDuration = 30;
+
+/** Shown when a visitor shared personal details in the chat. */
+const REDACTED_NOTE =
+  'שימו לב: הסרתי אוטומטית פרטים אישיים שכתבתם (כמו טלפון או מספר זהות). עדיף לא למסור אותם בצ׳אט, ואפשר להשאיר אותם בשיחה ישירה עם המשרד או בקליטת הפנייה.';
 
 /** Join the text parts of a UIMessage into a plain string. */
 function messageText(message: UIMessage | undefined): string {
@@ -99,8 +104,23 @@ export async function POST(req: Request) {
     return Response.json({ error: 'אין הודעות' }, { status: 400 });
   }
 
+  // Personal details are removed here, before the model, the local engine, the logs or the database see them.
+  let redacted = false;
+  const clean: UIMessage[] = messages.slice(-12).map((m) => {
+    if (m.role !== 'user') return m;
+    return {
+      ...m,
+      parts: m.parts.map((p) => {
+        if (p.type !== 'text') return p;
+        const r = redactPersonalDetails(p.text);
+        if (r.found.length > 0) redacted = true;
+        return { ...p, text: r.text };
+      }),
+    };
+  });
+
   // Token-window management: keep only the most recent turns in context.
-  const trimmed = messages.slice(-12);
+  const trimmed = clean;
   const userTurns = trimmed.filter((m) => m.role === 'user');
   const lastUserText = messageText(userTurns[userTurns.length - 1]);
   const previousUserText = messageText(userTurns[userTurns.length - 2]);
@@ -108,7 +128,8 @@ export async function POST(req: Request) {
   // No AI provider configured (or CHAT_PROVIDER=local): the local engine answers.
   const model = getChatModel();
   if (!model || Date.now() < modelDownUntil) {
-    return streamStaticReply(await localReply(lastUserText, previousUserText));
+    const reply = await localReply(lastUserText, previousUserText);
+    return streamStaticReply(redacted ? `${REDACTED_NOTE}\n\n${reply}` : reply);
   }
 
   // Which practice-area page the visitor is on (matched against known routes only).
@@ -130,7 +151,12 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model,
-    system: buildSystemPrompt(context, area, await withTimeout(getLearnedPrompt(), 1500, '')),
+    system:
+      buildSystemPrompt(context, area, await withTimeout(getLearnedPrompt(), 1500, '')) +
+      (redacted
+        ? '\n\n## הודעה אחרונה\nהמשתמש מסר פרטים אישיים (טלפון, זהות, כרטיס או דוא״ל) והם הוסרו אוטומטית. ' +
+          'אל תבקש אותם שוב. אמור במשפט אחד חם שעדיף לא למסור פרטים כאלה בצ׳אט, ושאפשר להשאיר אותם בשיחה ישירה עם המשרד או בקליטת הפנייה.'
+        : ''),
     messages: modelMessages,
     tools: chatTools,
     stopWhen: stepCountIs(4),

@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test:privacy": "node --import tsx scripts/test-redact.ts",
     "ingest": "node --env-file-if-exists=.env.local --import tsx scripts/ingest.ts",
     "captions": "node --env-file-if-exists=.env.local --import tsx scripts/captions.ts",
     "avatar": "node --env-file-if-exists=.env.local --import tsx scripts/avatar.ts",
