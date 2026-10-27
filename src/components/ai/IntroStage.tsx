@@ -145,7 +145,7 @@ export function IntroStage({
           playsInline
           muted={muted}
           aria-label="סרטון היכרות: העוזרת הווירטואלית של ליאור מציגה את האתר"
-          className="h-full w-full object-cover object-[50%_14%]"
+          className="h-full w-full object-cover object-top"
           onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
           onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
           onPlay={() => setPlaying(true)}
@@ -236,6 +236,16 @@ export function IntroStage({
           </div>
         )}
 
+        {/* Captions sit over the lower edge of the picture (below the chin, which the video is framed for). */}
+        {captionsOn && current && (
+          <p
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-1 bg-linear-to-t from-black/85 via-black/60 to-transparent px-3.5 pb-1.5 pt-6 text-[0.85rem] leading-snug text-cream"
+          >
+            {current.text}
+          </p>
+        )}
+
         {duration > 0 && (
           <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-white/20">
             <div className="h-full bg-accent-light" style={{ width: `${Math.min(100, (time / duration) * 100)}%` }} />
@@ -243,12 +253,6 @@ export function IntroStage({
         )}
       </div>
 
-      <p
-        aria-hidden="true"
-        className="min-h-[3.9rem] shrink-0 bg-black px-3.5 py-2 text-[0.9rem] leading-snug text-cream/95"
-      >
-        {captionsOn && current ? current.text : ''}
-      </p>
       <span role="status" className="sr-only">
         {focus ? current?.text : ''}
       </span>

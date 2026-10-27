@@ -63,7 +63,7 @@ function Floating() {
             <ConciergePanel
               autoFocus
               onClose={closePanel}
-              className="h-[min(36rem,calc(100dvh-1.5rem))] rounded-2xl border border-navy/10 shadow-2xl"
+              className="h-[min(40rem,calc(100dvh-1.5rem))] rounded-2xl border border-navy/10 shadow-2xl"
             />
           </motion.div>
         )}
