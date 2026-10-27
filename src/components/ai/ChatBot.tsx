@@ -27,11 +27,13 @@ function Floating() {
   return (
     <>
       {!panelOpen && (
-        <div className={cn('fixed end-4 z-[60] flex flex-col items-center gap-1.5 sm:end-5', bottom)}>
+        <div className={cn('fixed end-3 z-[60] flex flex-col items-center gap-1.5 sm:end-5', bottom)}>
           {!opened && (
             <>
-              <p className="relative rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-navy shadow-xl ring-1 ring-navy/10">
-                יש שאלה? אני כאן ועונה מיד
+              <p className="rounded-2xl bg-white px-3 py-1.5 text-center text-sm font-semibold leading-snug text-navy shadow-xl ring-1 ring-navy/10">
+                יש שאלה?
+                <br />
+                אני עונה מיד
               </p>
               <span
                 aria-hidden="true"
