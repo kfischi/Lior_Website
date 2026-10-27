@@ -50,8 +50,9 @@ export interface PracticeArea {
 
 export interface Testimonial {
   name: string;
-  role?: string;
-  rating: number; // 1–5
+  /** Publication date at the source, ISO `YYYY-MM-DD`. The site lists newest first. */
+  date: string;
+  rating: number; // 0–5, fractions allowed (shown exactly as at the source)
   text: string;
 }
 
@@ -115,7 +116,7 @@ export const brand = {
 
   // --- Fonts (next/font keys; see src/app/layout.tsx) ---
   fonts: {
-    headingName: 'Frank Ruhl Libre',
+    headingName: 'Rubik',
     bodyName: 'Heebo',
   },
 
@@ -402,6 +403,8 @@ export const brand = {
   // reviewer's first name or initial and city as shown at the source. The section
   // stays hidden while this is empty.
   //
+  // Keep the list in any order: the page sorts by `date`, newest first.
+  //
   // Selection rule: nothing that claims an outcome ("won", "got what I wanted"),
   // describes the client's case or health, or uses the word "specialist", and no
   // quotes with typos. Excluded reviews are listed in docs/seo/backlog.md.
@@ -410,34 +413,58 @@ export const brand = {
   testimonialsSource: 'ביקורות שפורסמו באתר LawReviews',
   testimonials: [
     {
+      name: 'ד.',
+      date: '2024-02-27',
+      rating: 5,
+      text: 'עו"ד ליאור ארז, אשה מקסימה, אנושית הוגנת, ומאוד מקצועית, תמיד נמצאת גם בשעות לא שגרתיות בזמן דחיפות ומצוקה, מוכיחה בעשיה אכפתית ועקבית תמיד מחוברת לרעיון קידום והגנה על אזרחים ודאגה על זכויותיהם.',
+    },
+    {
+      name: 'חנה, צפת',
+      date: '2024-01-23',
+      rating: 5,
+      text: 'מעבר להיותה עורכת דין שלוחמת צדק ומוציאה את האמת לאור. אשה ערכית. אנושית. ואמיתית!!!',
+    },
+    {
+      name: 'מ.',
+      date: '2024-01-23',
+      rating: 5,
+      text: 'עורכת דין מאוד יסודית, לא מוותרת עד השגת התוצאות הרצויות והכל במאור פנים ואיכפתיות.',
+    },
+    {
       name: 'ט.',
-      role: 'ינואר 2024',
+      date: '2024-01-23',
       rating: 5,
       text: 'ממליצה על עו"ד ליאור ארז! עו"ד איכפתית, מקצועית, חריפה וזמינה. היא תהיה שם בשבילך לכל שאלה ותמצא דרך יצירתית לפתרון המיטבי עבורך.',
     },
     {
-      name: 'אלה, אשדוד',
-      role: 'ינואר 2024',
+      name: 'קורין, טירת כרמל',
+      date: '2024-01-22',
       rating: 5,
-      text: 'עורכת דין מצוינת, נותנת ייעוץ וייצוג מעולה. תמיד זמינה וקשובה. בקיאה בדיני החוקים ויודעת לתת את המקסימום לכל מקרה ולקוח. ממליצה מאוד.',
-    },
-    {
-      name: 'שולי, רחובות',
-      role: 'ינואר 2024',
-      rating: 5,
-      text: 'ליאור עו"ד מוכשרת ומיומנת, הוכיחה מקצועיות, חדות מחשבה וחשיבה מחוץ לקופסא. קיבלתי יחס אישי ואדיב, שירות איכותי ובזכות ליאור תהליך המשפט הפך לפשוט. ממליצה בחום!!',
+      text: 'עו"ד עניינית עושה את עבודתה כראוי ממליצה עליה בחום',
     },
     {
       name: 'הילה ק., מודיעין',
-      role: 'ינואר 2024',
+      date: '2024-01-21',
       rating: 5,
       text: 'קיבלתי מעורכת הדין ליאור ארז שירות ראוי לציון, מקצועיות, רצינות, עניינית מאוד, עזרה לי בנושא הרשויות. היחס של ליאור יוצא מגדר הרגיל ועשתה כל שביכולתה להשביע את רצוני.',
     },
     {
-      name: 'ד.',
-      role: 'פברואר 2024',
+      name: 'שולי, רחובות',
+      date: '2024-01-21',
       rating: 5,
-      text: 'עו"ד ליאור ארז, אשה מקסימה, אנושית הוגנת, ומאוד מקצועית, תמיד נמצאת גם בשעות לא שגרתיות בזמן דחיפות ומצוקה, מוכיחה בעשיה אכפתית ועקבית תמיד מחוברת לרעיון קידום והגנה על אזרחים ודאגה על זכויותיהם.',
+      text: 'ליאור עו"ד מוכשרת ומיומנת, הוכיחה מקצועיות, חדות מחשבה וחשיבה מחוץ לקופסא. קיבלתי יחס אישי ואדיב, שירות איכותי ובזכות ליאור תהליך המשפט הפך לפשוט. ממליצה בחום!!',
+    },
+    {
+      name: 'אלה, אשדוד',
+      date: '2024-01-18',
+      rating: 5,
+      text: 'עורכת דין מצוינת, נותנת ייעוץ וייצוג מעולה. תמיד זמינה וקשובה. בקיאה בדיני החוקים ויודעת לתת את המקסימום לכל מקרה ולקוח. ממליצה מאוד.',
+    },
+    {
+      name: 'גיא, חיפה',
+      date: '2024-01-16',
+      rating: 4.6,
+      text: 'ליאור קלואי ארז היא לוחמת צדק, בעידן של ימינו כל אחד יכול למצוא את עצמו במלחמה על זכויות יסוד. ליאור תעמוד לצדכם ותקרע לצד השני את הצורה :)',
     },
   ] satisfies Testimonial[],
 
@@ -446,7 +473,9 @@ export const brand = {
     { src: '/videos/review-1.mp4', poster: '/videos/review-1.webp', label: 'ביקורת וידאו מלקוח' },
     { src: '/videos/review-2.mp4', poster: '/videos/review-2.webp', label: 'ביקורת וידאו מלקוח' },
     { src: '/videos/review-3.mp4', poster: '/videos/review-3.webp', label: 'ביקורת וידאו מלקוח' },
-  ] as { src: string; poster: string; label: string; captions?: string }[],
+    { src: '/videos/review-4.mp4', poster: '/videos/review-4.webp', label: 'ביקורת וידאו מלקוחה' },
+    { src: '/videos/review-5.mp4', poster: '/videos/review-5.webp', label: 'ביקורת וידאו מלקוחה', landscape: true },
+  ] as { src: string; poster: string; label: string; captions?: string; landscape?: boolean }[],
 
   // --- FAQ (also rendered as FAQPage JSON-LD) ---
   faq: [

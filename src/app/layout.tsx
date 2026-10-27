@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Frank_Ruhl_Libre, Heebo } from 'next/font/google';
+import { Rubik, Heebo } from 'next/font/google';
 import './globals.css';
 
 import { brand } from '@/lib/brand';
@@ -13,10 +13,10 @@ import { ScrollProgress } from '@/components/motion/ScrollProgress';
 /*
  * Fonts self-host at build time via next/font — no runtime requests to Google.
  */
-const frank = Frank_Ruhl_Libre({
+const rubik = Rubik({
   subsets: ['hebrew', 'latin'],
-  weight: ['400', '500', '700', '900'],
-  variable: '--font-frank',
+  weight: ['400', '500', '600'],
+  variable: '--font-rubik',
   display: 'swap',
 });
 
@@ -47,7 +47,7 @@ export default function RootLayout({
   const jsonLd = [legalServiceJsonLd(), attorneyJsonLd(), websiteJsonLd()];
 
   return (
-    <html lang="he" dir="rtl" className={`${frank.variable} ${heebo.variable}`}>
+    <html lang="he" dir="rtl" className={`${rubik.variable} ${heebo.variable}`}>
       <head>
         <link rel="alternate" type="application/rss+xml" title="מדריכים" href="/feed.xml" />
         <style dangerouslySetInnerHTML={{ __html: brandVars() }} />

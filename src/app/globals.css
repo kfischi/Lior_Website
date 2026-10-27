@@ -19,7 +19,7 @@
   --color-background: var(--brand-cream);
   --color-foreground: var(--brand-ink);
 
-  --font-heading: var(--font-frank), Georgia, serif;
+  --font-heading: var(--font-rubik), var(--font-heebo), system-ui, sans-serif;
   --font-sans: var(--font-heebo), system-ui, sans-serif;
 
   --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
@@ -57,8 +57,8 @@
   h3,
   h4 {
     font-family: var(--font-heading);
-    font-weight: 700;
-    line-height: 1.1;
+    font-weight: 600;
+    line-height: 1.15;
     text-wrap: balance;
   }
 
@@ -215,13 +215,13 @@
 /* Fluid display type. */
 @utility display-2xl {
   font-size: clamp(2.9rem, 8.2vw, 7rem);
-  line-height: 0.98;
-  letter-spacing: -0.03em;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
 }
 @utility display-xl {
   font-size: clamp(2.5rem, 6vw, 5.5rem);
-  line-height: 1.02;
-  letter-spacing: -0.02em;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
 }
 
 /*

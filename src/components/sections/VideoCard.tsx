@@ -8,6 +8,8 @@ interface VideoCardProps {
   poster: string;
   label: string;
   captions?: string;
+  /** Wide footage keeps its own shape instead of being letterboxed in a tall card. */
+  landscape?: boolean;
 }
 
 /**
@@ -15,12 +17,12 @@ interface VideoCardProps {
  * appear once it starts, and the button returns when it ends. Nothing loads
  * until it is pressed (preload="none").
  */
-export function VideoCard({ src, poster, label, captions }: VideoCardProps) {
+export function VideoCard({ src, poster, label, captions, landscape }: VideoCardProps) {
   const ref = React.useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = React.useState(false);
 
   return (
-    <div className="group relative aspect-[9/16] overflow-hidden rounded-3xl bg-black shadow-2xl ring-1 ring-cream/10">
+    <div className={`group relative ${landscape ? 'aspect-[4/3]' : 'aspect-[9/16]'} overflow-hidden rounded-3xl bg-black shadow-2xl ring-1 ring-cream/10`}>
       <video
         ref={ref}
         controls={playing}
@@ -28,7 +30,7 @@ export function VideoCard({ src, poster, label, captions }: VideoCardProps) {
         preload="none"
         poster={poster}
         aria-label={label}
-        className="h-full w-full object-cover"
+        className="h-full w-full object-contain"
         onPlay={() => setPlaying(true)}
         onEnded={() => setPlaying(false)}
       >

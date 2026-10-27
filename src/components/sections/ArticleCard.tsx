@@ -12,7 +12,7 @@ export function ArticleCard({ article }: { article: Article }) {
       className="group flex h-full flex-col rounded-2xl border border-navy/10 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-lg"
     >
       {area && <span className="eyebrow mb-3">{area.title}</span>}
-      <h3 className="font-heading text-xl font-bold leading-snug text-navy">{article.title}</h3>
+      <h3 className="font-heading text-xl font-semibold leading-snug text-navy">{article.title}</h3>
       <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-ink/70">{article.tldr}</p>
       <div className="mt-5 flex items-center justify-between text-xs text-ink/75">
         <span>
