@@ -122,7 +122,13 @@ export function useSpeechOutput() {
     () => false,
   );
 
+  const [speaking, setSpeaking] = React.useState(false);
+  // The utterance being spoken now; late events from a cancelled one must not end this one.
+  const current = React.useRef<SpeechSynthesisUtterance | null>(null);
+
   const cancel = React.useCallback(() => {
+    current.current = null;
+    setSpeaking(false);
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
   }, []);
 
@@ -134,6 +140,17 @@ export function useSpeechOutput() {
       utterance.lang = 'he-IL';
       const hebrew = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith('he'));
       if (hebrew) utterance.voice = hebrew;
+      current.current = utterance;
+      const finish = () => {
+        if (current.current !== utterance) return;
+        current.current = null;
+        setSpeaking(false);
+      };
+      utterance.onstart = () => {
+        if (current.current === utterance) setSpeaking(true);
+      };
+      utterance.onend = finish;
+      utterance.onerror = finish;
       window.speechSynthesis.speak(utterance);
     },
     [cancel],
@@ -149,5 +166,5 @@ export function useSpeechOutput() {
 
   React.useEffect(() => cancel, [cancel]);
 
-  return { supported, speak, cancel, unlock };
+  return { supported, speaking, speak, cancel, unlock };
 }

@@ -23,15 +23,34 @@ const PLACEHOLDER: Record<IntakeStep, string> = {
 };
 
 /** The assistant's round photo. It is a brand image, so it carries no alt text. */
-export function Avatar({ className }: { className?: string }) {
+export function Avatar({ className, speaking }: { className?: string; speaking?: boolean }) {
   return (
     <Image
       src={brand.chat.avatar}
       alt=""
       width={96}
       height={96}
-      className={cn('shrink-0 rounded-full object-cover ring-2 ring-accent-light/70', className)}
+      className={cn(
+        'shrink-0 rounded-full object-cover ring-2 ring-accent-light/70',
+        speaking && 'motion-safe:animate-talk motion-safe:animate-voice-ring',
+        className,
+      )}
     />
+  );
+}
+
+/** Sound bars beside the name while the answer is read aloud (decoration; the status text says it). */
+function VoiceWave() {
+  return (
+    <span aria-hidden="true" className="flex h-4 items-center gap-0.5">
+      {[0, 0.2, 0.1, 0.3, 0.15].map((delay) => (
+        <span
+          key={delay}
+          className="h-full w-0.5 origin-center rounded-full bg-accent-light motion-safe:animate-wave"
+          style={{ animationDelay: `${delay}s` }}
+        />
+      ))}
+    </span>
   );
 }
 
@@ -350,7 +369,13 @@ export function ConciergePanel({
   // Voice: dictate a message, and optionally hear the answers read aloud.
   const [readAloud, setReadAloud] = React.useState(false);
   const spokenId = React.useRef<string | null>(null);
-  const { supported: canSpeak, speak, cancel: cancelSpeech, unlock: unlockSpeech } = useSpeechOutput();
+  const {
+    supported: canSpeak,
+    speaking,
+    speak,
+    cancel: cancelSpeech,
+    unlock: unlockSpeech,
+  } = useSpeechOutput();
   const voice = useSpeechInput({
     onText: setInput,
     onDone: (text) => {
@@ -407,10 +432,16 @@ export function ConciergePanel({
     >
       <header className="bg-navy text-cream">
         <div className="flex items-center gap-3 px-4 py-3.5">
-          <Avatar className="h-11 w-11" />
+          <Avatar className="h-11 w-11" speaking={speaking} />
           <div className="min-w-0 flex-1 leading-tight">
-            <p className="font-heading text-base font-semibold">{brand.chat.assistantName}</p>
+            <p className="flex items-center gap-2 font-heading text-base font-semibold">
+              {brand.chat.assistantName}
+              {speaking && <VoiceWave />}
+            </p>
             <p className="truncate text-xs text-cream/70">עוזרת וירטואלית · בינה מלאכותית</p>
+            <span role="status" className="sr-only">
+              {speaking ? 'העוזרת מקריאה את התשובה' : ''}
+            </span>
           </div>
           {messages.length > 1 && (
             <button
