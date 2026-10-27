@@ -42,3 +42,4 @@ next-env.d.ts
 
 # talking-avatar pipeline scratch space
 /.avatar-work/
+/.avatar-venv/

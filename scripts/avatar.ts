@@ -11,9 +11,12 @@
  * Needs ffmpeg and ffprobe on the PATH. Keys are read from .env.local, never printed.
  *
  *   --photo <path>      default public/images/lior-about.webp
- *   --tts <name>        silent (default) | elevenlabs | gemini
+ *   --tts <name>        silent (default) | recorded | elevenlabs | gemini
+ *   --recording <file>  with --tts recorded: one recording (audio or video) of the whole script read aloud
+ *                       with a short pause between the lines; it is cut into lines at the pauses
  *   --voice <id>        ElevenLabs voice id, or a Gemini voice name (default Kore)
- *   --provider <name>   preview (default) | fal | did
+ *   --provider <name>   preview (default) | local | fal | did
+ *                       local: animates the photo on this machine, no account or key (npm run avatar:setup first)
  *   --out <name>        output name in public/videos (default intro)
  *   --gap <seconds>     pause between lines (default 0.45)
  *   --max-chunk <s>     longest piece sent to a provider (default 28)
@@ -158,9 +161,40 @@ async function speak(tts: string, text: string, voice: string | undefined, file:
   throw new Error(`Unknown --tts "${tts}". Use silent, elevenlabs or gemini.`);
 }
 
+/**
+ * Cuts one recording of the whole script into `count` lines at its longest pauses.
+ * Returns the WAV files, one per line, with the silence trimmed from their edges.
+ */
+function splitRecording(recording: string, count: number): string[] {
+  const wav = join(WORK, 'recording.wav');
+  ffmpeg(['-i', recording, '-vn', '-ac', '1', '-ar', '44100', wav]);
+  const total = duration(wav);
+  const log = spawnSync('ffmpeg', ['-i', wav, '-af', 'silencedetect=noise=-35dB:d=0.3', '-f', 'null', '-'], { encoding: 'utf8' }).stderr;
+  const starts = [...log.matchAll(/silence_start: ([\d.]+)/g)].map((m) => Number(m[1]));
+  const ends = [...log.matchAll(/silence_end: ([\d.]+)/g)].map((m) => Number(m[1]));
+  const gaps = starts
+    .map((st, i) => ({ start: st, end: ends[i] ?? total }))
+    .filter((g) => g.start > 0.3 && g.end < total - 0.3)
+    .map((g) => ({ ...g, length: g.end - g.start }));
+  if (gaps.length < count - 1) {
+    throw new Error(`Found ${gaps.length} pauses in the recording but need ${count - 1} (one between each of the ${count} lines). Pause longer between lines, or record the lines separately.`);
+  }
+  const cuts = [...gaps].sort((a, b) => b.length - a.length).slice(0, count - 1).sort((a, b) => a.start - b.start);
+  const weakest = Math.min(...cuts.map((c) => c.length));
+  if (weakest < 0.45) console.warn(`Warning: the shortest pause used to split lines is only ${weakest.toFixed(2)} s; check the cuts.`);
+  const bounds = [0, ...cuts.map((c) => (c.start + c.end) / 2), total];
+  const files: string[] = [];
+  for (let i = 0; i < count; i++) {
+    const file = join(WORK, `line-${String(i).padStart(2, '0')}.wav`);
+    ffmpeg(['-i', wav, '-ss', bounds[i].toFixed(3), '-to', bounds[i + 1].toFixed(3), '-af', 'silenceremove=start_periods=1:start_threshold=-40dB,areverse,silenceremove=start_periods=1:start_threshold=-40dB,areverse', file]);
+    files.push(file);
+  }
+  return files;
+}
+
 // ---------- talking video providers ----------
 
-type Render = (photo: string, audio: string, out: string) => Promise<void>;
+type Render = (photo: string, audio: string, out: string, startAt: number) => Promise<void>;
 
 /** No lip movement: a slow push-in on the still photo, to test the whole pipeline. */
 const previewRender: Render = async (photo, audio, out) => {
@@ -233,7 +267,17 @@ const didRender: Render = async (photo, audio, out) => {
   await download(done, out);
 };
 
-const PROVIDERS: Record<string, Render> = { preview: previewRender, fal: falRender, did: didRender };
+/** Offline "living portrait": landmarks plus 2D animation driven by the audio. No account, no key. */
+const localRender: Render = async (photo, audio, out, startAt) => {
+  const python = process.env.AVATAR_PYTHON || join(ROOT, '.avatar-venv/bin/python');
+  if (!existsSync(python)) throw new Error('Run "npm run avatar:setup" first (it creates .avatar-venv).');
+  run(python, [
+    join(ROOT, 'scripts/avatar-local/puppet.py'),
+    '--photo', photo, '--audio', audio, '--out', out, '--start', startAt.toFixed(3),
+  ]);
+};
+
+const PROVIDERS: Record<string, Render> = { preview: previewRender, local: localRender, fal: falRender, did: didRender };
 
 // ---------- main ----------
 
@@ -265,11 +309,18 @@ async function main() {
   const gapFile = join(WORK, 'gap.wav');
   ffmpeg(['-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=mono', '-t', gap.toFixed(2), gapFile]);
   const lines: { file: string; seconds: number }[] = [];
-  for (let i = 0; i < intro.segments.length; i++) {
-    const file = join(WORK, `line-${String(i).padStart(2, '0')}.wav`);
-    process.stdout.write(`speech ${i + 1}/${intro.segments.length}\r`);
-    await speak(tts, intro.segments[i].text, args.voice, file);
-    lines.push({ file, seconds: duration(file) });
+  if (tts === 'recorded') {
+    if (!args.recording) throw new Error('--recording <file> is required with --tts recorded.');
+    for (const file of splitRecording(join(ROOT, args.recording), intro.segments.length)) {
+      lines.push({ file, seconds: duration(file) });
+    }
+  } else {
+    for (let i = 0; i < intro.segments.length; i++) {
+      const file = join(WORK, `line-${String(i).padStart(2, '0')}.wav`);
+      process.stdout.write(`speech ${i + 1}/${intro.segments.length}\r`);
+      await speak(tts, intro.segments[i].text, args.voice, file);
+      lines.push({ file, seconds: duration(file) });
+    }
   }
   let t = 0;
   const starts = lines.map((l) => {
@@ -307,7 +358,7 @@ async function main() {
     concat(parts, audio);
     const clip = join(WORK, `clip-${c}.mp4`);
     console.log(`video ${c + 1}/${chunks.length} (${duration(audio).toFixed(1)} s of speech)...`);
-    await render(photo, audio, clip);
+    await render(photo, audio, clip, starts[chunks[c][0]]);
     // Providers return clips a little shorter or longer than the speech. Pad with the last frame
     // or trim, so every chunk is exactly as long as its audio and the start times stay true.
     const fixed = join(WORK, `fixed-${c}.mp4`);
