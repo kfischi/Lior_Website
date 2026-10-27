@@ -1,6 +1,6 @@
 import 'server-only';
 import { brand } from '@/lib/brand';
-import { listNotes, logUnknown } from '@/lib/learning/store';
+import { listApprovedNotes, logUnknown } from '@/lib/learning/store';
 import { sanitizeQuestion } from '@/lib/learning/sanitize';
 import { withTimeout } from '@/lib/with-timeout';
 import { SITE_TARGETS, withSiteAction, type SiteTarget } from '@/lib/site-actions';
@@ -280,8 +280,19 @@ function pick(hits: Hit[], present: Set<string>): { hit: Hit; hedge: boolean } |
   return null;
 }
 
+export interface LocalReplyOptions {
+  /** Use these notes instead of the stored ones (the admin "test the chat" box). */
+  notes?: Note[];
+  /** False for dry runs: do not add the question to the unanswered list. */
+  recordUnknown?: boolean;
+}
+
 /** Answer a question from the site and from what the attorney taught. */
-export async function localReply(question: string, previousQuestion?: string): Promise<string> {
+export async function localReply(
+  question: string,
+  previousQuestion?: string,
+  options: LocalReplyOptions = {},
+): Promise<string> {
   const norm = normalizeText(question);
   const words = norm.split(' ');
 
@@ -309,7 +320,7 @@ export async function localReply(question: string, previousQuestion?: string): P
   if (where) return navigate(where);
   if (/[A-Za-z]{3}/.test(question) && !/[\u0590-\u05FF]/.test(question)) return english();
 
-  const notes = await withTimeout(listNotes(), 1500, []);
+  const notes = options.notes ?? (await withTimeout(listApprovedNotes(), 1500, []));
   let q = question;
   // A short follow-up ("ופיצויים?", "ואם לא אגיע") is about the previous question.
   const followUp = analyze(question).length <= 1 || (words.length <= 5 && /^(?:ו|אז |ומה|ואם|והאם)/.test(norm));
@@ -330,7 +341,7 @@ export async function localReply(question: string, previousQuestion?: string): P
   if (picked) return compose(picked.hit, hits, question, picked.hedge);
 
   const clean = sanitizeQuestion(question);
-  if (clean.length >= 4 && tokens(clean).length >= 2 && !question.includes('הוסר]')) {
+  if (options.recordUnknown !== false && clean.length >= 4 && tokens(clean).length >= 2 && !question.includes('הוסר]')) {
     void logUnknown(clean).catch(() => undefined);
   }
   return unknown();

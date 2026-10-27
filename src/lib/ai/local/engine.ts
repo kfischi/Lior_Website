@@ -1,6 +1,7 @@
 import { brand } from '@/lib/brand';
 import { articles } from '@/lib/articles';
 import { knowledge } from '@/lib/knowledge';
+import type { Note as StoredNote } from '@/lib/learning/types';
 import { analyze } from './text';
 
 /**
@@ -30,12 +31,8 @@ export interface Doc {
   len: number;
 }
 
-export interface Note {
-  id: string;
-  question: string;
-  answer: string;
-  enabled: boolean;
-}
+/** What the engine needs of a taught note. Only approved notes are ever indexed. */
+export type Note = Pick<StoredNote, 'id' | 'question' | 'answer' | 'status'>;
 
 /** Cut text to about `max` characters at a sentence boundary. */
 function brief(text: string, max = 420): string {
@@ -171,7 +168,7 @@ function buildStatic(): Doc[] {
 
 function taughtDocs(notes: Note[]): Doc[] {
   return notes
-    .filter((n) => n.enabled && n.question.trim().length > 0)
+    .filter((n) => n.status === 'approved' && n.question.trim().length > 0)
     .map((n) =>
       makeDoc(
         { id: `note:${n.id}`, kind: 'taught', title: n.question, answer: n.answer, boost: 1.8 },
