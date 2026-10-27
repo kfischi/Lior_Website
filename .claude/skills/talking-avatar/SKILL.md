@@ -25,6 +25,10 @@ npm run avatar -- --tts recorded --recording my-reading.m4a --provider local   #
   Real recorded Hebrew sounds far better than any offline synthetic voice.
 - `--lines-dir <folder>`: instead of one recording, one audio file per line named `01.mp3`, `02.mp3`, ... in order.
   The safest way, for example with a text-to-speech site that makes each line separately.
+- WhatsApp voice notes (`.opus`) work as they are: save the 12 notes as `01.opus` ... `12.opus` in a folder and use
+  `--lines-dir`. Tested with a real voice note.
+- Voice cloning from a short sample is NOT possible offline: it needs a service (ElevenLabs Instant Voice Clone wants
+  about a minute or more of clean speech) and the speaker's consent. Prefer the speaker reading the lines herself.
 - `--provider local` (`scripts/avatar-local/puppet.py`): MediaPipe face landmarks and 2D animation. The mouth opens
   with the loudness and brightness of the voice, plus blinks, small head movement, breathing and brow lifts. About
   3 frames a second on 4 CPU cores (a 90 s video takes around 7 minutes).
