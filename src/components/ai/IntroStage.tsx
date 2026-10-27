@@ -2,13 +2,28 @@
 
 import * as React from 'react';
 import { Captions, CaptionsOff, FileText, Play, Volume2, VolumeX, X } from 'lucide-react';
-import { useReducedMotion } from 'motion/react';
+import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
 import { brand, type IntroSegment } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 import { applyTour, clearTour } from './tour';
 
 /** Seconds after the chat opens that the video starts (a replay starts at once). */
 export const INTRO_START_DELAY_MS = 2000;
+
+function vttTime(seconds: number): string {
+  const ms = Math.round(seconds * 1000);
+  const pad = (n: number, width = 2) => String(n).padStart(width, '0');
+  return `${pad(Math.floor(ms / 3600000))}:${pad(Math.floor(ms / 60000) % 60)}:${pad(Math.floor(ms / 1000) % 60)}.${pad(ms % 1000, 3)}`;
+}
+
+/** The segments as a WebVTT caption file, so the video carries a real captions track. */
+function toVtt(segments: IntroSegment[], total: number): string {
+  const cues = segments.map((seg, i) => {
+    const end = segments[i + 1]?.start ?? Math.max(total, seg.start + 4);
+    return `${vttTime(seg.start)} --> ${vttTime(end)}\n${seg.text}`;
+  });
+  return `WEBVTT\n\n${cues.join('\n\n')}\n`;
+}
 
 /**
  * The welcome video at the top of the chat. Two seconds after the chat opens (the visitor's tap
@@ -42,6 +57,15 @@ export function IntroStage({
   const currentIndex = segments.reduce((found, seg, i) => (seg.start <= time ? i : found), -1);
   const current: IntroSegment | undefined = segments[currentIndex];
   const focus = visible && playing ? current?.focus : undefined;
+  const captionsUrl = React.useMemo(
+    () =>
+      duration > 0 && segments.length > 0
+        ? `data:text/vtt;charset=utf-8,${encodeURIComponent(toVtt(segments, duration))}`
+        : undefined,
+    [duration, segments],
+  );
+  const scrollOrigin = React.useRef<number | null>(null);
+  const visitorScrolled = React.useRef(false);
 
   // Buffer while closed, then open and play after the delay.
   React.useEffect(() => {
@@ -62,9 +86,26 @@ export function IntroStage({
   // Light up what she is talking about.
   React.useEffect(() => {
     const wide = window.matchMedia('(min-width: 1024px)').matches;
+    if (focus && wide && !reduced && scrollOrigin.current === null) scrollOrigin.current = window.scrollY;
     applyTour(focus, { scroll: wide && !reduced, smooth: !reduced });
     return clearTour;
   }, [focus, reduced]);
+
+  // The tour scrolls the page; when the video ends, take the visitor back to where they were
+  // (unless they scrolled themselves in the meantime).
+  React.useEffect(() => {
+    const mark = () => {
+      visitorScrolled.current = true;
+    };
+    const events = ['wheel', 'touchmove', 'keydown'] as const;
+    events.forEach((name) => window.addEventListener(name, mark, { passive: true }));
+    return () => {
+      events.forEach((name) => window.removeEventListener(name, mark));
+      if (scrollOrigin.current !== null && !visitorScrolled.current) {
+        window.scrollTo({ top: scrollOrigin.current, behavior: 'smooth' });
+      }
+    };
+  }, []);
 
   function play() {
     setNeedsTap(false);
@@ -91,7 +132,7 @@ export function IntroStage({
       className={cn(
         'flex shrink-0 flex-col overflow-hidden bg-black text-cream outline-none transition-[height,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
         visible
-          ? 'h-[48%] max-h-[24rem] min-h-[15rem] opacity-100 [@media(max-height:40rem)]:min-h-[9rem]'
+          ? 'h-[36%] max-h-[24rem] min-h-[11rem] opacity-100 [@media(max-height:40rem)]:h-[32%] [@media(max-height:40rem)]:min-h-[8.5rem]'
           : 'pointer-events-none h-0 opacity-0',
       )}
     >
@@ -111,7 +152,9 @@ export function IntroStage({
           onPause={() => setPlaying(false)}
           onEnded={() => onDone('ended')}
           onError={() => onDone('skipped')}
-        />
+        >
+          {captionsUrl && <track kind="captions" srcLang="he" label="עברית" src={captionsUrl} />}
+        </video>
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/55 to-transparent"

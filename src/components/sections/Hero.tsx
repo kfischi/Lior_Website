@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import Image from 'next/image';
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
 import { ChevronDown } from 'lucide-react';
 import { brand } from '@/lib/brand';
 import { HeroVideo } from './HeroVideo';

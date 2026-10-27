@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
+import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
 import { ArrowDown } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useConsentPending } from '@/components/legal/CookieConsent';

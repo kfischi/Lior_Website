@@ -655,7 +655,14 @@ export function ConciergePanel({
       )}
 
       {/* Quick actions */}
-      <div data-tour-target="questions" className="flex flex-wrap items-center gap-2 border-t border-navy/10 px-4 pb-1 pt-3">
+      <div
+        data-tour-target="questions"
+        // While the video plays the chips scroll inside a short strip, so the message log and input keep room.
+        className={cn(
+          'flex flex-wrap items-center gap-2 border-t border-navy/10 px-4 pb-1 pt-3',
+          intro && 'max-h-24 overflow-y-auto',
+        )}
+      >
         {intakeStep ? (
           <Chip onClick={cancelIntake}>ביטול</Chip>
         ) : (
