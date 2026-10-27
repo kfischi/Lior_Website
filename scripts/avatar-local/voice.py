@@ -18,6 +18,7 @@ ap.add_argument("--script", required=True)
 ap.add_argument("--out", required=True)
 ap.add_argument("--only", help="comma-separated line numbers, 1-based")
 ap.add_argument("--seed", type=int, default=7)
+ap.add_argument("--cfg", type=float, default=0.5, help="lower (0.3) follows the reference voice less and the text more")
 args = ap.parse_args()
 
 import torch, torchaudio as ta
@@ -40,7 +41,7 @@ for n, line in enumerate(lines, 1):
     pieces = []
     for p in parts:
         torch.manual_seed(args.seed + n)
-        pieces += [model.generate(p, language_id="he", audio_prompt_path=args.ref).cpu(), gap]
+        pieces += [model.generate(p, language_id="he", audio_prompt_path=args.ref, cfg_weight=args.cfg).cpu(), gap]
     wav = torch.cat(pieces[:-1], dim=-1)
     ta.save(os.path.join(args.out, f"{n:02d}.wav"), wav, model.sr)
     print(f"line {n}: {wav.shape[-1] / model.sr:.1f}s", flush=True)
