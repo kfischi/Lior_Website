@@ -486,6 +486,8 @@ export const brand = {
     { src: '/videos/review-3.mp4', poster: '/videos/review-3.webp', label: 'ביקורת וידאו מלקוח' },
     { src: '/videos/review-4.mp4', poster: '/videos/review-4.webp', label: 'ביקורת וידאו מלקוחה' },
     { src: '/videos/review-5.mp4', poster: '/videos/review-5.webp', label: 'ביקורת וידאו מלקוחה', landscape: true },
+    { youtubeId: 'WgO6rikPJDQ', label: 'ביקורת וידאו מלקוח', landscape: true },
+    { youtubeId: 'y84XQuiUilE', label: 'ביקורת וידאו מלקוח' },
   ] as VideoReview[],
 
   // --- FAQ (also rendered as FAQPage JSON-LD) ---
@@ -598,6 +600,7 @@ export const brand = {
     processors: [
       'Netlify (אחסון האתר)',
       'Cloudinary (שירות תמונות וסרטונים)',
+      'YouTube (Google) (הפעלת סרטוני לקוחות, רק לאחר לחיצה על ההפעלה)',
       'Google או Anthropic (עיבוד שיחות בצ׳אט באמצעות בינה מלאכותית, לפי ההגדרות)',
       'Meta WhatsApp Business (העברת פנייה בוואטסאפ, כשהאפשרות מופעלת)',
     ],
