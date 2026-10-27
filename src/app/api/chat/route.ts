@@ -6,7 +6,7 @@ import {
   stepCountIs,
   type UIMessage,
 } from 'ai';
-import { getChatModel } from '@/lib/ai/model';
+import { chatProviderOptions, getChatModel } from '@/lib/ai/model';
 import { buildSystemPrompt } from '@/lib/ai/system';
 import { retrieveContext } from '@/lib/ai/rag';
 import { chatTools } from '@/lib/ai/tools';
@@ -113,6 +113,8 @@ export async function POST(req: Request) {
     tools: chatTools,
     stopWhen: stepCountIs(4),
     temperature: 0.5,
+    maxOutputTokens: 700,
+    providerOptions: chatProviderOptions(),
     onFinish: ({ text }) => {
       void persistExchange(sessionId, lastUserText, splitSuggestions(text).text);
     },

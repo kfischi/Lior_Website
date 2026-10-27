@@ -9,7 +9,7 @@ import {
   logoutAction,
   toggleNoteAction,
 } from '@/lib/actions/admin';
-import { LoginForm, TeachForm } from '@/components/admin/AdminForms';
+import { LoginForm, TeachForm, TestChatForm } from '@/components/admin/AdminForms';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
@@ -68,6 +68,14 @@ async function Body({ q }: { q?: string }) {
           </Button>
         </form>
       </div>
+
+      <section aria-labelledby="status-title" className="rounded-2xl border border-navy/10 bg-white p-6">
+        <h2 id="status-title" className="mb-1 text-2xl text-navy">
+          מצב הצ׳אט
+        </h2>
+        <p className="mb-4 text-sm text-ink/75">בודק שהמודל מחובר, וכמה זמן לוקחת תשובה קצרה.</p>
+        <TestChatForm />
+      </section>
 
       <section aria-labelledby="teach-title" className="rounded-2xl border border-navy/10 bg-white p-6">
         <h2 id="teach-title" className="mb-4 text-2xl text-navy">
