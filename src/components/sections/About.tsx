@@ -85,15 +85,15 @@ export function About() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`${c.title}, ${c.issuer}, ${c.date}. הצגת התעודה בגודל מלא (נפתח בחלון חדש)`}
-                        className="group flex items-center gap-4 rounded-xl border border-navy/10 bg-white p-3 transition-all hover:-translate-y-0.5 hover:border-accent hover:shadow-lg"
+                        className="group flex flex-col items-start gap-4 rounded-xl border border-navy/10 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-accent hover:shadow-lg sm:flex-row sm:items-center"
                       >
                         <Image
                           src={c.image}
                           alt=""
                           width={c.width}
                           height={c.height}
-                          sizes="112px"
-                          className="h-36 w-28 rounded-md object-cover object-top shadow-sm"
+                          sizes="(min-width: 640px) 224px, 256px"
+                          className="h-auto w-full max-w-64 rounded-md shadow-md sm:w-56"
                         />
                         <span className="flex max-w-[14rem] flex-col leading-snug">
                           <span className="font-semibold text-navy">{c.title}</span>

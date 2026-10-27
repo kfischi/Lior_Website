@@ -1,5 +1,6 @@
+import Image from 'next/image';
 import { Quote, Star } from 'lucide-react';
-import { brand } from '@/lib/brand';
+import { brand, type TestimonialLetter } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 
@@ -43,9 +44,25 @@ function Stars({ rating, onDark }: { rating: number; onDark?: boolean }) {
   );
 }
 
+type ReviewItem =
+  | { kind: 'text'; key: string; date: string; name: string; rating: number; text: string }
+  | { kind: 'letter'; key: string; date: string; name: string; letter: TestimonialLetter };
+
+/** Reviews and scanned letters in one list, newest first. */
+const items: ReviewItem[] = [
+  ...testimonials.map((t) => ({ kind: 'text' as const, key: `${t.date}-${t.name}`, ...t })),
+  ...brand.testimonialLetters.map((letter) => ({
+    kind: 'letter' as const,
+    key: `${letter.date}-${letter.name}`,
+    date: letter.date,
+    name: letter.name,
+    letter,
+  })),
+].sort((a, b) => b.date.localeCompare(a.date));
+
 export function Reviews() {
   // Never show placeholder reviews: the section appears only with real ones.
-  if (testimonials.length === 0) return null;
+  if (items.length === 0) return null;
 
   return (
     <section
@@ -69,35 +86,65 @@ export function Reviews() {
         </Reveal>
 
         <Stagger as="ul" className="columns-1 gap-6 md:columns-2 lg:columns-3">
-          {testimonials.map((t, i) => {
-            const featured = i === 0;
+          {items.map((item, i) => {
+            const featured = i === 0 && item.kind === 'text';
             return (
-              <StaggerItem as="li" key={`${t.date}-${t.name}`} className="mb-6 break-inside-avoid">
+              <StaggerItem as="li" key={item.key} className="mb-6 break-inside-avoid">
                 <figure
                   className={cn(
-                    'group relative flex flex-col gap-5 overflow-hidden rounded-[1.75rem] p-8 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl',
+                    'group relative flex flex-col gap-5 overflow-hidden rounded-[1.75rem] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl',
+                    item.kind === 'letter' ? 'p-5' : 'p-8',
                     featured
                       ? 'bg-navy text-cream shadow-xl'
                       : 'border border-navy/10 bg-white shadow-sm hover:border-accent/50',
                   )}
                 >
-                  <Quote
-                    aria-hidden="true"
-                    className={cn(
-                      'absolute -top-2 end-5 h-20 w-20 rotate-180',
-                      featured ? 'text-cream/10' : 'text-accent/10',
-                    )}
-                    strokeWidth={1.5}
-                  />
-                  <Stars rating={t.rating} onDark={featured} />
-                  <blockquote
-                    className={cn(
-                      'relative flex-1 text-lg leading-relaxed',
-                      featured ? 'text-cream/95' : 'text-ink/85',
-                    )}
-                  >
-                    <p>״{t.text}״</p>
-                  </blockquote>
+                  {item.kind === 'text' && (
+                    <Quote
+                      aria-hidden="true"
+                      className={cn(
+                        'absolute -top-2 end-5 h-20 w-20 rotate-180',
+                        featured ? 'text-cream/10' : 'text-accent/10',
+                      )}
+                      strokeWidth={1.5}
+                    />
+                  )}
+                  {item.kind === 'text' ? (
+                    <>
+                      <Stars rating={item.rating} onDark={featured} />
+                      <blockquote
+                        className={cn(
+                          'relative flex-1 text-lg leading-relaxed',
+                          featured ? 'text-cream/95' : 'text-ink/85',
+                        )}
+                      >
+                        <p>״{item.text}״</p>
+                      </blockquote>
+                    </>
+                  ) : (
+                    <div className="relative flex flex-col gap-3">
+                      <p className="flex items-center justify-between gap-3 text-sm">
+                        <span className="font-medium text-accent">מכתב תודה מלקוחה</span>
+                        <span className="text-ink/70">לחצו להגדלה</span>
+                      </p>
+                      <a
+                        href={item.letter.image}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="הצגת המכתב בגודל מלא (נפתח בחלון חדש)"
+                        className="block overflow-hidden rounded-xl bg-cream ring-1 ring-navy/10 transition-shadow hover:shadow-lg"
+                      >
+                        <Image
+                          src={item.letter.image}
+                          alt={item.letter.alt}
+                          width={item.letter.width}
+                          height={item.letter.height}
+                          sizes="(min-width: 1024px) 320px, (min-width: 768px) 45vw, 90vw"
+                          className="h-auto w-full mix-blend-multiply"
+                        />
+                      </a>
+                    </div>
+                  )}
                   <figcaption
                     className={cn(
                       'flex items-center gap-3 border-t pt-5',
@@ -111,17 +158,17 @@ export function Reviews() {
                         featured ? 'bg-accent-light text-navy' : 'bg-accent/10 text-accent',
                       )}
                     >
-                      {Array.from(t.name)[0]}
+                      {Array.from(item.name)[0]}
                     </span>
                     <span className="flex flex-col leading-snug">
                       <span className={cn('font-semibold', featured ? 'text-cream' : 'text-navy')}>
-                        {t.name}
+                        {item.name}
                       </span>
                       <time
-                        dateTime={t.date}
+                        dateTime={item.date}
                         className={cn('text-sm', featured ? 'text-cream/75' : 'text-ink/75')}
                       >
-                        {dateFormat.format(new Date(t.date))}
+                        {dateFormat.format(new Date(item.date))}
                       </time>
                     </span>
                   </figcaption>

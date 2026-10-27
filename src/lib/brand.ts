@@ -56,6 +56,19 @@ export interface Testimonial {
   text: string;
 }
 
+/** A client's letter shown as a scanned image among the reviews (no rating). */
+export interface TestimonialLetter {
+  name: string;
+  /** Date of the letter, ISO `YYYY-MM-DD`. */
+  date: string;
+  /** Image in /public/images. */
+  image: string;
+  width: number;
+  height: number;
+  /** Text alternative for the scan: what the letter says, in words. */
+  alt: string;
+}
+
 /** A client video: a local file, or a YouTube video played only after a click. */
 export type VideoReview = { label: string; landscape?: boolean } & (
   | { src: string; poster: string; captions?: string; youtubeId?: undefined }
@@ -473,6 +486,19 @@ export const brand = {
       text: 'ליאור קלואי ארז היא לוחמת צדק, בעידן של ימינו כל אחד יכול למצוא את עצמו במלחמה על זכויות יסוד. ליאור תעמוד לצדכם ותקרע לצד השני את הצורה :)',
     },
   ] satisfies Testimonial[],
+
+  // Letters from clients, shown as scans in the reviews list (sorted with the reviews by date).
+  // Publish only with the writer's permission.
+  testimonialLetters: [
+    {
+      name: 'ליאה',
+      date: '2016-04-03',
+      image: '/images/letter-2016.webp',
+      width: 1400,
+      height: 778,
+      alt: 'מכתב תודה בכתב יד מלקוחה בשם ליאה, מתאריך 3.4.2016. היא כותבת שלפני הטיפול חייה היו סערה, ושמהיום הראשון הרגישה נחת, שלווה ותקווה; שהעורכת הייתה שם בשבילה בכל שעה, האזינה בקשב מלא ונתנה לה שקט נפשי.',
+    },
+  ] as TestimonialLetter[],
 
   // --- Video reviews ---
   // Local file: put it in /public/videos and add `captions` (.vtt path) to show subtitles.
