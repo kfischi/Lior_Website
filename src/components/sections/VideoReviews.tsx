@@ -1,5 +1,6 @@
 import { brand } from '@/lib/brand';
 import { VideoCard } from './VideoCard';
+import { YouTubeCard } from './YouTubeCard';
 
 /** Client video reviews: native controls, nothing loads until a visitor presses play. */
 export function VideoReviews() {
@@ -16,8 +17,23 @@ export function VideoReviews() {
         </div>
         <ul className="mx-auto flex max-w-5xl snap-x snap-mandatory gap-5 overflow-x-auto pb-4 md:flex-wrap md:justify-center md:overflow-visible">
           {items.map((v, i) => (
-            <li key={v.src} className="w-[72%] shrink-0 snap-center self-center md:w-[calc((100%-2.5rem)/3)]">
-              <VideoCard src={v.src} poster={v.poster} label={`${v.label} ${i + 1}`} captions={v.captions} landscape={v.landscape} />
+            <li key={v.youtubeId ?? v.src} className="w-[72%] shrink-0 snap-center self-center md:w-[calc((100%-2.5rem)/3)]">
+              {v.youtubeId !== undefined ? (
+                <YouTubeCard
+                  videoId={v.youtubeId}
+                  poster={v.poster}
+                  label={`${v.label} ${i + 1}`}
+                  landscape={v.landscape}
+                />
+              ) : (
+                <VideoCard
+                  src={v.src}
+                  poster={v.poster}
+                  label={`${v.label} ${i + 1}`}
+                  captions={v.captions}
+                  landscape={v.landscape}
+                />
+              )}
             </li>
           ))}
         </ul>

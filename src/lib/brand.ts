@@ -56,6 +56,12 @@ export interface Testimonial {
   text: string;
 }
 
+/** A client video: a local file, or a YouTube video played only after a click. */
+export type VideoReview = { label: string; landscape?: boolean } & (
+  | { src: string; poster: string; captions?: string; youtubeId?: undefined }
+  | { youtubeId: string; poster?: string; src?: undefined; captions?: undefined }
+);
+
 export const brand = {
   // --- Identity ---
   firmName: 'משרד עורכת דין ליאור-קלואי ארז',
@@ -468,14 +474,19 @@ export const brand = {
     },
   ] satisfies Testimonial[],
 
-  // --- Video reviews (files in /public/videos; add a `captions` .vtt path to show subtitles) ---
+  // --- Video reviews ---
+  // Local file: put it in /public/videos and add `captions` (.vtt path) to show subtitles.
+  // YouTube: { youtubeId: 'dQw4w9WgXcQ', label: '...', landscape: true } (the 11 characters
+  // after `v=` in the link, or after `youtu.be/` / `shorts/`). `landscape: true` for wide
+  // videos; leave it off for Shorts and vertical videos. Nothing from YouTube loads until
+  // a visitor presses play.
   videoReviews: [
     { src: '/videos/review-1.mp4', poster: '/videos/review-1.webp', label: 'ביקורת וידאו מלקוח' },
     { src: '/videos/review-2.mp4', poster: '/videos/review-2.webp', label: 'ביקורת וידאו מלקוח' },
     { src: '/videos/review-3.mp4', poster: '/videos/review-3.webp', label: 'ביקורת וידאו מלקוח' },
     { src: '/videos/review-4.mp4', poster: '/videos/review-4.webp', label: 'ביקורת וידאו מלקוחה' },
     { src: '/videos/review-5.mp4', poster: '/videos/review-5.webp', label: 'ביקורת וידאו מלקוחה', landscape: true },
-  ] as { src: string; poster: string; label: string; captions?: string; landscape?: boolean }[],
+  ] as VideoReview[],
 
   // --- FAQ (also rendered as FAQPage JSON-LD) ---
   faq: [

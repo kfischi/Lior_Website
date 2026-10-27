@@ -129,6 +129,12 @@ npm run ingest     # הטמעת ידע ל-RAG (דורש Supabase + OpenAI)
 robots שמאפשר זחלני חיפוש ובינה מלאכותית, ו-JSON-LD (Article, FAQPage, LegalService, Attorney, WebSite).
 כל טקסט משפטי חייב אישור של עורכת הדין לפני הסתמכות עליו.
 
+## סרטוני YouTube בביקורות וידאו
+
+מוסיפים ל-`brand.videoReviews` שורה כמו `{ youtubeId: 'XXXXXXXXXXX', label: 'ביקורת וידאו', landscape: true }`
+(11 התווים אחרי `v=` או `youtu.be/` או `shorts/`; `landscape` לסרטון לרוחב, בלי זה הכרטיס אנכי). הנגן נטען מ-`youtube-nocookie.com`
+רק אחרי לחיצה, ומבקש כתוביות בעברית אם קיימות ב-YouTube.
+
 ## כתוביות לביקורות וידאו
 
 `npm run captions` שולח כל סרטון ב-`brand.videoReviews` ל-Gemini ויוצר טיוטת כתוביות `public/videos/review-N.he.vtt`
