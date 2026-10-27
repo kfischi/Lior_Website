@@ -80,118 +80,120 @@ export function IntroStage({
       aria-label="סרטון היכרות עם העוזרת של ליאור"
       aria-hidden={!visible}
       className={cn(
-        'relative shrink-0 overflow-hidden bg-black text-cream transition-[height,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
-        visible ? 'h-[40%] max-h-[20rem] min-h-[12rem] opacity-100' : 'pointer-events-none h-0 opacity-0',
+        'flex shrink-0 flex-col overflow-hidden bg-black text-cream transition-[height,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
+        visible ? 'h-[48%] max-h-[24rem] min-h-[15rem] opacity-100' : 'pointer-events-none h-0 opacity-0',
       )}
     >
-      <video
-        ref={videoRef}
-        src={src}
-        poster={poster}
-        preload="auto"
-        playsInline
-        muted={muted}
-        aria-label="סרטון היכרות: העוזרת הווירטואלית של ליאור מציגה את האתר"
-        className="h-full w-full object-cover object-[50%_25%]"
-        onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
-        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onEnded={() => onDone('ended')}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/55 to-transparent"
-      />
-      <div className="absolute inset-x-0 top-0 flex items-center gap-2 p-2.5">
-        <span className="whitespace-nowrap rounded-full bg-black/45 px-3 py-1 text-xs backdrop-blur">נוצר בבינה מלאכותית</span>
-        <span className="flex-1" />
-        <button
-          type="button"
-          onClick={() => setTranscriptOpen((v) => !v)}
-          aria-pressed={transcriptOpen}
-          aria-label="תמלול מלא"
-          className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
-        >
-          <FileText className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => setCaptionsOn((v) => !v)}
-          aria-pressed={captionsOn}
-          aria-label={captionsOn ? 'כיבוי כתוביות' : 'הפעלת כתוביות'}
-          className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
-        >
-          {captionsOn ? <Captions className="h-4 w-4" /> : <CaptionsOff className="h-4 w-4" />}
-        </button>
-        <button
-          type="button"
-          onClick={() => setMuted((v) => !v)}
-          aria-pressed={muted}
-          aria-label={muted ? 'הפעלת קול' : 'השתקה'}
-          className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
-        >
-          {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-        </button>
-        <button
-          type="button"
-          onClick={() => onDone('skipped')}
-          aria-label="סגירת הסרטון והמשך לצ׳אט"
-          className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
-        >
-          <X className="h-4 w-4" />
-        </button>
+      <div className="relative min-h-0 flex-1">
+        <video
+          ref={videoRef}
+          src={src}
+          poster={poster}
+          preload="auto"
+          playsInline
+          muted={muted}
+          aria-label="סרטון היכרות: העוזרת הווירטואלית של ליאור מציגה את האתר"
+          className="h-full w-full object-cover object-[50%_14%]"
+          onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
+          onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          onEnded={() => onDone('ended')}
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/55 to-transparent"
+        />
+        <div className="absolute inset-x-0 top-0 flex items-center gap-2 p-2.5">
+          <span className="whitespace-nowrap rounded-full bg-black/45 px-3 py-1 text-xs backdrop-blur">
+            נוצר בבינה מלאכותית
+          </span>
+          <span className="flex-1" />
+          <button
+            type="button"
+            onClick={() => setTranscriptOpen((v) => !v)}
+            aria-pressed={transcriptOpen}
+            aria-label="תמלול מלא"
+            className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
+          >
+            <FileText className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setCaptionsOn((v) => !v)}
+            aria-pressed={captionsOn}
+            aria-label={captionsOn ? 'כיבוי כתוביות' : 'הפעלת כתוביות'}
+            className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
+          >
+            {captionsOn ? <Captions className="h-4 w-4" /> : <CaptionsOff className="h-4 w-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setMuted((v) => !v)}
+            aria-pressed={muted}
+            aria-label={muted ? 'הפעלת קול' : 'השתקה'}
+            className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
+          >
+            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => onDone('skipped')}
+            aria-label="סגירת הסרטון והמשך לצ׳אט"
+            className="rounded-full bg-black/45 p-2 backdrop-blur transition-colors hover:bg-black/65"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {(needsTap || (!playing && time === 0)) && visible && (
+          <button
+            type="button"
+            onClick={play}
+            aria-label="הפעלת סרטון ההיכרות"
+            className="absolute inset-0 flex items-center justify-center bg-black/25 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light"
+          >
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-cream/90 text-navy shadow-2xl">
+              <Play className="h-7 w-7 translate-x-[-2px]" fill="currentColor" aria-hidden="true" />
+            </span>
+          </button>
+        )}
+
+        {transcriptOpen && (
+          <div className="absolute inset-0 z-10 overflow-y-auto bg-black/85 p-4 pt-14 text-sm leading-relaxed">
+            <ol className="space-y-2">
+              {segments.map((seg, i) => (
+                <li key={seg.start}>
+                  <button
+                    type="button"
+                    onClick={() => seek(seg.start)}
+                    aria-current={i === currentIndex ? 'true' : undefined}
+                    className={cn(
+                      'w-full rounded-lg px-3 py-1.5 text-start transition-colors hover:bg-cream/10',
+                      i === currentIndex ? 'bg-accent-light/20 text-white' : 'text-cream/80',
+                    )}
+                  >
+                    {seg.text}
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+
+        {duration > 0 && (
+          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-white/20">
+            <div className="h-full bg-accent-light" style={{ width: `${Math.min(100, (time / duration) * 100)}%` }} />
+          </div>
+        )}
       </div>
 
-      {captionsOn && current && !transcriptOpen && (
-        <p
-          aria-hidden="true"
-          className="absolute inset-x-2.5 bottom-3 rounded-xl bg-black/60 px-3 py-2 text-[0.9rem] leading-snug backdrop-blur-sm"
-        >
-          {current.text}
-        </p>
-      )}
-
-      {(needsTap || (!playing && time === 0)) && visible && (
-        <button
-          type="button"
-          onClick={play}
-          aria-label="הפעלת סרטון ההיכרות"
-          className="absolute inset-0 flex items-center justify-center bg-black/25 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light"
-        >
-          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-cream/90 text-navy shadow-2xl">
-            <Play className="h-7 w-7 translate-x-[-2px]" fill="currentColor" aria-hidden="true" />
-          </span>
-        </button>
-      )}
-
-      {transcriptOpen && (
-        <div className="absolute inset-0 z-10 overflow-y-auto bg-black/85 p-4 pt-14 text-sm leading-relaxed">
-          <ol className="space-y-2">
-            {segments.map((seg, i) => (
-              <li key={seg.start}>
-                <button
-                  type="button"
-                  onClick={() => seek(seg.start)}
-                  aria-current={i === currentIndex ? 'true' : undefined}
-                  className={cn(
-                    'w-full rounded-lg px-3 py-1.5 text-start transition-colors hover:bg-cream/10',
-                    i === currentIndex ? 'bg-accent-light/20 text-white' : 'text-cream/80',
-                  )}
-                >
-                  {seg.text}
-                </button>
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
-
-      {duration > 0 && (
-        <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-white/20">
-          <div className="h-full bg-accent-light" style={{ width: `${Math.min(100, (time / duration) * 100)}%` }} />
-        </div>
-      )}
+      <p
+        aria-hidden="true"
+        className="min-h-[3.9rem] shrink-0 bg-black px-3.5 py-2 text-[0.9rem] leading-snug text-cream/95"
+      >
+        {captionsOn && current ? current.text : ''}
+      </p>
       <span role="status" className="sr-only">
         {focus ? current?.text : ''}
       </span>

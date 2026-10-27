@@ -25,7 +25,7 @@
  */
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 interface Segment {
   start: number;
@@ -303,7 +303,7 @@ async function main() {
   rmSync(WORK, { recursive: true, force: true });
   mkdirSync(WORK, { recursive: true });
   const photo = join(WORK, 'photo.png');
-  ffmpeg(['-i', join(ROOT, photoArg), photo]);
+  ffmpeg(['-i', resolve(ROOT, photoArg), photo]);
 
   // 1) speech for every line, and exact start times
   const gapFile = join(WORK, 'gap.wav');
@@ -311,7 +311,7 @@ async function main() {
   const lines: { file: string; seconds: number }[] = [];
   if (tts === 'recorded') {
     if (!args.recording) throw new Error('--recording <file> is required with --tts recorded.');
-    for (const file of splitRecording(join(ROOT, args.recording), intro.segments.length)) {
+    for (const file of splitRecording(resolve(ROOT, args.recording), intro.segments.length)) {
       lines.push({ file, seconds: duration(file) });
     }
   } else {

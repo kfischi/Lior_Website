@@ -1,6 +1,6 @@
 ---
 name: talking-avatar
-description: Turn a photo of a person into a talking-head video that speaks a Hebrew script, with exact caption timings, for the chat's welcome video. Use when asked to make, redo or improve the avatar video, switch voice or video provider, or change the script.
+description: Turn a photo of a person into a talking-head video that speaks a Hebrew script (their own recording, a synthetic voice, or a paid service), with exact caption timings, for the chat's welcome video. Works fully offline with no account or key. Use when asked to make, redo or improve the avatar video, switch voice or video provider, or change the script.
 ---
 
 # Talking avatar (photo to speaking video)
@@ -14,6 +14,23 @@ H.264 file, a poster, and the exact start time of every line in `src/lib/avatar-
 The person in the photo must have agreed in writing to the use of their face and voice, including a
 cloned voice. Ask if it is not already stated. Never make a video of anyone else. The video is
 labelled "נוצר בבינה מלאכותית" in the player and the script says she is a virtual assistant; keep both.
+
+## The no-account route (works anywhere with Python and ffmpeg)
+```
+npm run avatar:setup                                                            # once: ~40 s, installs into .avatar-venv
+npm run avatar -- --tts recorded --recording my-reading.m4a --provider local   # a real voice, animated photo
+```
+- `--tts recorded`: one recording (audio or a phone video) of the whole script read aloud, with a clear pause of
+  about a second between lines. It is cut into lines at the longest pauses, and each line's start time is exact.
+  Real recorded Hebrew sounds far better than any offline synthetic voice.
+- `--provider local` (`scripts/avatar-local/puppet.py`): MediaPipe face landmarks and 2D animation. The mouth opens
+  with the loudness and brightness of the voice, plus blinks, small head movement, breathing and brow lifts. About
+  3 frames a second on 4 CPU cores (a 90 s video takes around 7 minutes).
+- Honest quality: a stylised living portrait. Small, soft speech movements look natural at the size of the chat
+  window. It has no lip rounding for "o/u", the teeth are a simple shaded band, and it looks synthetic when enlarged.
+  Photoreal lip-sync needs a neural model on a GPU or a paid service (below). Say so to the person asking.
+- Tested here: setup, the pause-based split, chunking with motion kept continuous across chunks, the join, and
+  the site playback, all with a synthetic tone recording. Not yet tried with real Hebrew speech.
 
 ## Inputs
 - Photo: front-facing, sharp, neutral expression, head and shoulders, plain lighting
@@ -42,7 +59,9 @@ the provider, 28 s; fal OmniHuman 1.5 allows 30 s at 1080p and 60 s at 720p).
 | Speech | `gemini` (`gemini-2.5-flash-preview-tts`) | written to the docs, not run against the live service |
 | Video | `fal` (OmniHuman, audio-driven) | written to the docs, not run against the live service |
 | Video | `did` (talks from image and audio) | written to the docs, not run against the live service |
+| Video | `local` | tested end to end (see above) |
 | Video | `preview` | tested: still photo with a slow push-in, no lip movement |
+| Speech | `recorded` | tested with a synthetic recording; the person's own voice |
 
 The sandbox cannot reach these services, so the first real run may need small fixes to request
 fields. The scripts print the service's error text (never keys) so the fix is quick.
@@ -56,6 +75,7 @@ fields. The scripts print the service's error text (never keys) so the fix is qu
 5. Do not publish a video the person has not watched and approved.
 
 ## Do not
-- Do not fake lip movement with the preview provider and ship it as the final video.
+- Do not ship the `preview` provider's output (still photo) as the final video.
+- Do not describe the `local` result as photorealistic AI video; it is an animated portrait.
 - Do not remove the AI label, the disclaimer line, or the skip and captions controls.
 - Do not commit `.env.local` or `.avatar-work/`.

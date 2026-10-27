@@ -90,9 +90,9 @@ def detect(img_bgr: np.ndarray) -> np.ndarray:
 
 def crop_square(img: np.ndarray, pts: np.ndarray, size: int):
     fw = pts[:, 0].max() - pts[:, 0].min()
-    side = fw * 2.5
+    side = fw * 3.0
     cx = (pts[:, 0].max() + pts[:, 0].min()) / 2
-    cy = (pts[:, 1].max() + pts[:, 1].min()) / 2 + side * 0.06
+    cy = (pts[:, 1].max() + pts[:, 1].min()) / 2 + side * 0.12  # face centre sits at 38% of the height
     x0, y0 = cx - side / 2, cy - side / 2
     scale = size / side
     m = np.array([[scale, 0, -x0 * scale], [0, scale, -y0 * scale]], dtype=np.float64)
@@ -146,22 +146,29 @@ class Puppet:
         d = np.zeros((len(self.src), 2))
         k = self.index
         fh, mw = self.fh, self.mw
-        o = opening * 0.085 * fh
+        o = opening * 0.055 * fh
 
         def add(i, dx, dy):
             if i in k:
                 d[k[i]] += (dx, dy)
 
+        x0, x1 = self.base[61][0], self.base[291][0]
+
+        def along(i):
+            """0 at the mouth corners, 1 in the middle: the corners stay put while the centre opens."""
+            u = min(1.0, max(0.0, (self.base[i][0] - x0) / (x1 - x0)))
+            return math.sin(math.pi * u) ** 0.8
+
         for i in LOWER_INNER:
-            add(i, 0, o)
+            add(i, 0, o * along(i))
         for i in OUTER_LOWER:
-            add(i, 0, o * 0.9)
+            add(i, 0, o * 0.92 * along(i))
         for i in UPPER_INNER + OUTER_UPPER:
-            add(i, 0, -o * 0.12)
+            add(i, 0, -o * 0.12 * along(i))
         for i, wgt in zip(JAW, [0.75, 0.7, 0.7, 0.65, 0.55, 0.7, 0.7, 0.65, 0.55, 0.7, 0.6, 0.6, 0.5, 0.35, 0.4, 0.5, 0.35, 0.3]):
-            add(i, 0, o * wgt)
+            add(i, 0, o * wgt * 0.7)
         for i in CORNERS:
-            add(i, width * 0.07 * mw * (1 if self.base[i][0] > self.base[1][0] else -1), o * 0.18)
+            add(i, width * 0.03 * mw * (1 if self.base[i][0] > self.base[1][0] else -1), o * 0.06)
         # Blink
         b = self.blink(t)
         for up, lo in self.pairs.items():
@@ -176,8 +183,8 @@ class Puppet:
 
     def head_matrix(self, t, opening, emph):
         s = self.size
-        rot = math.radians(1.1 * math.sin(2 * math.pi * 0.19 * t) + 0.6 * math.sin(2 * math.pi * 0.43 * t + 1.1))
-        rot += math.radians(0.5 * (opening - 0.4))
+        rot = math.radians(0.7 * math.sin(2 * math.pi * 0.19 * t) + 0.4 * math.sin(2 * math.pi * 0.43 * t + 1.1))
+        rot += math.radians(0.25 * (opening - 0.4))
         tx = s * 0.0045 * math.sin(2 * math.pi * 0.23 * t + 0.4)
         ty = s * 0.004 * math.sin(2 * math.pi * 0.27 * t) + s * 0.0035 * emph
         sc = 1.0 + 0.004 * math.sin(2 * math.pi * 0.27 * t + 0.6)
@@ -193,14 +200,19 @@ class Puppet:
         a, off = self.head_matrix(t, opening, emph)
         a_inv = np.linalg.inv(a)
         # Displacement field on a coarse grid, then smoothly enlarged.
-        rbf = RBFInterpolator(self.src, d, kernel="thin_plate_spline", smoothing=2.0)
+        rbf = RBFInterpolator(self.src, d, kernel="thin_plate_spline", smoothing=6.0)
         field = rbf(self.grid).reshape(self.gs, self.gs, 2).astype(np.float32)
         dx = cv2.resize(field[..., 0], (s, s), interpolation=cv2.INTER_CUBIC)
         dy = cv2.resize(field[..., 1], (s, s), interpolation=cv2.INTER_CUBIC)
         px = a_inv[0, 0] * (self.X - off[0]) + a_inv[0, 1] * (self.Y - off[1])
         py = a_inv[1, 0] * (self.X - off[0]) + a_inv[1, 1] * (self.Y - off[1])
-        out = cv2.remap(self.img, (px - dx).astype(np.float32), (py - dy).astype(np.float32),
-                        cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+        # The field says where source content goes; find where each output pixel comes from.
+        qx, qy = px.astype(np.float32), py.astype(np.float32)
+        for _ in range(3):
+            ddx = cv2.remap(dx, qx, qy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            ddy = cv2.remap(dy, qx, qy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            qx, qy = (px - ddx).astype(np.float32), (py - ddy).astype(np.float32)
+        out = cv2.remap(self.img, qx, qy, cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
         # Mouth interior from the moved inner-lip ring, in final-image coordinates.
         ring = np.array([self.base[i] + d[self.index[i]] for i in INNER_LIPS])
         ring = ring @ a.T + off
@@ -226,18 +238,22 @@ class Puppet:
         deeper = np.array([20, 12, 40], np.float32)
         base = dark[None, None, :] * (1 - yy[..., None]) + deeper[None, None, :] * yy[..., None]
         layer[:] = np.where(mask[..., None] > 0, np.broadcast_to(base, layer.shape), layer)
-        # Upper teeth, a soft band under the upper lip.
-        if gap > 3.5:
-            tooth_h = min(gap * 0.5, self.fh * 0.05)
+        # Upper teeth: a short, inset, softly shaded band under the upper lip.
+        if gap > 5:
+            tooth_h = min(gap * 0.34, self.fh * 0.032)
             band = np.zeros((s, s), np.float32)
             cv2.fillPoly(band, [poly], 1.0)
             band[: int(top[1]), :] = 0
             band[int(top[1] + tooth_h) :, :] = 0
-            band = cv2.GaussianBlur(band * mask, (0, 0), 0.9)
-            teeth = np.array([214, 224, 232], np.float32)
-            layer = layer * (1 - band[..., None] * 0.92) + teeth * band[..., None] * 0.92
+            inset = (ring[:, 0].max() - ring[:, 0].min()) * 0.14
+            band[:, : int(ring[:, 0].min() + inset)] = 0
+            band[:, int(ring[:, 0].max() - inset) :] = 0
+            band = cv2.GaussianBlur(band * mask, (0, 0), 1.4)
+            shade = np.clip((np.arange(s, dtype=np.float32)[:, None] - top[1]) / max(tooth_h, 1.0), 0, 1)[..., None]
+            teeth = np.array([228, 236, 241], np.float32) * (1 - shade * 0.18)
+            layer = layer * (1 - band[..., None] * 0.78) + teeth * band[..., None] * 0.78
         # Tongue when wide open.
-        if gap > 9:
+        if gap > 11:
             tongue = np.zeros((s, s), np.float32)
             cx = int(ring[:, 0].mean())
             cv2.ellipse(tongue, (cx, int(bot[1] - gap * 0.22)), (int(self.mw * 0.17), max(2, int(gap * 0.2))), 0, 0, 360, 1.0, -1)
