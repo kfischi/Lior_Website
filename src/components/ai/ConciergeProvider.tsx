@@ -366,6 +366,20 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
   const aiBusy = chat.status === 'submitted' || chat.status === 'streaming';
   const busy = aiBusy || submitting;
 
+  // Never leave the visitor waiting on a stalled answer: after 30 s, stop and offer a phone call.
+  const chatRef = React.useRef(chat);
+  React.useEffect(() => {
+    chatRef.current = chat;
+  });
+  React.useEffect(() => {
+    if (!aiBusy) return;
+    const timer = window.setTimeout(() => {
+      void chatRef.current.stop();
+      say('assistant', 'התשובה מתעכבת. אפשר לנסות שוב, או להתקשר ונענה מיד.', { call: true });
+    }, 30_000);
+    return () => window.clearTimeout(timer);
+  }, [aiBusy, say]);
+
   const send = React.useCallback(
     (text: string) => {
       const value = text.trim();

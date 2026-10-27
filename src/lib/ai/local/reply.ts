@@ -2,6 +2,7 @@ import 'server-only';
 import { brand } from '@/lib/brand';
 import { listNotes, logUnknown } from '@/lib/learning/store';
 import { sanitizeQuestion } from '@/lib/learning/sanitize';
+import { withTimeout } from '@/lib/with-timeout';
 import { withSuggestions } from '../suggestions';
 import { search, type Hit } from './engine';
 import { analyze, normalizeText, tokens } from './text';
@@ -105,7 +106,7 @@ export async function localReply(question: string, previousQuestion?: string): P
   if (BYE.has(norm)) return 'להתראות, ובהצלחה. אפשר לחזור בכל עת.';
   if (question.length > 260) return sensitive();
 
-  const notes = await listNotes().catch(() => []);
+  const notes = await withTimeout(listNotes(), 1500, []);
   let q = question;
   if (analyze(question).length <= 1 && previousQuestion) q = `${previousQuestion} ${question}`;
 
