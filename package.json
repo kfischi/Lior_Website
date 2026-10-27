@@ -12,7 +12,8 @@
     "ingest": "node --env-file=.env.local --import tsx scripts/ingest.ts",
     "captions": "node --env-file=.env.local --import tsx scripts/captions.ts",
     "avatar": "node --env-file=.env.local --import tsx scripts/avatar.ts",
-    "avatar:setup": "bash scripts/avatar-local/setup.sh"
+    "avatar:setup": "bash scripts/avatar-local/setup.sh",
+    "avatar:doctor": "node --import tsx scripts/avatar-doctor.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.89",
