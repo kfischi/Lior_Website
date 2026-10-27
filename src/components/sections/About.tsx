@@ -61,6 +61,11 @@ export function About() {
             </blockquote>
 
             <p className="mt-8 text-lg leading-relaxed text-ink/75">{brand.about.body}</p>
+            {brand.about.more.map((paragraph) => (
+              <p key={paragraph} className="mt-4 text-lg leading-relaxed text-ink/75">
+                {paragraph}
+              </p>
+            ))}
 
             <ul className="mt-8 flex flex-wrap gap-3">
               {brand.about.credentials.map((c) => (
@@ -109,6 +114,28 @@ export function About() {
                   ))}
                 </ul>
               </div>
+            )}
+
+            {brand.about.gallery.length > 0 && (
+              <ul className="mt-10 grid grid-cols-2 gap-4 border-t border-navy/10 pt-8">
+                {brand.about.gallery.map((photo) => (
+                  <li key={photo.src}>
+                    <figure>
+                      <Image
+                        src={photo.src}
+                        alt={photo.alt}
+                        width={photo.width}
+                        height={photo.height}
+                        sizes="(min-width: 1024px) 18rem, 45vw"
+                        className="aspect-[3/4] w-full rounded-xl object-cover object-top shadow-md"
+                      />
+                      {photo.caption && (
+                        <figcaption className="mt-2 text-sm text-ink/75">{photo.caption}</figcaption>
+                      )}
+                    </figure>
+                  </li>
+                ))}
+              </ul>
             )}
 
             {brand.trustStats.length > 0 && (

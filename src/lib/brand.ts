@@ -264,6 +264,25 @@ export const brand = {
     ] as { title: string; issuer: string; date: string; image: string; width: number; height: number }[],
     /** Cloudinary public ID for the attorney portrait. Local /public path or Cloudinary ID. Leave empty for a monogram panel. */
     portraitId: '/images/lior-about.webp',
+    /** More about the attorney: short paragraphs shown after the main text. Only approved text; leave empty until then. */
+    more: [] as string[],
+    /** Photos shown in a row under the text (images in /public/images). Empty caption = no caption. */
+    gallery: [
+      {
+        src: '/images/lior-lecture.webp',
+        width: 900,
+        height: 1193,
+        alt: 'עו״ד ליאור-קלואי ארז מדברת עם מיקרופון ליד דוכן, באולם עם דגל ישראל',
+        caption: 'על הבמה',
+      },
+      {
+        src: '/images/lior-portrait-2.webp',
+        width: 800,
+        height: 1223,
+        alt: 'דיוקן של עו״ד ליאור-קלואי ארז בגלימה שחורה',
+        caption: '',
+      },
+    ] as { src: string; width: number; height: number; alt: string; caption: string }[],
   },
 
   // --- Scrolling band under the hero (practice areas are added automatically) ---
