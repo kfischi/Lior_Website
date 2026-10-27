@@ -1,35 +1,20 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import { Captions, CaptionsOff, FileText, Play, Volume2, VolumeX, X } from 'lucide-react';
 import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
 import { brand, type IntroSegment } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 import { applyTour, clearTour } from './tour';
 
-/** Seconds after the chat opens that the video starts (a replay starts at once). */
+/** Seconds after the chat opens that the welcome starts (a replay starts at once). */
 export const INTRO_START_DELAY_MS = 2000;
 
-function vttTime(seconds: number): string {
-  const ms = Math.round(seconds * 1000);
-  const pad = (n: number, width = 2) => String(n).padStart(width, '0');
-  return `${pad(Math.floor(ms / 3600000))}:${pad(Math.floor(ms / 60000) % 60)}:${pad(Math.floor(ms / 1000) % 60)}.${pad(ms % 1000, 3)}`;
-}
-
-/** The segments as a WebVTT caption file, so the video carries a real captions track. */
-function toVtt(segments: IntroSegment[], total: number): string {
-  const cues = segments.map((seg, i) => {
-    const end = segments[i + 1]?.start ?? Math.max(total, seg.start + 4);
-    return `${vttTime(seg.start)} --> ${vttTime(end)}\n${seg.text}`;
-  });
-  return `WEBVTT\n\n${cues.join('\n\n')}\n`;
-}
-
 /**
- * The welcome video at the top of the chat. Two seconds after the chat opens (the visitor's tap
- * allows sound) the picture opens and she starts talking, with live captions and a transcript
- * you can click to jump around. While she speaks, the parts of the site she mentions light up
- * (the chat, the mic, the articles, the contact buttons...). Skippable at any time.
+ * The welcome at the top of the chat: a still photo of the attorney while the welcome is read aloud,
+ * with live captions and a transcript you can click to jump around. While it speaks, the parts of the
+ * site it mentions light up (the chat, the mic, the articles, the contact buttons...). Skippable at any time.
  */
 export function IntroStage({
   onDone,
@@ -38,12 +23,12 @@ export function IntroStage({
 }: {
   onDone: (reason: 'ended' | 'skipped') => void;
   delayMs?: number;
-  /** Move keyboard focus into the video when it opens (a replay the visitor asked for). */
+  /** Move keyboard focus into the card when it opens (a replay the visitor asked for). */
   focusOnShow?: boolean;
 }) {
-  const { src, poster, segments } = brand.chat.intro;
+  const { photo, audio, segments } = brand.chat.welcome;
   const reduced = useReducedMotion();
-  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const audioRef = React.useRef<HTMLAudioElement>(null);
   const regionRef = React.useRef<HTMLDivElement>(null);
   const [visible, setVisible] = React.useState(false);
   const [time, setTime] = React.useState(0);
@@ -57,13 +42,6 @@ export function IntroStage({
   const currentIndex = segments.reduce((found, seg, i) => (seg.start <= time ? i : found), -1);
   const current: IntroSegment | undefined = segments[currentIndex];
   const focus = visible && playing ? current?.focus : undefined;
-  const captionsUrl = React.useMemo(
-    () =>
-      duration > 0 && segments.length > 0
-        ? `data:text/vtt;charset=utf-8,${encodeURIComponent(toVtt(segments, duration))}`
-        : undefined,
-    [duration, segments],
-  );
   const scrollOrigin = React.useRef<number | null>(null);
   const visitorScrolled = React.useRef(false);
 
@@ -72,18 +50,18 @@ export function IntroStage({
     const timer = window.setTimeout(() => {
       setVisible(true);
       if (focusOnShow) regionRef.current?.focus();
-      const video = videoRef.current;
-      if (!video) return;
+      const sound = audioRef.current;
+      if (!sound) return;
       if (reduced) {
         setNeedsTap(true);
         return;
       }
-      video.play().catch(() => setNeedsTap(true));
+      sound.play().catch(() => setNeedsTap(true));
     }, delayMs);
     return () => window.clearTimeout(timer);
   }, [reduced, delayMs, focusOnShow]);
 
-  // Light up what she is talking about.
+  // Light up what is being talked about.
   React.useEffect(() => {
     const wide = window.matchMedia('(min-width: 1024px)').matches;
     if (focus && wide && !reduced && scrollOrigin.current === null) scrollOrigin.current = window.scrollY;
@@ -91,7 +69,7 @@ export function IntroStage({
     return clearTour;
   }, [focus, reduced]);
 
-  // The tour scrolls the page; when the video ends, take the visitor back to where they were
+  // The tour scrolls the page; when the welcome ends, take the visitor back to where they were
   // (unless they scrolled themselves in the meantime).
   React.useEffect(() => {
     const mark = () => {
@@ -109,13 +87,13 @@ export function IntroStage({
 
   function play() {
     setNeedsTap(false);
-    videoRef.current?.play().catch(() => setNeedsTap(true));
+    audioRef.current?.play().catch(() => setNeedsTap(true));
   }
 
   function seek(seconds: number) {
-    const video = videoRef.current;
-    if (!video) return;
-    video.currentTime = seconds;
+    const sound = audioRef.current;
+    if (!sound) return;
+    sound.currentTime = seconds;
     setTranscriptOpen(false);
     play();
   }
@@ -126,43 +104,42 @@ export function IntroStage({
       role="region"
       tabIndex={-1}
       data-intro-stage
-      aria-label="סרטון היכרות עם העוזרת של ליאור"
+      aria-label="הודעת פתיחה מהעוזרת של ליאור"
       // While closed the buttons must not be reachable by Tab or by a screen reader.
       inert={!visible}
       className={cn(
-        'flex shrink-0 flex-col overflow-hidden bg-black text-cream outline-none transition-[max-height,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
-        visible
-          ? 'max-h-[30rem] opacity-100'
-          : 'pointer-events-none max-h-0 opacity-0',
+        'flex shrink-0 flex-col overflow-hidden bg-navy text-cream outline-none transition-[max-height,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none',
+        visible ? 'max-h-[30rem] opacity-100' : 'pointer-events-none max-h-0 opacity-0',
       )}
     >
-      {/* The picture keeps the video's own shape, so the whole face is always in view, never cropped. */}
-      <div className="relative mx-auto aspect-[720/560] max-h-[46dvh] w-full">
-        <video
-          ref={videoRef}
-          src={src}
-          poster={poster}
-          preload="auto"
-          playsInline
-          muted={muted}
-          aria-label="סרטון היכרות: העוזרת הווירטואלית של ליאור מציגה את האתר"
-          className="h-full w-full object-contain"
-          onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
-          onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
-          onPlay={() => setPlaying(true)}
-          onPause={() => setPlaying(false)}
-          onEnded={() => onDone('ended')}
-          onError={() => onDone('skipped')}
-        >
-          {captionsUrl && <track kind="captions" srcLang="he" label="עברית" src={captionsUrl} />}
-        </video>
+      <audio
+        ref={audioRef}
+        src={audio}
+        preload="auto"
+        muted={muted}
+        onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onEnded={() => onDone('ended')}
+        onError={() => onDone('skipped')}
+      />
+
+      <div className="relative h-40 w-full shrink-0 sm:h-44">
+        <Image
+          src={photo}
+          alt={brand.attorneyName}
+          fill
+          sizes="(min-width: 640px) 28rem, 100vw"
+          className="object-cover object-[50%_9%]"
+        />
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/55 to-transparent"
         />
         <div className="absolute inset-x-0 top-0 z-20 flex items-center gap-1.5 p-2">
           <span className="whitespace-nowrap rounded-full bg-black/45 px-2.5 py-1 text-[0.7rem] backdrop-blur">
-            נוצר בבינה מלאכותית
+            העוזרת הווירטואלית · בינה מלאכותית
           </span>
           <span className="flex-1" />
           <button
@@ -195,7 +172,7 @@ export function IntroStage({
           <button
             type="button"
             onClick={() => onDone('skipped')}
-            aria-label="סגירת הסרטון והמשך לצ׳אט"
+            aria-label="סגירת הפתיחה והמשך לצ׳אט"
             className="rounded-full bg-black/45 p-1.5 backdrop-blur transition-colors hover:bg-black/65"
           >
             <X className="h-4 w-4" />
@@ -206,11 +183,11 @@ export function IntroStage({
           <button
             type="button"
             onClick={play}
-            aria-label="הפעלת סרטון ההיכרות"
+            aria-label="השמעת הודעת הפתיחה"
             className="absolute inset-0 flex items-center justify-center bg-black/25 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-light"
           >
-            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-cream/90 text-navy shadow-2xl">
-              <Play className="h-7 w-7 translate-x-[-2px]" fill="currentColor" aria-hidden="true" />
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-cream/90 text-navy shadow-2xl">
+              <Play className="h-6 w-6 translate-x-[-2px]" fill="currentColor" aria-hidden="true" />
             </span>
           </button>
         )}
@@ -237,22 +214,19 @@ export function IntroStage({
           </div>
         )}
 
-        {/* Captions sit over the lower edge of the picture (below the chin, which the video is framed for). */}
-        {captionsOn && current && (
-          <p
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-1 bg-linear-to-t from-black/85 via-black/60 to-transparent px-3.5 pb-1.5 pt-6 text-[0.85rem] leading-snug text-cream"
-          >
-            {current.text}
-          </p>
-        )}
-
         {duration > 0 && (
           <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-white/20">
             <div className="h-full bg-accent-light" style={{ width: `${Math.min(100, (time / duration) * 100)}%` }} />
           </div>
         )}
       </div>
+
+      {/* Live captions under the photo, so they never cover the face. */}
+      {captionsOn && (
+        <p aria-hidden="true" className="min-h-[4.25rem] px-4 py-2.5 text-[0.9rem] leading-snug text-cream/95">
+          {current?.text ?? segments[0]?.text}
+        </p>
+      )}
 
       <span role="status" className="sr-only">
         {focus ? current?.text : ''}

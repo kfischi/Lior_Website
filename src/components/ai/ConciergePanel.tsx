@@ -19,9 +19,9 @@ import { useSpeechInput, useSpeechOutput } from './useVoice';
 
 const INTRO_SEEN_KEY = 'concierge-intro-seen-v1';
 
-/** The welcome video plays once per browser tab, and only in the floating window. */
+/** The welcome opens (and speaks) once per browser tab, and only in the floating window. */
 function introWanted(enabled: boolean): boolean {
-  if (!enabled || !brand.chat.intro.src || typeof window === 'undefined') return false;
+  if (!enabled || !brand.chat.welcome.audio || typeof window === 'undefined') return false;
   try {
     return !sessionStorage.getItem(INTRO_SEEN_KEY);
   } catch {
@@ -409,25 +409,25 @@ export function ConciergePanel({
   const starters = area ? area.page.faq.map((f) => f.question) : brand.chat.suggestedPrompts;
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const hasIntro = Boolean(brand.chat.intro.src);
+  const hasIntro = Boolean(brand.chat.welcome.audio);
   const [docOpen, setDocOpen] = React.useState(false);
   const [intro, setIntro] = React.useState(() => introWanted(autoFocus));
   const [introDelay, setIntroDelay] = React.useState(INTRO_START_DELAY_MS);
 
   const replayRef = React.useRef<HTMLButtonElement>(null);
 
-  // Counts as seen as soon as it opens, so closing the chat mid-video does not replay it with sound.
+  // Counts as seen as soon as it opens, so closing and reopening the chat does not play it again with sound.
   React.useEffect(() => {
     if (!intro) return;
     try {
       sessionStorage.setItem(INTRO_SEEN_KEY, '1');
     } catch {
-      // Private mode: the video may play again next time.
+      // Private mode: the card may open again next time.
     }
   }, [intro]);
 
   function closeIntro(reason: 'ended' | 'skipped') {
-    // Focus is lost when the video unmounts; put it back only if it was in the video (or nowhere).
+    // Focus is lost when the card unmounts; put it back only if it was in the card (or nowhere).
     const active = document.activeElement;
     const focusWasInIntro =
       !active || active === document.body || Boolean(active.closest('[data-intro-stage]'));
@@ -537,8 +537,8 @@ export function ConciergePanel({
                 setIntroDelay(0);
                 setIntro(true);
               }}
-              aria-label="צפייה בסרטון ההיכרות"
-              title="סרטון היכרות"
+              aria-label="השמעת ההודעה הפותחת"
+              title="הודעת פתיחה"
               className="rounded-full p-2 text-cream/80 transition-colors hover:bg-cream/10 hover:text-cream"
             >
               <Play className="h-5 w-5" />

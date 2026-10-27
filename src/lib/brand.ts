@@ -234,6 +234,16 @@ export const brand = {
      * See docs/avatar-script.md and .claude/skills/talking-avatar.
      */
     intro: introConfig as IntroConfig,
+    /**
+     * What the chat opens with, instead of the video: a still photo of the attorney while the welcome is
+     * read aloud (the audio track of the intro), with live captions, a transcript and the site highlights.
+     * Leave `audio` empty to switch it off. The video pipeline stays in the repo (`intro` above).
+     */
+    welcome: {
+      photo: '/images/lior-about.webp',
+      audio: '/audio/intro.mp3',
+      segments: (introConfig as IntroConfig).segments,
+    },
   },
 
   // --- Trust strip (E-E-A-T) ---
