@@ -15,6 +15,7 @@ import { localReply } from '@/lib/ai/local/reply';
 import { splitSuggestions } from '@/lib/ai/suggestions';
 import { splitSiteAction } from '@/lib/site-actions';
 import { redactPersonalDetails } from '@/lib/privacy/redact';
+import { recordChat } from '@/lib/learning/stats';
 import { brand } from '@/lib/brand';
 import { getLearnedPrompt } from '@/lib/learning/store';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
@@ -129,6 +130,7 @@ export async function POST(req: Request) {
   const model = getChatModel();
   if (!model || Date.now() < modelDownUntil) {
     const reply = await localReply(lastUserText, previousUserText);
+    void recordChat(lastUserText, !reply.includes('לא מצאתי תשובה מדויקת'));
     return streamStaticReply(redacted ? `${REDACTED_NOTE}\n\n${reply}` : reply);
   }
 
@@ -165,6 +167,7 @@ export async function POST(req: Request) {
     providerOptions: chatProviderOptions(),
     abortSignal: abort.signal,
     onFinish: ({ text }) => {
+      void recordChat(lastUserText, true);
       void persistExchange(sessionId, lastUserText, splitSiteAction(splitSuggestions(text).text).text);
     },
     onError: (err) => {

@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { brand } from '@/lib/brand';
 import { adminEnabled, isAdmin } from '@/lib/admin-auth';
 import { listNotes, listUnknown } from '@/lib/learning/store';
+import { getStats, type Stats } from '@/lib/learning/stats';
+import { StatsPanel } from '@/components/admin/StatsPanel';
 import { logoutAction } from '@/lib/actions/admin';
 import { LoginForm, LogoutButton, TestChatForm } from '@/components/admin/AdminForms';
 import { NoteCard } from '@/components/admin/NoteCard';
@@ -52,9 +54,10 @@ async function Body({ q }: { q?: string }) {
 
   let notes: Awaited<ReturnType<typeof listNotes>> = [];
   let unknown: Awaited<ReturnType<typeof listUnknown>> = [];
+  let stats: Stats | null = null;
   let loadFailed = false;
   try {
-    [notes, unknown] = await Promise.all([listNotes(), listUnknown()]);
+    [notes, unknown, stats] = await Promise.all([listNotes(), listUnknown(), getStats(30)]);
   } catch (err) {
     console.error('Loading admin data failed:', err);
     loadFailed = true;
@@ -82,6 +85,8 @@ async function Body({ q }: { q?: string }) {
           שגיאה: לא הצלחנו לטעון את הרשימות. רעננו את הדף. האתר והצ׳אט ממשיכים לעבוד.
         </p>
       )}
+
+      {stats && <StatsPanel stats={stats} />}
 
       <section aria-labelledby="teach-title" className="rounded-2xl border border-navy/15 bg-white p-4 sm:p-6">
         <h2 id="teach-title" className="mb-4 text-2xl text-navy">

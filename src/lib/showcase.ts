@@ -86,7 +86,7 @@ export const showcase = {
     {
       id: 'chat-approve',
       group: 'trust',
-      status: 'building',
+      status: 'live',
       title: 'טיוטה, אישור ואזהרות ניסוח',
       text: 'תשובה חדשה מחכה לאישור, אפשר לבדוק אותה לפני פרסום, והמערכת מזהירה על הבטחות תוצאה ופרטים אישיים, בהתאם לכללי הפרסום של הלשכה.',
     },
@@ -142,7 +142,7 @@ export const showcase = {
     {
       id: 'trust-redact',
       group: 'trust',
-      status: 'building',
+      status: 'live',
       title: 'הסרת פרטים מזהים לפני מודל חיצוני',
       text: 'טלפונים, מספרי זהות, כרטיסי אשראי ודוא״ל מוסרים מההודעה לפני שהיא נשלחת למודל, ולפני שהיא נשמרת.',
     },
@@ -161,6 +161,13 @@ export const showcase = {
       text: 'Next.js 16, React 19, TypeScript במצב קפדני, Tailwind 4, אנימציות שמכבדות העדפות משתמש, ומעבר חלק למובייל ול-RTL.',
     },
     {
+      id: 'chat-prefs',
+      group: 'chat',
+      status: 'live',
+      title: 'פגישה במשרד או בזום, בזמן נוח',
+      text: 'בקליטת הפנייה בוחרים איפה ומתי נוח, והעדפה זו מגיעה למשרד יחד עם הפרטים.',
+    },
+    {
       id: 'next-docs',
       group: 'chat',
       status: 'planned',
@@ -172,7 +179,7 @@ export const showcase = {
       group: 'chat',
       status: 'planned',
       title: 'תיאום פגישה ביומן',
-      text: 'חיבור ליומן, הצעת מועדים פנויים ואישור, עם סיכום קצר לעורכת הדין.',
+      text: 'חיבור ליומן, הצעת מועדים פנויים ואישור, עם סיכום קצר לעורכת הדין. דורש חיבור לחשבון היומן של המשרד.',
     },
     {
       id: 'next-lang',
@@ -184,9 +191,9 @@ export const showcase = {
     {
       id: 'next-dash',
       group: 'trust',
-      status: 'planned',
-      title: 'לוח נתונים',
-      text: 'מה נשאל הכי הרבה, איפה התשובות לא עוזרות, ואילו מאמרים כדאי לכתוב.',
+      status: 'live',
+      title: 'לוח נתונים בלי לפגוע בפרטיות',
+      text: 'מה נשאל הכי הרבה, כמה שיחות לא נענו, כמה סומנו "לא עזר" וכמה השאירו פרטים. נשמרים רק מספרים ונושא כללי, לא השאלות עצמן.',
     },
     {
       id: 'next-private',

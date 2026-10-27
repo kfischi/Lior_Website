@@ -25,7 +25,7 @@ const STORE_NAME = 'lior-learning';
 const DATA_DIR = path.join(process.cwd(), '.data');
 const memory = new Map<string, string>();
 
-async function readRaw(key: string): Promise<string | null> {
+export async function readRaw(key: string): Promise<string | null> {
   try {
     const value = await getStore({ name: STORE_NAME, consistency: 'strong' }).get(key, {
       type: 'text',
@@ -41,7 +41,7 @@ async function readRaw(key: string): Promise<string | null> {
   }
 }
 
-async function writeRaw(key: string, value: string): Promise<void> {
+export async function writeRaw(key: string, value: string): Promise<void> {
   try {
     await getStore({ name: STORE_NAME, consistency: 'strong' }).set(key, value);
     return;
