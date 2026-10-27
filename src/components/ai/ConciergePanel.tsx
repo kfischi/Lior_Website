@@ -5,13 +5,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
-import { MessageCircle, Mic, Phone, Play, RotateCcw, Send, Shield, Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X } from 'lucide-react';
+import { MapPin, MessageCircle, Mic, Phone, Play, RotateCcw, Send, Shield, Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X } from 'lucide-react';
 import type { UIMessage } from 'ai';
 import { brand, telHref, whatsappHref } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 import { splitSuggestions } from '@/lib/ai/suggestions';
+import { splitSiteAction, type SiteTarget } from '@/lib/site-actions';
 import { INTAKE_STEPS, useConcierge, type IntakeStep } from './ConciergeProvider';
 import { INTRO_START_DELAY_MS, IntroStage } from './IntroStage';
+import { useSiteNavigator } from './siteNav';
 import { useSpeechInput, useSpeechOutput } from './useVoice';
 
 const INTRO_SEEN_KEY = 'concierge-intro-seen-v1';
@@ -153,6 +155,20 @@ function WithLinks({ text, onNavigate }: { text: string; onNavigate: () => void 
   );
 }
 
+/** The assistant offers to take the visitor to a part of the site. */
+function SiteButton({ target, onGo }: { target: SiteTarget; onGo: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onGo}
+      className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-accent/40 bg-white px-3 py-2.5 text-sm font-medium text-navy transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+    >
+      <MapPin className="h-4 w-4 text-accent" aria-hidden="true" />
+      להצגה באתר: {target.label}
+    </button>
+  );
+}
+
 function Bubble({
   message,
   isLast,
@@ -166,6 +182,7 @@ function Bubble({
   showFeedback?: boolean;
 }) {
   const { extras, choose, startIntake, busy, closePanel } = useConcierge();
+  const goTo = useSiteNavigator();
   const [vote, setVote] = React.useState<'up' | 'down' | null>(null);
   const ex = extras[message.id];
   const isUser = message.role === 'user';
@@ -180,10 +197,11 @@ function Bubble({
   const content = message.parts.map((part, i) => {
     if (part.type === 'text') {
       if (isUser) return <span key={i}>{part.text}</span>;
-      const { text } = splitSuggestions(part.text);
-      return text ? (
+      const { text, target } = splitSiteAction(splitSuggestions(part.text).text);
+      return text || target ? (
         <span key={i}>
           <WithLinks text={text} onNavigate={closePanel} />
+          {target && <SiteButton target={target} onGo={() => goTo(target)} />}
         </span>
       ) : null;
     }
@@ -441,10 +459,26 @@ export function ConciergePanel({
     if (!last || last.role !== 'assistant' || spokenId.current === last.id) return;
     spokenId.current = last.id;
     const text = last.parts
-      .map((p) => (p.type === 'text' ? splitSuggestions(p.text).text : ''))
+      .map((p) => (p.type === 'text' ? splitSiteAction(splitSuggestions(p.text).text).text : ''))
       .join(' ');
     speak(text);
   }, [readAloud, status, messages, speak]);
+
+  // The floating assistant acts on what it says: when it offers a part of the site, it takes the visitor
+  // there (on a wide screen; on a phone the chat would cover it, so the button is shown instead).
+  const goTo = useSiteNavigator();
+  const handled = React.useRef<Set<string> | null>(null);
+  React.useEffect(() => {
+    if (!autoFocus) return;
+    handled.current ??= new Set(messages.map((m) => m.id));
+    const last = messages[messages.length - 1];
+    if (status !== 'ready' || !last || last.role !== 'assistant' || handled.current.has(last.id)) return;
+    handled.current.add(last.id);
+    const target = last.parts
+      .map((p) => (p.type === 'text' ? splitSiteAction(splitSuggestions(p.text).text).target : undefined))
+      .find(Boolean);
+    if (target && window.matchMedia('(min-width: 1024px)').matches) goTo(target, { auto: true });
+  }, [autoFocus, goTo, messages, status]);
 
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });

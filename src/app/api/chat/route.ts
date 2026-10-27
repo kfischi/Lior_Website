@@ -13,6 +13,7 @@ import { retrieveContext } from '@/lib/ai/rag';
 import { chatTools } from '@/lib/ai/tools';
 import { localReply } from '@/lib/ai/local/reply';
 import { splitSuggestions } from '@/lib/ai/suggestions';
+import { splitSiteAction } from '@/lib/site-actions';
 import { brand } from '@/lib/brand';
 import { getLearnedPrompt } from '@/lib/learning/store';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
@@ -138,7 +139,7 @@ export async function POST(req: Request) {
     providerOptions: chatProviderOptions(),
     abortSignal: abort.signal,
     onFinish: ({ text }) => {
-      void persistExchange(sessionId, lastUserText, splitSuggestions(text).text);
+      void persistExchange(sessionId, lastUserText, splitSiteAction(splitSuggestions(text).text).text);
     },
     onError: (err) => {
       console.error('streamText error:', err);

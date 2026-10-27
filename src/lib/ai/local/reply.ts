@@ -3,6 +3,7 @@ import { brand } from '@/lib/brand';
 import { listNotes, logUnknown } from '@/lib/learning/store';
 import { sanitizeQuestion } from '@/lib/learning/sanitize';
 import { withTimeout } from '@/lib/with-timeout';
+import { SITE_TARGETS, withSiteAction, type SiteTarget } from '@/lib/site-actions';
 import { withSuggestions } from '../suggestions';
 import { search, type Hit } from './engine';
 import { analyze, normalizeText, tokens } from './text';
@@ -99,6 +100,35 @@ function sensitive(): string {
   );
 }
 
+const NAV_VERB = /(?:^|\s)(?:תראי|תראה|תראו|הראי|הראה|הראו|להראות|תציגי|להציג|הציגי|הצג|קחי|קח|קחו|תקחי|תקח|קפצי|קפוץ|פתחי|פתח|פתחו|עברי|עבור|לעבור|לראות|לצפות|לקרוא|נווטי|נווט|איפה|היכן)(?:\s|$)/;
+
+/** "Show me the reviews", "take me to the criminal law page": the visitor wants to go somewhere on the site. */
+function navigationTarget(question: string): SiteTarget | undefined {
+  const q = ` ${normalizeText(question)} `;
+  const words = q.trim().split(' ').length;
+  const verb = NAV_VERB.test(q);
+  if (!verb && words > 3) return undefined;
+  let best: { target: SiteTarget; len: number } | undefined;
+  for (const target of SITE_TARGETS) {
+    if (target.needsVerb && !verb) continue;
+    for (const phrase of target.phrases) {
+      const p = normalizeText(phrase);
+      // Hebrew attaches ה/ו/ל/ב/מ/ש/כ to the front of a word: "ההמלצות", "למדריכים".
+      if (p.length >= 3 && new RegExp(`(?:^|\\s)[והבכלמש]{0,2}${p}(?:\\s|$)`).test(q) && (!best || p.length > best.len)) {
+        best = { target, len: p.length };
+      }
+    }
+  }
+  return best?.target;
+}
+
+function navigate(target: SiteTarget): string {
+  const text = target.line
+    ? `בשמחה, מציגה לכם את עמוד התחום באתר. ${target.line}`
+    : `בשמחה, מציגה לכם באתר: ${target.label}.`;
+  return withSuggestions(withSiteAction(text, target.id), ['קביעת ייעוץ', 'מה עוד יש באתר?']);
+}
+
 /** The same answer twice in a row helps nobody: ask for the one detail that would change it. */
 function moreSpecific(): string {
   return withSuggestions(
@@ -141,6 +171,8 @@ export async function localReply(question: string, previousQuestion?: string): P
   }
   if (BYE.has(norm)) return 'להתראות, ובהצלחה. אפשר לחזור בכל עת.';
   if (question.length > 260) return sensitive();
+  const where = navigationTarget(question);
+  if (where) return navigate(where);
   if (/[A-Za-z]{3}/.test(question) && !/[\u0590-\u05FF]/.test(question)) return english();
 
   const notes = await withTimeout(listNotes(), 1500, []);

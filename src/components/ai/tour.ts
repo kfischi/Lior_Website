@@ -38,3 +38,13 @@ export function applyTour(focus: IntroFocus | undefined, options: { scroll: bool
     }
   }
 }
+
+let spotlightTimer: number | undefined;
+
+/** Lights one element for a few seconds (the assistant pointing at something on the page). */
+export function spotlight(el: Element, ms = 4000): void {
+  window.clearTimeout(spotlightTimer);
+  clearTour();
+  el.setAttribute(ATTR, '');
+  spotlightTimer = window.setTimeout(() => el.removeAttribute(ATTR), ms);
+}
