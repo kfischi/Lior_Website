@@ -10,10 +10,10 @@ import { chatProviderOptions, getChatModel } from '@/lib/ai/model';
 import { buildSystemPrompt } from '@/lib/ai/system';
 import { retrieveContext } from '@/lib/ai/rag';
 import { chatTools } from '@/lib/ai/tools';
-import { fallbackReply } from '@/lib/ai/fallback';
+import { localReply } from '@/lib/ai/local/reply';
 import { splitSuggestions } from '@/lib/ai/suggestions';
 import { brand } from '@/lib/brand';
-import { findLearnedAnswer, getLearnedPrompt } from '@/lib/learning/store';
+import { getLearnedPrompt } from '@/lib/learning/store';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
@@ -86,13 +86,14 @@ export async function POST(req: Request) {
 
   // Token-window management: keep only the most recent turns in context.
   const trimmed = messages.slice(-12);
-  const lastUserText = messageText([...trimmed].reverse().find((m) => m.role === 'user'));
+  const userTurns = trimmed.filter((m) => m.role === 'user');
+  const lastUserText = messageText(userTurns[userTurns.length - 1]);
+  const previousUserText = messageText(userTurns[userTurns.length - 2]);
 
-  // No AI provider configured: answer from the knowledge base instead of failing.
+  // No AI provider configured (or CHAT_PROVIDER=local): the local engine answers.
   const model = getChatModel();
   if (!model) {
-    const taught = await findLearnedAnswer(lastUserText);
-    return streamStaticReply(taught ?? fallbackReply(lastUserText));
+    return streamStaticReply(await localReply(lastUserText, previousUserText));
   }
 
   // Which practice-area page the visitor is on (matched against known routes only).
@@ -136,10 +137,9 @@ export async function POST(req: Request) {
       });
       for await (const chunk of chunks) {
         if (chunk.type === 'error' && !produced) {
-          const taught = await findLearnedAnswer(lastUserText);
           const id = 'fallback';
           writer.write({ type: 'text-start', id });
-          writer.write({ type: 'text-delta', id, delta: taught ?? fallbackReply(lastUserText) });
+          writer.write({ type: 'text-delta', id, delta: await localReply(lastUserText, previousUserText) });
           writer.write({ type: 'text-end', id });
           return;
         }

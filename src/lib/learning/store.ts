@@ -83,7 +83,7 @@ const isUnknown = (v: unknown): v is UnknownQuestion =>
   isRecord(v) && typeof v.id === 'string' && typeof v.question === 'string';
 
 let notesCache: { at: number; notes: Note[] } | null = null;
-const CACHE_MS = 30_000;
+const CACHE_MS = 5_000;
 
 export async function listNotes(): Promise<Note[]> {
   if (notesCache && Date.now() - notesCache.at < CACHE_MS) return notesCache.notes;
@@ -159,38 +159,5 @@ export async function getLearnedPrompt(): Promise<string> {
   } catch (err) {
     console.error('Reading learned notes failed (non-fatal):', err);
     return '';
-  }
-}
-
-const tokens = (text: string): Set<string> =>
-  new Set(
-    text
-      .toLowerCase()
-      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-      .split(/\s+/)
-      .filter((w) => w.length >= 3),
-  );
-
-/**
- * Keyword fallback for when no AI model is configured: returns the answer of a
- * taught Q&A whose question shares most of its words with the visitor's.
- */
-export async function findLearnedAnswer(question: string): Promise<string | null> {
-  try {
-    const asked = tokens(question);
-    if (asked.size === 0) return null;
-    let best: { score: number; answer: string } | null = null;
-    for (const note of await listNotes()) {
-      if (!note.enabled || !note.question) continue;
-      const own = tokens(note.question);
-      if (own.size === 0) continue;
-      let hits = 0;
-      for (const w of own) if (asked.has(w)) hits += 1;
-      const score = hits / own.size;
-      if (score >= 0.6 && (!best || score > best.score)) best = { score, answer: note.answer };
-    }
-    return best?.answer ?? null;
-  } catch {
-    return null;
   }
 }

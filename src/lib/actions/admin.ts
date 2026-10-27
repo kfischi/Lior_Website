@@ -98,7 +98,7 @@ export async function testChatAction(_prev: FormState): Promise<FormState> {
   if (!model || !name) {
     return {
       ok: false,
-      message: 'אין מפתח למודל בשרת (GOOGLE_GENERATIVE_AI_API_KEY). הצ׳אט עונה כרגע מבסיס הידע בלבד.',
+      message: 'מצב מקומי, בלי API: העוזרת עונה מהאתר ומהלימוד של ליאור. זה עובד גם בלי מפתח.',
     };
   }
   const started = Date.now();
