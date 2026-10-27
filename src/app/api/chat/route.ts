@@ -5,6 +5,7 @@ import {
   createUIMessageStreamResponse,
   stepCountIs,
   type UIMessage,
+  type UIMessageChunk,
 } from 'ai';
 import { chatModelName, chatProviderOptions, getChatModel } from '@/lib/ai/model';
 import { buildSystemPrompt } from '@/lib/ai/system';
@@ -15,9 +16,17 @@ import { splitSuggestions } from '@/lib/ai/suggestions';
 import { brand } from '@/lib/brand';
 import { getLearnedPrompt } from '@/lib/learning/store';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
+import { withTimeout } from '@/lib/with-timeout';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
+
+/**
+ * After the model fails or stalls, skip it for a minute so every visitor gets the
+ * local engine's instant answer instead of each waiting for the same timeout.
+ */
+let modelDownUntil = 0;
+const MODEL_COOLDOWN_MS = 60_000;
 export const maxDuration = 30;
 
 /** Join the text parts of a UIMessage into a plain string. */
@@ -97,7 +106,7 @@ export async function POST(req: Request) {
 
   // No AI provider configured (or CHAT_PROVIDER=local): the local engine answers.
   const model = getChatModel();
-  if (!model) {
+  if (!model || Date.now() < modelDownUntil) {
     return streamStaticReply(await localReply(lastUserText, previousUserText));
   }
 
@@ -108,19 +117,26 @@ export async function POST(req: Request) {
       : undefined;
 
   // RAG (optional) — only active when Supabase + embeddings are configured.
-  const context = await retrieveContext(lastUserText);
+  const context = await withTimeout(retrieveContext(lastUserText), 2000, undefined);
 
   const modelMessages = await convertToModelMessages(trimmed);
 
+  // The model must start answering quickly and finish within the function limit;
+  // otherwise the visitor gets the local engine's answer instead of a hung chat.
+  const abort = new AbortController();
+  const hardLimit = setTimeout(() => abort.abort(), 24_000);
+  let firstChunkLimit: ReturnType<typeof setTimeout> | undefined = setTimeout(() => abort.abort(), 6_000);
+
   const result = streamText({
     model,
-    system: buildSystemPrompt(context, area, await getLearnedPrompt()),
+    system: buildSystemPrompt(context, area, await withTimeout(getLearnedPrompt(), 1500, '')),
     messages: modelMessages,
     tools: chatTools,
     stopWhen: stepCountIs(4),
     temperature: 0.5,
     maxOutputTokens: 700,
     providerOptions: chatProviderOptions(),
+    abortSignal: abort.signal,
     onFinish: ({ text }) => {
       void persistExchange(sessionId, lastUserText, splitSuggestions(text).text);
     },
@@ -129,27 +145,45 @@ export async function POST(req: Request) {
     },
   });
 
-  // If the model fails before saying anything (bad key, quota, outage), answer from
-  // the knowledge base instead of showing the visitor an error.
+  const writeLocal = async (writer: { write: (chunk: UIMessageChunk) => void }) => {
+    modelDownUntil = Date.now() + MODEL_COOLDOWN_MS;
+    const id = 'fallback';
+    writer.write({ type: 'text-start', id });
+    writer.write({ type: 'text-delta', id, delta: await localReply(lastUserText, previousUserText) });
+    writer.write({ type: 'text-end', id });
+  };
+
+  // If the model fails or stalls before saying anything (bad key, quota, outage),
+  // answer from the local engine instead of showing the visitor an error.
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
       let produced = false;
-      const chunks = result.toUIMessageStream({
-        onError: (err) => {
-          console.error('Chat model failed:', err);
-          return 'model_error';
-        },
-      });
-      for await (const chunk of chunks) {
-        if (chunk.type === 'error' && !produced) {
-          const id = 'fallback';
-          writer.write({ type: 'text-start', id });
-          writer.write({ type: 'text-delta', id, delta: await localReply(lastUserText, previousUserText) });
-          writer.write({ type: 'text-end', id });
-          return;
+      try {
+        const chunks = result.toUIMessageStream({
+          onError: (err) => {
+            console.error('Chat model failed:', err);
+            return 'model_error';
+          },
+        });
+        for await (const chunk of chunks) {
+          if ((chunk.type === 'error' || chunk.type === 'abort') && !produced) {
+            await writeLocal(writer);
+            return;
+          }
+          if (chunk.type !== 'start' && chunk.type !== 'start-step') {
+            produced = true;
+            clearTimeout(firstChunkLimit);
+            firstChunkLimit = undefined;
+          }
+          writer.write(chunk);
         }
-        if (chunk.type !== 'start' && chunk.type !== 'start-step') produced = true;
-        writer.write(chunk);
+        if (!produced) await writeLocal(writer);
+      } catch (err) {
+        console.error('Chat stream failed:', err);
+        if (!produced) await writeLocal(writer);
+      } finally {
+        clearTimeout(hardLimit);
+        clearTimeout(firstChunkLimit);
       }
     },
   });
