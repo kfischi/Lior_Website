@@ -54,7 +54,7 @@ export default function ArticlesPage() {
         <section aria-labelledby="hub-title" className="bg-navy pb-16 pt-36 text-cream md:pb-20">
           <div className="shell max-w-4xl">
             <p className="eyebrow mb-4 text-accent-light">{brand.firmName}</p>
-            <h1 id="hub-title" className="text-4xl font-bold text-cream md:text-6xl">
+            <h1 id="hub-title" className="text-4xl font-semibold text-cream md:text-6xl">
               מדריכים ומאמרים
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-cream/85">

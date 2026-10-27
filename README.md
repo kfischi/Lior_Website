@@ -107,7 +107,7 @@ npm run lint · typecheck
 npm run ingest     # הטמעת ידע ל-RAG (דורש Supabase + OpenAI)
 ```
 
-> הפונטים (Frank Ruhl Libre, Heebo) נטענים דרך `next/font` ומתארחים עצמית ב-build —
+> הפונטים (Rubik, Heebo) נטענים דרך `next/font` ומתארחים עצמית ב-build —
 > ללא קריאות runtime ל-Google.
 
 

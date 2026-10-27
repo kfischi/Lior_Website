@@ -57,7 +57,7 @@ export default function FaqPage() {
         <section aria-labelledby="faq-hub" className="bg-navy pb-14 pt-36 text-cream md:pb-20">
           <div className="shell max-w-3xl">
             <p className="eyebrow mb-4 text-accent-light">{brand.firmName}</p>
-            <h1 id="faq-hub" className="text-4xl font-bold text-cream md:text-6xl">
+            <h1 id="faq-hub" className="text-4xl font-semibold text-cream md:text-6xl">
               שאלות ותשובות
             </h1>
             <p className="mt-6 text-lg text-cream/85">

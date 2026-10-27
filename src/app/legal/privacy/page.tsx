@@ -11,7 +11,7 @@ export const metadata: Metadata = buildMetadata({
 export default function PrivacyPage() {
   return (
     <>
-      <h1 className="font-heading text-3xl font-bold text-navy md:text-4xl">מדיניות פרטיות</h1>
+      <h1 className="font-heading text-3xl font-semibold text-navy md:text-4xl">מדיניות פרטיות</h1>
       <p className="text-sm text-ink/75">עודכן לאחרונה: {brand.legal.lastUpdated}</p>
 
       <h2>מי אנחנו</h2>

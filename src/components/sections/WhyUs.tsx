@@ -77,7 +77,7 @@ export function WhyUs() {
               </span>
             </div>
             <div className="relative mt-16">
-              <h3 className="font-heading text-4xl font-bold leading-tight md:text-5xl">{feature.title}</h3>
+              <h3 className="font-heading text-4xl font-semibold leading-tight md:text-5xl">{feature.title}</h3>
               <p className="mt-5 max-w-md text-lg leading-relaxed text-cream/85">{feature.description}</p>
             </div>
           </StaggerItem>
@@ -103,7 +103,7 @@ export function WhyUs() {
                 </span>
               </div>
               <div className="mt-10">
-                <h3 className="font-heading text-2xl font-bold text-navy">{item.title}</h3>
+                <h3 className="font-heading text-2xl font-semibold text-navy">{item.title}</h3>
                 <p className="mt-3 leading-relaxed text-ink/75">{item.description}</p>
               </div>
               <span

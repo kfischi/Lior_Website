@@ -73,7 +73,7 @@ export function Footer() {
         </div>
 
         <div className="md:col-span-4">
-          <h3 className="font-heading text-lg font-bold text-cream">יצירת קשר</h3>
+          <h3 className="font-heading text-lg font-semibold text-cream">יצירת קשר</h3>
           <ul className="mt-4 space-y-3 text-sm">
             <li className="flex items-start gap-2">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent-light" aria-hidden="true" />
@@ -109,7 +109,7 @@ export function Footer() {
         </div>
 
         <nav aria-label="קישורים משפטיים" className="md:col-span-3">
-          <h3 className="font-heading text-lg font-bold text-cream">מידע</h3>
+          <h3 className="font-heading text-lg font-semibold text-cream">מידע</h3>
           <ul className="mt-4 space-y-2 text-sm">
             {LEGAL_LINKS.map((l) => (
               <li key={l.href}>

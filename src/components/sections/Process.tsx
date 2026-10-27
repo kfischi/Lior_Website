@@ -38,11 +38,11 @@ export function Process() {
               </span>
               <span
                 aria-hidden="true"
-                className="relative flex h-12 w-12 items-center justify-center rounded-full bg-accent-light font-heading text-xl font-bold text-navy"
+                className="relative flex h-12 w-12 items-center justify-center rounded-full bg-accent-light font-heading text-xl font-semibold text-navy"
               >
                 {i + 1}
               </span>
-              <h3 className="relative mt-8 font-heading text-3xl font-bold text-cream">{step.title}</h3>
+              <h3 className="relative mt-8 font-heading text-3xl font-semibold text-cream">{step.title}</h3>
               <p className="relative mt-4 leading-relaxed text-cream/80">{step.text}</p>
             </StaggerItem>
           ))}

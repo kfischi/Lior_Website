@@ -12,7 +12,7 @@ export const metadata: Metadata = buildMetadata({
 export default function TermsPage() {
   return (
     <>
-      <h1 className="font-heading text-3xl font-bold text-navy md:text-4xl">תנאי שימוש</h1>
+      <h1 className="font-heading text-3xl font-semibold text-navy md:text-4xl">תנאי שימוש</h1>
       <p className="text-sm text-ink/75">עודכן לאחרונה: {brand.legal.lastUpdated}</p>
 
       <h2>כללי</h2>

@@ -102,7 +102,7 @@ export default async function PracticeAreaPage({ params }: { params: Promise<Par
             </nav>
             <Reveal>
               <p className="eyebrow mb-4 text-accent-light">{brand.firmName}</p>
-              <h1 id="area-title" className="text-4xl font-bold text-cream md:text-5xl">
+              <h1 id="area-title" className="text-4xl font-semibold text-cream md:text-5xl">
                 {area.title}
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-cream/85">

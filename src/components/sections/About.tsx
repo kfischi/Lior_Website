@@ -34,7 +34,7 @@ export function About() {
                   className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-navy/85 to-transparent"
                 />
                 <div className="absolute inset-x-0 bottom-0 p-6 text-cream">
-                  <p className="font-heading text-2xl font-bold">{brand.attorneyName}</p>
+                  <p className="font-heading text-2xl font-semibold">{brand.attorneyName}</p>
                   <p className="mt-1 text-sm text-cream/80">עורכת דין · {brand.address.city}</p>
                 </div>
               </div>
@@ -76,7 +76,7 @@ export function About() {
 
             {brand.about.certificates.length > 0 && (
               <div className="mt-10 border-t border-navy/10 pt-8">
-                <h3 className="mb-4 font-heading text-xl font-bold text-navy">תעודות והשתלמויות</h3>
+                <h3 className="mb-4 font-heading text-xl font-semibold text-navy">תעודות והשתלמויות</h3>
                 <ul className="flex flex-wrap gap-5">
                   {brand.about.certificates.map((c) => (
                     <li key={c.image}>
@@ -117,7 +117,7 @@ export function About() {
                   <div key={stat.label}>
                     <dt className="sr-only">{stat.label}</dt>
                     <dd>
-                      <span className="block font-heading text-4xl font-bold text-navy">
+                      <span className="block font-heading text-4xl font-semibold text-navy">
                         {stat.value}
                       </span>
                       <span className="mt-1 block text-xs text-ink/75">{stat.label}</span>

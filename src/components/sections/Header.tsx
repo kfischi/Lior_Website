@@ -49,7 +49,7 @@ export function Header() {
         <Link
           href="/"
           className={cn(
-            'flex items-center gap-3 font-heading text-lg lg:shrink-0 lg:whitespace-nowrap font-bold transition-colors md:text-xl',
+            'flex items-center gap-3 font-heading text-lg lg:shrink-0 lg:whitespace-nowrap font-semibold transition-colors md:text-xl',
             scrolled ? 'text-navy' : 'text-cream',
           )}
         >

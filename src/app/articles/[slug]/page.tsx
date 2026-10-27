@@ -75,7 +75,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
               </ol>
             </nav>
             {area && <p className="eyebrow mb-4 text-accent-light">{area.title}</p>}
-            <h1 id="article-title" className="text-3xl font-bold text-cream md:text-5xl">
+            <h1 id="article-title" className="text-3xl font-semibold text-cream md:text-5xl">
               {article.title}
             </h1>
             <p className="mt-5 text-sm text-cream/70">

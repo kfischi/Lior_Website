@@ -32,8 +32,8 @@ Avoid pure black and pure white.
 
 ## Typography
 
-- **Display / headings:** Frank Ruhl Libre (Hebrew serif). Large, tight
-  leading, balanced wrap. This carries the "editorial" feel.
+- **Display / headings:** Rubik (rounded modern Hebrew sans), weight 500–600.
+  Calm, friendly and professional; balanced wrap, light negative tracking.
 - **Body / UI:** Heebo. 16–18px base, 1.7 line-height, comfortable measure.
 - Scale is generous: hero display clamps up to ~clamp(2.5rem, 6vw, 5.5rem).
 - Hebrew numerals/punctuation correct; RTL throughout.
