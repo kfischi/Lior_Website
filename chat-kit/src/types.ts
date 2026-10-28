@@ -34,8 +34,10 @@ export type ChatKitConfig = {
     message: string;
     /** Still image of the assistant, shown in the media window (public path). */
     poster?: string;
-    /** Local video (webm/mp4), optional. Plays muted unless the visitor taps it. */
+    /** Local video (webm/mp4), optional. A silent loop that moves while the assistant speaks. */
     video?: { src: string; type: string }[];
+    /** True if the video file itself carries the welcome voice: it then plays once on the play button. */
+    videoHasSound?: boolean;
     /** Local recording of the welcome (webm/mp3), optional. */
     audio?: string;
     /** Captions shown in sync with the audio. Without them the whole welcome text is shown. */
@@ -62,6 +64,7 @@ export type ChatKitConfig = {
     micStop: string;
     listen: string;
     stopListening: string;
+    pause: string;
     mute: string;
     unmute: string;
     transcript: string;

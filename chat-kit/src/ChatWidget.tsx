@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { MediaStage } from './MediaStage';
+import { AvatarVideoPlayer } from './AvatarVideoPlayer';
 import { findAnswer, isUrgent } from './matcher';
 import { useSpeechInput } from './useSpeechInput';
 import { useSpeechOutput } from './useSpeechOutput';
@@ -208,7 +208,12 @@ function ChatInner({ config }: { config: ChatKitConfig }) {
             </button>
           </header>
 
-          <MediaStage config={config} onPlayingChange={(playing) => playing && cancelVoice()} />
+          <AvatarVideoPlayer
+            config={config}
+            speaking={voice.speaking}
+            onWelcomePlayingChange={(playing) => playing && cancelVoice()}
+            onStop={cancelVoice}
+          />
 
           <div ref={logRef} role="log" aria-live="polite" className="flex-1 space-y-3 overflow-y-auto p-4">
             {messages.map((message) => (

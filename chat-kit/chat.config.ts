@@ -78,6 +78,7 @@ export const chatConfig: ChatKitConfig = {
     micStop: 'עצירת ההקלטה',
     listen: 'הקראה בקול',
     stopListening: 'עצירת ההקראה',
+    pause: 'השהיית ההקראה',
     mute: 'השתקה',
     unmute: 'ביטול השתקה',
     transcript: 'תמלול הפתיחה',
