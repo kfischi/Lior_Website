@@ -118,6 +118,28 @@ export function useSpeechInput(handlers: {
   return { supported, listening, error, start, stop, clearError: () => setError('') };
 }
 
+/**
+ * The most natural female Hebrew voice the device offers. Edge and Windows have neural voices ("Hila ... Natural"),
+ * Chrome has "Google עברית", Apple has "Carmit"; the compact built-in ones sound robotic and rank last.
+ */
+function bestHebrewVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | undefined {
+  const score = (v: SpeechSynthesisVoice) => {
+    const name = v.name.toLowerCase();
+    let n = 0;
+    if (name.includes('natural')) n += 6;
+    if (name.includes('hila')) n += 4;
+    if (name.includes('online')) n += 3;
+    if (name.includes('google')) n += 2;
+    if (name.includes('carmit')) n += 2;
+    if (name.includes('female')) n += 1;
+    if (name.includes('asaf') || name.includes('male') && !name.includes('female')) n -= 4;
+    return n;
+  };
+  return voices
+    .filter((v) => v.lang.toLowerCase().replace('_', '-').startsWith('he') || v.lang.toLowerCase().startsWith('iw'))
+    .sort((a, b) => score(b) - score(a))[0];
+}
+
 /** A tenth of a second of silence: played on a tap so that later recordings are allowed to start by themselves. */
 const SILENCE =
   'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
@@ -148,8 +170,9 @@ export function useSpeechOutput() {
     if (!text.trim() || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'he-IL';
-    const hebrew = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith('he'));
+    const hebrew = bestHebrewVoice(window.speechSynthesis.getVoices());
     if (hebrew) utterance.voice = hebrew;
+    utterance.rate = 1.05;
     current.current = utterance;
     const finish = () => {
       if (current.current !== utterance) return;
