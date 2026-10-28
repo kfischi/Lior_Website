@@ -1,11 +1,14 @@
 'use client';
 
 import * as React from 'react';
+import { loadVoiceManifest, recordedPlaylist } from '@/lib/voice/recorded';
+import { cleanForSpeech } from '@/lib/voice/spoken';
 
 /**
- * Browser speech for the chat: dictation (speech to text) and reading answers
- * aloud (text to speech). Both use the Web Speech API, so nothing is installed
- * and nothing is sent to this site's servers. Support varies by browser, so
+ * Speech for the chat: dictation (speech to text) and reading answers aloud (text to speech).
+ * Dictation uses the browser's Web Speech API. Answers are read from the recordings in /public/voice
+ * (one voice, recorded sentence by sentence) and, for any sentence without a recording, by the browser's voice.
+ * Nothing is sent to this site's servers. Support varies by browser, so
  * both hooks report `supported` and the UI hides the controls when false.
  */
 
@@ -115,53 +118,102 @@ export function useSpeechInput(handlers: {
   return { supported, listening, error, start, stop, clearError: () => setError('') };
 }
 
+/** A tenth of a second of silence: played on a tap so that later recordings are allowed to start by themselves. */
+const SILENCE =
+  'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+
 export function useSpeechOutput() {
   const supported = React.useSyncExternalStore(
     noSubscription,
-    () => typeof window !== 'undefined' && 'speechSynthesis' in window,
+    () => typeof window !== 'undefined' && ('speechSynthesis' in window || 'Audio' in window),
     () => false,
   );
 
   const [speaking, setSpeaking] = React.useState(false);
   // The utterance being spoken now; late events from a cancelled one must not end this one.
   const current = React.useRef<SpeechSynthesisUtterance | null>(null);
+  // One audio element for all recorded sentences, and a counter that tells a stale playlist from the current one.
+  const player = React.useRef<HTMLAudioElement | null>(null);
+  const run = React.useRef(0);
 
   const cancel = React.useCallback(() => {
     current.current = null;
+    run.current += 1;
     setSpeaking(false);
+    player.current?.pause();
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
   }, []);
 
+  const speakWithBrowser = React.useCallback((text: string) => {
+    if (!text.trim() || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'he-IL';
+    const hebrew = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith('he'));
+    if (hebrew) utterance.voice = hebrew;
+    current.current = utterance;
+    const finish = () => {
+      if (current.current !== utterance) return;
+      current.current = null;
+      setSpeaking(false);
+    };
+    utterance.onstart = () => {
+      if (current.current === utterance) setSpeaking(true);
+    };
+    utterance.onend = finish;
+    utterance.onerror = finish;
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
+  /** Plays the recordings one after the other; resolves false if one cannot be played (then the browser voice takes over). */
+  const playRecorded = React.useCallback(async (files: string[], token: number): Promise<boolean> => {
+    const audio = (player.current ??= new Audio());
+    setSpeaking(true);
+    for (const file of files) {
+      if (run.current !== token) return true;
+      audio.src = file;
+      const finished = await new Promise<boolean>((resolve) => {
+        audio.onended = () => resolve(true);
+        audio.onerror = () => resolve(false);
+        audio.onpause = () => {
+          if (run.current !== token) resolve(true);
+        };
+        audio.play().catch(() => resolve(false));
+      });
+      if (!finished) return false;
+    }
+    if (run.current === token) setSpeaking(false);
+    return true;
+  }, []);
+
   const speak = React.useCallback(
-    (text: string) => {
-      if (!text.trim() || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    (raw: string) => {
+      const text = cleanForSpeech(raw);
+      if (!text || typeof window === 'undefined') return;
       cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'he-IL';
-      const hebrew = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith('he'));
-      if (hebrew) utterance.voice = hebrew;
-      current.current = utterance;
-      const finish = () => {
-        if (current.current !== utterance) return;
-        current.current = null;
-        setSpeaking(false);
-      };
-      utterance.onstart = () => {
-        if (current.current === utterance) setSpeaking(true);
-      };
-      utterance.onend = finish;
-      utterance.onerror = finish;
-      window.speechSynthesis.speak(utterance);
+      const token = run.current;
+      void loadVoiceManifest().then(async (recordings) => {
+        if (run.current !== token) return;
+        const files = recordedPlaylist(text, recordings);
+        if (files && (await playRecorded(files, token))) return;
+        if (run.current === token) speakWithBrowser(text);
+      });
     },
-    [cancel],
+    [cancel, playRecorded, speakWithBrowser],
   );
 
-  /** Some mobile browsers only allow speech after one utterance started by a tap. */
+  /** Some mobile browsers only allow speech and sound after something was started by a tap. */
   const unlock = React.useCallback(() => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    const silent = new SpeechSynthesisUtterance(' ');
-    silent.volume = 0;
-    window.speechSynthesis.speak(silent);
+    if (typeof window === 'undefined') return;
+    if ('Audio' in window) {
+      const audio = (player.current ??= new Audio());
+      audio.src = SILENCE;
+      void audio.play().catch(() => undefined);
+    }
+    if ('speechSynthesis' in window) {
+      const silent = new SpeechSynthesisUtterance(' ');
+      silent.volume = 0;
+      window.speechSynthesis.speak(silent);
+    }
   }, []);
 
   React.useEffect(() => cancel, [cancel]);
