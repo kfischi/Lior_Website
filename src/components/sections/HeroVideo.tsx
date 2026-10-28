@@ -84,6 +84,11 @@ export function HeroVideo({ sources, poster, trimEnd = 0 }: HeroVideoProps) {
 
     const tick = (now: number) => {
       const { duration, currentTime, paused, readyState } = video;
+      // Every source may already have failed before this effect attached its listeners.
+      if (!shown && video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
+        onFail();
+        return;
+      }
       // Autoplay can already be running before this effect attached its listeners.
       if (!shown && !paused && readyState >= 3) show();
       if (paused) {
