@@ -406,7 +406,7 @@ export function ConciergePanel({
   const pathname = usePathname();
   const area = brand.practiceAreas.find((a) => pathname === `/practice-areas/${a.slug}`);
   // On a practice-area page, offer that page's own questions first.
-  const starters = area ? area.page.faq.map((f) => f.question) : brand.chat.suggestedPrompts;
+  const starters = area ? area.page.faq.slice(0, 6).map((f) => f.question) : brand.chat.suggestedPrompts;
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const hasIntro = Boolean(brand.chat.welcome.audio);

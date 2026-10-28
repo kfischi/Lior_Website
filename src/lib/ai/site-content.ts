@@ -42,10 +42,16 @@ function additionalAreasText(): string {
   return brand.about.additionalAreas.map((a) => `### ${a.title}\n${a.text}`).join('\n\n');
 }
 
+/** Empty when there are no other areas, so no empty heading is sent. */
+function additionalSection(heading: string): string {
+  const text = additionalAreasText();
+  return text ? `${heading}${text}\n\n` : '';
+}
+
 export function siteContentAsPrompt(): string {
-  return `## תחומי העיסוק\n${practiceAreaText()}\n\n## תחומים נוספים\n${additionalAreasText()}\n\n## מדריכים באתר\nכשהנושא רלוונטי, הפנה את המשתמש למדריך המתאים בכתיבת הנתיב (למשל /articles/hearing-before-dismissal).\n${articleText()}`;
+  return `## תחומי העיסוק\n${practiceAreaText()}\n\n${additionalSection('## תחומים נוספים\n')}## מדריכים באתר\nכשהנושא רלוונטי, הפנה את המשתמש למדריך המתאים בכתיבת הנתיב (למשל /articles/hearing-before-dismissal).\n${articleText()}`;
 }
 
 export function siteContentAsMarkdown(): string {
-  return `${practiceAreaText()}\n\n## תחומים נוספים\n\n${additionalAreasText()}\n\n${articleText()}`;
+  return `${practiceAreaText()}\n\n${additionalSection('## תחומים נוספים\n\n')}${articleText()}`;
 }

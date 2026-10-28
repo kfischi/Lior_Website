@@ -47,3 +47,26 @@ consent to be represented); how to send documents; existing clients; how to prep
 The first screen of the chat now offers eight starter questions instead of three. These are general information in the
 same careful wording as the earlier rounds (no promises, no individual advice), but they are legal statements:
 please read them, especially the first three.
+
+## Round 4: three practice areas (to approve)
+
+The site now presents three areas, as requested: **criminal** (including accompanying victims of crime under the Crime
+Victims' Rights Law), **torts** (negligence, discrimination and bullying at work, sexual harassment, defamation and
+claims over Pfizer vaccines) and **personal status** (drafting wills, continuing power of attorney, declaration of a
+missing person). The old pages for discrimination and sexual harassment were merged into torts; their addresses
+redirect there. The earlier "other areas" list (National Insurance, labour-law claims for wages, guardianship,
+probate orders, restraining orders) is no longer shown, and the chat says wage claims alone are outside the areas.
+
+Please check, in particular:
+1. **Pfizer vaccines.** The text says a person who believes they were harmed by a vaccine may consult about a claim, that
+   the link between vaccine and harm is examined on medical evidence, and that no result can be promised. It does not say
+   vaccines cause harm. The Bar's advertising rules and defamation law apply; the wording is hers to approve.
+2. **Crime Victims' Rights Law.** The page lists rights in general terms (information about the proceedings, a victim
+   statement before sentencing). Please confirm which rights she wants named, and whether the office offers free or
+   state-funded representation, which is not mentioned.
+3. **Personal status.** The title "מעמד אישי" is read by many visitors as family law, so the page and the chat say the
+   office does not handle marriage and divorce. "Declaration of a missing person" is described only in general terms:
+   please give the exact name of the procedure and what the office does in it.
+4. **Continuing power of attorney.** The text says it is made with a lawyer and registered with the Public Guardian.
+5. **Labour law.** Wage and severance claims, hearings before dismissal outside discrimination, and National Insurance
+   are not in the three areas. Say if any of them should stay.

@@ -55,9 +55,9 @@ const PAGE_TARGETS: SiteTarget[] = [
 
 /** How visitors name each area, besides its title. */
 const AREA_ALIASES: Record<string, string[]> = {
-  'workplace-discrimination': ['אפליה והתעמרות', 'תחום העבודה', 'דיני עבודה', 'אפליה', 'התעמרות'],
-  'sexual-harassment': ['הטרדה מינית', 'הטרדה'],
-  'criminal-law': ['משפט פלילי', 'הליך פלילי', 'פלילי', 'פליליים'],
+  torts: ['נזיקין', 'רשלנות', 'רשלנות רפואית', 'אפליה והתעמרות', 'תחום העבודה', 'דיני עבודה', 'אפליה', 'התעמרות', 'הטרדה מינית', 'הטרדה', 'לשון הרע', 'חיסונים', 'חיסוני פייזר'],
+  'criminal-law': ['משפט פלילי', 'הליך פלילי', 'פלילי', 'פליליים', 'נפגעי עבירה'],
+  'personal-status': ['מעמד אישי', 'צוואות', 'צוואה', 'ייפוי כוח מתמשך', 'יפוי כוח מתמשך', 'נעדר', 'הצהרה על נעדר'],
 };
 
 const AREA_TARGETS: SiteTarget[] = brand.practiceAreas.map((a) => ({
