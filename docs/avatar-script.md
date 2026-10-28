@@ -6,7 +6,7 @@ site all read it. `npm run avatar` builds the video from it (see `.claude/skills
 
 ## Script (Hebrew, about 90 seconds, calm and warm pace)
 
-1. שלום, ברוכים הבאים. אני ליאורה, העוזרת הווירטואלית של עורכת הדין ליאור קלואי ארז.
+1. שלום, ברוכים הבאים. אני ליאור, העוזרת הווירטואלית של עורכת הדין ליאור קלואי ארז.
 2. אני כאן בשבילכם עשרים וארבע שעות ביממה, שבעה ימים בשבוע. גם כשליאור בפגישה או בבית משפט, וגם בלילה. מי שפונה אלינו אף פעם לא נשאר לבד.
 3. ואם אתם רוצים להכיר את ליאור ואת תחומי העיסוק שלה, הכול כאן באתר.  _(marks: about)_
 4. כל השיחה איתי מתנהלת כאן, בצ׳אט. אפשר לכתוב לי כל שאלה, בכל שעה.  _(marks: chat)_
@@ -23,7 +23,7 @@ The line that says she is a virtual assistant and not a substitute for legal adv
 
 ## With a ready-made voice from a text-to-speech site
 
-1. Paste each numbered line separately into the site, with a Hebrew voice (name it "ליאורה"; calm, warm, not fast).
+1. Paste each numbered line separately into the site, with a Hebrew voice (name it "ליאור"; calm, warm, not fast).
 2. Download each result and name the files `01.mp3`, `02.mp3` ... in order (12 files), in one folder.
 3. `npm run avatar -- --tts recorded --lines-dir <folder> --provider local` animates the photo and writes the
    captions' start times. The file count must equal the number of lines in `src/lib/avatar-intro.json`.
