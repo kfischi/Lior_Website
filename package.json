@@ -17,7 +17,8 @@
     "captions": "node --env-file-if-exists=.env.local --import tsx scripts/captions.ts",
     "avatar": "node --env-file-if-exists=.env.local --import tsx scripts/avatar.ts",
     "avatar:setup": "bash scripts/avatar-local/setup.sh",
-    "avatar:doctor": "node --import tsx scripts/avatar-doctor.ts"
+    "avatar:doctor": "node --import tsx scripts/avatar-doctor.ts",
+    "voice:script": "NODE_PATH=scripts/shims node --import tsx scripts/export-voice-script.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.89",

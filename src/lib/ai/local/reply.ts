@@ -3,9 +3,10 @@ import { brand } from '@/lib/brand';
 import { listApprovedNotes, logUnknown } from '@/lib/learning/store';
 import { sanitizeQuestion } from '@/lib/learning/sanitize';
 import { withTimeout } from '@/lib/with-timeout';
-import { SITE_TARGETS, withSiteAction, type SiteTarget } from '@/lib/site-actions';
+import { SITE_TARGETS, splitSiteAction, withSiteAction, type SiteTarget } from '@/lib/site-actions';
 import { withSuggestions } from '../suggestions';
 import { search, type Hit, type Note } from './engine';
+import { splitSuggestions } from '../suggestions';
 import { analyze, normalizeText, tokens } from './text';
 
 /**
@@ -352,3 +353,22 @@ export async function localReply(
   return unknown();
 }
 
+
+/** Every sentence this engine says that does not come from a document (for exporting what has to be recorded). */
+export function fixedSpokenTexts(): string[] {
+  const replies = [
+    sensitive(),
+    crisis(),
+    assault(),
+    refuse(),
+    calm(),
+    moreSpecific(),
+    unknown(),
+    ...SITE_TARGETS.map(navigate),
+  ];
+  return [
+    ...replies.map((r) => splitSiteAction(splitSuggestions(r).text).text),
+    ...Object.values(EMPATHY),
+    'נראה לי שזה מה ששאלתם:',
+  ];
+}

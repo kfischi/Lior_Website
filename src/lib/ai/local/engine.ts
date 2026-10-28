@@ -59,6 +59,11 @@ function makeDoc(
 
 let staticDocs: Doc[] | null = null;
 
+/** Every fixed document the engine can answer from (for exporting what has to be recorded). */
+export function allStaticDocs(): Doc[] {
+  return buildStatic();
+}
+
 function buildStatic(): Doc[] {
   const docs: Doc[] = [];
 
