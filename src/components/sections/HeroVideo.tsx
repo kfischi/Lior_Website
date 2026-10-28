@@ -12,8 +12,14 @@ type HeroVideoProps = {
 /** A playing video whose clock has not moved for this long is treated as stuck. */
 const STALL_MS = 3500;
 const MAX_RECOVERIES = 3;
+/** A video that has shown nothing at all after this long is given up on. */
+const LOAD_TIMEOUT_MS = 25000;
+/** How often a paused-but-visible video is nudged to play again. */
+const RESUME_EVERY_MS = 1000;
 
 type SaveDataConnection = { saveData?: boolean; effectiveType?: string };
+
+const subscribeNothing = () => () => undefined;
 
 function isConstrainedNetwork(): boolean {
   const connection = (navigator as Navigator & { connection?: SaveDataConnection }).connection;
@@ -33,21 +39,21 @@ export function HeroVideo({ src, trimEnd = 0 }: HeroVideoProps) {
   const ref = React.useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = React.useState(false);
   const [failed, setFailed] = React.useState(false);
+  // The video is only rendered in the browser, and not at all on data saver / 2G,
+  // so the server HTML never starts a download that is cancelled afterwards.
+  const skip = React.useSyncExternalStore(subscribeNothing, isConstrainedNetwork, () => true);
 
   React.useEffect(() => {
     const video = ref.current;
-    if (!video || failed) return;
-
-    // Data saver / 2G: skip the download, the poster is enough.
-    if (isConstrainedNetwork()) {
-      const skip = requestAnimationFrame(() => setFailed(true));
-      return () => cancelAnimationFrame(skip);
-    }
+    if (!video || failed || skip) return;
 
     let visible = true;
     let frame = 0;
     let lastTime = -1;
     let lastMove = performance.now();
+    let lastNudge = 0;
+    const startedAt = performance.now();
+    let shown = false;
     let recoveries = 0;
 
     const start = () => {
@@ -56,9 +62,13 @@ export function HeroVideo({ src, trimEnd = 0 }: HeroVideoProps) {
       void video.play().catch(() => undefined);
     };
 
-    const onPlaying = () => {
+    const show = () => {
+      shown = true;
       setPlaying(true);
+    };
+    const onPlaying = () => {
       lastMove = performance.now();
+      show();
     };
     const onFail = () => {
       setPlaying(false);
@@ -68,11 +78,28 @@ export function HeroVideo({ src, trimEnd = 0 }: HeroVideoProps) {
     // Wait/retry hooks: the browser fires these as soon as data is usable again.
     video.addEventListener('playing', onPlaying);
     video.addEventListener('canplay', start);
-    video.addEventListener('error', onFail);
+    // Capture: a failing <source> reports its error on the source, which does not bubble.
+    video.addEventListener('error', onFail, true);
 
     const tick = (now: number) => {
-      const { duration, currentTime, paused } = video;
-      if (!paused && !video.seeking) {
+      const { duration, currentTime, paused, readyState } = video;
+      // Autoplay can already be running before this effect attached its listeners.
+      if (!shown && !paused && readyState >= 3) show();
+      if (paused) {
+        lastMove = now;
+        lastTime = currentTime;
+        if (visible && !document.hidden && readyState >= 3 && now - lastNudge > RESUME_EVERY_MS) {
+          lastNudge = now;
+          start();
+        }
+      } else if (readyState < 2 && !shown) {
+        // First download still running: not a stall, but do not wait forever.
+        lastMove = now;
+        if (now - startedAt > LOAD_TIMEOUT_MS) {
+          onFail();
+          return;
+        }
+      } else if (!video.seeking) {
         if (Math.abs(currentTime - lastTime) > 0.01) {
           lastTime = currentTime;
           lastMove = now;
@@ -124,14 +151,14 @@ export function HeroVideo({ src, trimEnd = 0 }: HeroVideoProps) {
       observer.disconnect();
       video.removeEventListener('playing', onPlaying);
       video.removeEventListener('canplay', start);
-      video.removeEventListener('error', onFail);
+      video.removeEventListener('error', onFail, true);
       document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('touchstart', onGesture);
       window.removeEventListener('pointerdown', onGesture);
     };
-  }, [trimEnd, failed]);
+  }, [trimEnd, failed, skip]);
 
-  if (failed) return null;
+  if (failed || skip) return null;
 
   return (
     <video
