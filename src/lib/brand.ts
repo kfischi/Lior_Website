@@ -262,7 +262,7 @@ export const brand = {
      */
     welcome: {
       photo: '/images/lior-about.webp',
-      audio: '/audio/intro.mp3',
+      audio: '', // switched off until the narration is re-recorded in Lior's own voice
       segments: (introConfig as IntroConfig).segments,
     },
   },
