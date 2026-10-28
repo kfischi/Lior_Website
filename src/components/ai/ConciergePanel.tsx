@@ -21,7 +21,7 @@ const INTRO_SEEN_KEY = 'concierge-intro-seen-v1';
 
 /** The welcome opens (and speaks) once per browser tab, and only in the floating window. */
 function introWanted(enabled: boolean): boolean {
-  if (!enabled || !brand.chat.welcome.audio || typeof window === 'undefined') return false;
+  if (!enabled || !brand.chat.welcome.photo || typeof window === 'undefined') return false;
   try {
     return !sessionStorage.getItem(INTRO_SEEN_KEY);
   } catch {
@@ -409,7 +409,7 @@ export function ConciergePanel({
   const starters = area ? area.page.faq.slice(0, 6).map((f) => f.question) : brand.chat.suggestedPrompts;
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const hasIntro = Boolean(brand.chat.welcome.audio);
+  const hasIntro = Boolean(brand.chat.welcome.photo);
   const [docOpen, setDocOpen] = React.useState(false);
   const [intro, setIntro] = React.useState(() => introWanted(autoFocus));
   const [introDelay, setIntroDelay] = React.useState(INTRO_START_DELAY_MS);
@@ -537,7 +537,7 @@ export function ConciergePanel({
                 setIntroDelay(0);
                 setIntro(true);
               }}
-              aria-label="השמעת ההודעה הפותחת"
+              aria-label={brand.chat.welcome.audio ? 'השמעת ההודעה הפותחת' : 'הצגת ההודעה הפותחת'}
               title="הודעת פתיחה"
               className="rounded-full p-2 text-cream/80 transition-colors hover:bg-cream/10 hover:text-cream"
             >

@@ -27,6 +27,8 @@ export function IntroStage({
   focusOnShow?: boolean;
 }) {
   const { photo, audio, segments } = brand.chat.welcome;
+  // Without a recording the card still opens, as a photo with the welcome text.
+  const hasAudio = Boolean(audio);
   const reduced = useReducedMotion();
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const regionRef = React.useRef<HTMLDivElement>(null);
@@ -51,7 +53,7 @@ export function IntroStage({
       setVisible(true);
       if (focusOnShow) regionRef.current?.focus();
       const sound = audioRef.current;
-      if (!sound) return;
+      if (!hasAudio || !sound) return;
       if (reduced) {
         setNeedsTap(true);
         return;
@@ -59,7 +61,7 @@ export function IntroStage({
       sound.play().catch(() => setNeedsTap(true));
     }, delayMs);
     return () => window.clearTimeout(timer);
-  }, [reduced, delayMs, focusOnShow]);
+  }, [reduced, delayMs, focusOnShow, hasAudio]);
 
   // Light up what is being talked about.
   React.useEffect(() => {
@@ -112,18 +114,20 @@ export function IntroStage({
         visible ? 'max-h-[30rem] opacity-100' : 'pointer-events-none max-h-0 opacity-0',
       )}
     >
-      <audio
-        ref={audioRef}
-        src={audio}
-        preload="auto"
-        muted={muted}
-        onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
-        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onEnded={() => onDone('ended')}
-        onError={() => onDone('skipped')}
-      />
+      {hasAudio && (
+        <audio
+          ref={audioRef}
+          src={audio}
+          preload="auto"
+          muted={muted}
+          onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
+          onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          onEnded={() => onDone('ended')}
+          onError={() => onDone('skipped')}
+        />
+      )}
 
       <div className="relative h-40 w-full shrink-0 sm:h-44">
         <Image
@@ -160,15 +164,17 @@ export function IntroStage({
           >
             {captionsOn ? <Captions className="h-4 w-4" /> : <CaptionsOff className="h-4 w-4" />}
           </button>
-          <button
-            type="button"
-            onClick={() => setMuted((v) => !v)}
-            aria-pressed={muted}
-            aria-label="השתקה"
-            className="rounded-full bg-black/45 p-1.5 backdrop-blur transition-colors hover:bg-black/65"
-          >
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </button>
+          {hasAudio && (
+            <button
+              type="button"
+              onClick={() => setMuted((v) => !v)}
+              aria-pressed={muted}
+              aria-label="השתקה"
+              className="rounded-full bg-black/45 p-1.5 backdrop-blur transition-colors hover:bg-black/65"
+            >
+              {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => onDone('skipped')}
@@ -179,7 +185,7 @@ export function IntroStage({
           </button>
         </div>
 
-        {visible && (needsTap || !playing) && (
+        {visible && hasAudio && (needsTap || !playing) && (
           <button
             type="button"
             onClick={play}
@@ -223,8 +229,8 @@ export function IntroStage({
 
       {/* Live captions under the photo, so they never cover the face. */}
       {captionsOn && (
-        <p aria-hidden="true" className="min-h-[4.25rem] px-4 py-2.5 text-[0.9rem] leading-snug text-cream/95">
-          {current?.text ?? segments[0]?.text}
+        <p aria-hidden={hasAudio} className="min-h-[4.25rem] px-4 py-2.5 text-[0.9rem] leading-snug text-cream/95">
+          {hasAudio ? (current?.text ?? segments[0]?.text) : segments.slice(0, 2).map((seg) => seg.text).join(' ')}
         </p>
       )}
 
