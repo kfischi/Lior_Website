@@ -3,7 +3,8 @@
   voice_finish.py --takes takesH --asr-model /path/to/hebrew-whisper-ct2 [--out public/voice]
 
 The takes are <key>_<tag>.wav (see voice_takes.py), one or more per sentence, where <key> is the key of the sentence
-in content/voice/sentences.json and its vowelled text is in content/voice/pointed-*.json.
+in content/voice/sentences.json and its vowelled text (what is read to the voice) is in content/voice/pointed-*.json.
+A take is judged against the sentence as written, so digits (said as words) are ignored and only Hebrew words count.
 Each take is listened to with a Hebrew speech recogniser and compared with what it was meant to say; a take that
 misses words, adds words or cuts the ending is rejected. Of the takes that pass, the one closest to the text is kept,
 trimmed, de-noised, sped up to the pace of the welcome (--tempo), levelled and written as <key>.mp3, and registered
@@ -24,6 +25,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument('--takes', required=True)
 ap.add_argument('--asr-model', required=True)
 ap.add_argument('--pointed', default='content/voice/pointed-*.json')
+ap.add_argument('--sentences', default='content/voice/sentences.json')
 ap.add_argument('--out', default='public/voice')
 ap.add_argument('--tempo', type=float, default=1.3)
 ap.add_argument('--min-ratio', type=float, default=0.88)
@@ -35,6 +37,13 @@ pointed: dict[str, str] = {}
 for path in sorted(glob.glob(args.pointed)):
     with open(path, encoding='utf-8') as fh:
         pointed.update(json.load(fh))
+
+# What the recogniser is compared with: the sentence as written in the chat (full spelling), not the vowelled
+# version, which leaves out letters (נחזר, מדבר) and would count a correct recording as wrong.
+plain: dict[str, str] = {}
+if os.path.exists(args.sentences):
+    with open(args.sentences, encoding='utf-8') as fh:
+        plain = {item['key']: item['text'] for item in json.load(fh)}
 
 os.makedirs(args.out, exist_ok=True)
 manifest_path = os.path.join(args.out, 'manifest.json')
@@ -67,7 +76,7 @@ def listen(path: str) -> str:
 
 
 def judge(key: str, said: str) -> float:
-    want, got = words(pointed[key]), words(said)
+    want, got = words(plain.get(key, pointed[key])), words(said)
     if not want:
         return 0.0
     sm = difflib.SequenceMatcher(None, want, got)
