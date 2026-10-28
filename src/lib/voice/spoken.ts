@@ -5,7 +5,7 @@
  * Pure and safe for client and server.
  */
 
-const MAX_CHARS = 170;
+const MAX_CHARS = 230;
 const MIN_CHARS = 28;
 
 /** Removes what is shown but not said: links, the "read more" pointer, markers, Markdown. */
