@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform } from 'motion/react';
 import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
 import { ChevronDown } from 'lucide-react';
 import { brand } from '@/lib/brand';
+import { videoSources } from '@/lib/media';
 import { HeroVideo } from './HeroVideo';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -55,7 +56,11 @@ export function Hero() {
             className="object-cover"
           />
           {hasVideo && !reduced && (
-            <HeroVideo src={brand.hero.videoUrl} trimEnd={brand.hero.videoTrimEnd} />
+            <HeroVideo
+              sources={videoSources(brand.hero.videoUrl)}
+              poster={brand.hero.posterId}
+              trimEnd={brand.hero.videoTrimEnd}
+            />
           )}
         </div>
       </motion.div>

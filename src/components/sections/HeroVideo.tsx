@@ -2,9 +2,13 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/utils';
+import type { VideoSource } from '@/lib/media';
 
 type HeroVideoProps = {
-  src: string;
+  /** Best source first; the browser takes the first one it can play. */
+  sources: VideoSource[];
+  /** Still frame the browser shows natively while nothing has been decoded yet. */
+  poster?: string;
   /** Seconds to cut from the end of every loop (hides glitches in the last frames). */
   trimEnd?: number;
 };
@@ -17,17 +21,10 @@ const LOAD_TIMEOUT_MS = 25000;
 /** How often a paused-but-visible video is nudged to play again. */
 const RESUME_EVERY_MS = 1000;
 
-type SaveDataConnection = { saveData?: boolean; effectiveType?: string };
-
-const subscribeNothing = () => () => undefined;
-
-function isConstrainedNetwork(): boolean {
-  const connection = (navigator as Navigator & { connection?: SaveDataConnection }).connection;
-  return Boolean(connection?.saveData) || /(^|-)2g$/.test(connection?.effectiveType ?? '');
-}
-
 /**
  * Looping, muted background video that is only shown once it is really playing.
+ * It is part of the server HTML so the browser starts downloading it while the page
+ * is still being parsed, before React has loaded.
  * Until then (and whenever it cannot play: data saver, blocked autoplay, a
  * stalled or failed download) the poster image underneath stays visible, so the
  * hero never freezes on a half-loaded frame or a black box.
@@ -35,17 +32,14 @@ function isConstrainedNetwork(): boolean {
  * It restarts `trimEnd` seconds before the file ends instead of using the
  * native `loop`, so the final frames are never shown.
  */
-export function HeroVideo({ src, trimEnd = 0 }: HeroVideoProps) {
+export function HeroVideo({ sources, poster, trimEnd = 0 }: HeroVideoProps) {
   const ref = React.useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = React.useState(false);
   const [failed, setFailed] = React.useState(false);
-  // The video is only rendered in the browser, and not at all on data saver / 2G,
-  // so the server HTML never starts a download that is cancelled afterwards.
-  const skip = React.useSyncExternalStore(subscribeNothing, isConstrainedNetwork, () => true);
 
   React.useEffect(() => {
     const video = ref.current;
-    if (!video || failed || skip) return;
+    if (!video || failed) return;
 
     let visible = true;
     let frame = 0;
@@ -79,7 +73,14 @@ export function HeroVideo({ src, trimEnd = 0 }: HeroVideoProps) {
     video.addEventListener('playing', onPlaying);
     video.addEventListener('canplay', start);
     // Capture: a failing <source> reports its error on the source, which does not bubble.
-    video.addEventListener('error', onFail, true);
+    const onError = (event: Event) => {
+      // A source that cannot be used reports its error on itself, and the browser then
+      // tries the next one. Only the last source failing means the video cannot play.
+      if (event.target === video || event.target === video.querySelector('source:last-of-type')) {
+        onFail();
+      }
+    };
+    video.addEventListener('error', onError, true);
 
     const tick = (now: number) => {
       const { duration, currentTime, paused, readyState } = video;
@@ -151,14 +152,14 @@ export function HeroVideo({ src, trimEnd = 0 }: HeroVideoProps) {
       observer.disconnect();
       video.removeEventListener('playing', onPlaying);
       video.removeEventListener('canplay', start);
-      video.removeEventListener('error', onFail, true);
+      video.removeEventListener('error', onError, true);
       document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('touchstart', onGesture);
       window.removeEventListener('pointerdown', onGesture);
     };
-  }, [trimEnd, failed, skip]);
+  }, [trimEnd, failed]);
 
-  if (failed || skip) return null;
+  if (failed) return null;
 
   return (
     <video
@@ -172,10 +173,13 @@ export function HeroVideo({ src, trimEnd = 0 }: HeroVideoProps) {
       loop={trimEnd <= 0}
       playsInline
       preload="auto"
+      poster={poster}
       disablePictureInPicture
       aria-hidden="true"
     >
-      <source src={src} type="video/mp4" />
+      {sources.map((source) => (
+        <source key={source.src} src={source.src} type={source.type} />
+      ))}
     </video>
   );
 }
