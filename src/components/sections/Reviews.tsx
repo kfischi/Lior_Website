@@ -60,33 +60,8 @@ const items: ReviewItem[] = [
   })),
 ].sort((a, b) => b.date.localeCompare(a.date));
 
-export function Reviews() {
-  // Never show placeholder reviews: the section appears only with real ones.
-  if (items.length === 0) return null;
-
-  return (
-    <section
-      id="reviews"
-      aria-labelledby="reviews-title"
-      className="section relative overflow-hidden bg-cream"
-    >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-32 -end-32 h-96 w-96 rounded-full bg-accent/10 blur-3xl"
-      />
-      <div className="shell relative">
-        <Reveal className="mx-auto mb-14 max-w-2xl text-center">
-          <p className="eyebrow mb-3">מה אומרים עלינו</p>
-          <h2 id="reviews-title" className="display-xl text-navy">
-            המלצות
-          </h2>
-          {brand.testimonialsSource && (
-            <p className="mt-4 text-sm text-ink/75">{brand.testimonialsSource}</p>
-          )}
-        </Reveal>
-
-        <Stagger as="ul" className="columns-1 gap-6 md:columns-2 lg:columns-3">
-          {items.map((item, i) => {
+/** One review or letter card. `index` 0 is the featured (dark) card. */
+function renderItem(item: ReviewItem, i: number) {
             const featured = i === 0 && item.kind === 'text';
             return (
               <StaggerItem as="li" key={item.key} className="mb-6 break-inside-avoid">
@@ -175,8 +150,49 @@ export function Reviews() {
                 </figure>
               </StaggerItem>
             );
-          })}
+}
+
+/** How many reviews show at first; the rest open with one tap, so the page stays short. */
+const VISIBLE = 6;
+
+export function Reviews() {
+  // Never show placeholder reviews: the section appears only with real ones.
+  if (items.length === 0) return null;
+
+  return (
+    <section
+      id="reviews"
+      aria-labelledby="reviews-title"
+      className="section relative overflow-hidden bg-cream"
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-32 -end-32 h-96 w-96 rounded-full bg-accent/10 blur-3xl"
+      />
+      <div className="shell relative">
+        <Reveal className="mx-auto mb-14 max-w-2xl text-center">
+          <p className="eyebrow mb-3">מה אומרים עלינו</p>
+          <h2 id="reviews-title" className="display-xl text-navy">
+            המלצות
+          </h2>
+          {brand.testimonialsSource && (
+            <p className="mt-4 text-sm text-ink/75">{brand.testimonialsSource}</p>
+          )}
+        </Reveal>
+
+        <Stagger as="ul" className="columns-1 gap-6 md:columns-2 lg:columns-3">
+          {items.slice(0, VISIBLE).map(renderItem)}
         </Stagger>
+        {items.length > VISIBLE && (
+          <details className="group mt-2">
+            <summary className="mx-auto flex min-h-11 w-fit cursor-pointer list-none items-center gap-2 rounded-full border border-navy/25 px-6 py-2.5 font-medium text-navy transition-colors hover:bg-navy/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent [&::-webkit-details-marker]:hidden group-open:hidden">
+              עוד המלצות ({items.length - VISIBLE})
+            </summary>
+            <Stagger as="ul" className="mt-6 columns-1 gap-6 md:columns-2 lg:columns-3">
+              {items.slice(VISIBLE).map((item, i) => renderItem(item, i + VISIBLE))}
+            </Stagger>
+          </details>
+        )}
       </div>
     </section>
   );

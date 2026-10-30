@@ -13,7 +13,7 @@ const buttonVariants = cva(
         accent:
           'bg-accent text-cream shadow-sm hover:bg-accent/90 hover:shadow-md',
         accentOnDark:
-          'bg-accent-light text-navy shadow-sm hover:bg-accent-light/90 hover:shadow-md',
+          'bg-cream text-navy shadow-md hover:bg-white hover:shadow-lg',
         outline:
           'border border-navy/25 bg-transparent text-navy hover:border-navy/50 hover:bg-navy/5',
         ghost: 'bg-transparent text-navy hover:bg-navy/5',

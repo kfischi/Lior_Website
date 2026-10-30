@@ -4,6 +4,7 @@ import { buildMetadata, faqJsonLd } from '@/lib/seo';
 import { Header } from '@/components/sections/Header';
 import { Hero } from '@/components/sections/Hero';
 import { Marquee } from '@/components/sections/Marquee';
+import { TrustBar } from '@/components/sections/TrustBar';
 import { Process } from '@/components/sections/Process';
 import { WhyUs } from '@/components/sections/WhyUs';
 import { About } from '@/components/sections/About';
@@ -31,6 +32,7 @@ export default function HomePage() {
       <Header />
       <main id="main">
         <Hero />
+        <TrustBar />
         <Marquee />
         <WhyUs />
         <PracticeAreas />
