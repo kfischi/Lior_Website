@@ -691,6 +691,7 @@ export const brand = {
     { src: '/videos/review-5.mp4', poster: '/videos/review-5.webp', label: 'ביקורת וידאו מלקוחה', landscape: true },
     { youtubeId: 'WgO6rikPJDQ', label: 'ביקורת וידאו מלקוח', landscape: true },
     { youtubeId: 'y84XQuiUilE', label: 'ביקורת וידאו מלקוח' },
+    { youtubeId: '9dQtAxuUVqw', label: 'ביקורת וידאו מלקוח' },
   ].map((v) => {
     const transcript = 'src' in v && v.src ? (videoTranscripts as Record<string, VideoTranscriptLine[]>)[v.src] : undefined;
     return transcript ? { ...v, transcript } : v;
