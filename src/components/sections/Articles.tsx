@@ -1,11 +1,23 @@
 import Link from 'next/link';
-import { newestArticles } from '@/lib/articles';
+import { brand } from '@/lib/brand';
+import { newestArticles, type Article } from '@/lib/articles';
 import { ArticleCard } from './ArticleCard';
 import { PressList } from './PressList';
 
 /** Home page teaser for the guides hub. */
 export function Articles() {
-  const items = newestArticles(3);
+  // One guide per practice area first, so every visitor finds something for their own case; then the newest.
+  const all = newestArticles(100);
+  const items: Article[] = [];
+  for (const area of brand.practiceAreas) {
+    const first = all.find((a) => a.areaSlug === area.slug && !items.includes(a));
+    if (first) items.push(first);
+  }
+  for (const a of all) {
+    if (items.length >= 3) break;
+    if (!items.includes(a)) items.push(a);
+  }
+  items.splice(3);
   return (
     <section id="articles" aria-labelledby="articles-title" className="section bg-white">
       <div className="shell">

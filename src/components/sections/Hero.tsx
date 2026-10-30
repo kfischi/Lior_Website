@@ -4,8 +4,10 @@ import * as React from 'react';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
-import { ChevronDown } from 'lucide-react';
-import { brand } from '@/lib/brand';
+import { ChevronDown, MessagesSquare, Phone } from 'lucide-react';
+import { brand, telHref } from '@/lib/brand';
+import { Button } from '@/components/ui/button';
+import { OpenChatButton } from '@/components/ai/OpenChatButton';
 import { videoSources } from '@/lib/media';
 import { HeroVideo } from './HeroVideo';
 
@@ -108,6 +110,20 @@ export function Hero() {
           >
             {brand.hero.subtitle}
           </motion.p>
+
+          {/* The first screen must say what to do next: talk to the assistant, or call. */}
+          <motion.div {...fade(0.95)} className="mt-7 flex flex-wrap gap-3">
+            <OpenChatButton size="lg" variant="accentOnDark">
+              <MessagesSquare className="h-5 w-5" />
+              {brand.hero.primaryCta}
+            </OpenChatButton>
+            <Button asChild size="lg" variant="onDark">
+              <a href={telHref}>
+                <Phone className="h-5 w-5" />
+                <span dir="ltr">{brand.phone}</span>
+              </a>
+            </Button>
+          </motion.div>
         </div>
       </div>
 
