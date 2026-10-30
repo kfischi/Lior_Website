@@ -692,6 +692,7 @@ export const brand = {
     { youtubeId: 'WgO6rikPJDQ', label: 'ביקורת וידאו מלקוח', landscape: true },
     { youtubeId: 'y84XQuiUilE', label: 'ביקורת וידאו מלקוח' },
     { youtubeId: '9dQtAxuUVqw', label: 'ביקורת וידאו מלקוח' },
+    { youtubeId: 'lMKBqDUAPoY', label: 'ביקורת וידאו מלקוח' },
   ].map((v) => {
     const transcript = 'src' in v && v.src ? (videoTranscripts as Record<string, VideoTranscriptLine[]>)[v.src] : undefined;
     return transcript ? { ...v, transcript } : v;
