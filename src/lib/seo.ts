@@ -131,12 +131,15 @@ export function websiteJsonLd() {
   };
 }
 
-/** Person-level structured data: Attorney. */
+/**
+ * The attorney as a schema.org Person who works for the firm. (schema.org's `Attorney` type is a local business,
+ * not a person, so it would duplicate the firm's address and phone as a second business.)
+ */
 export function attorneyJsonLd() {
   const base = siteUrl();
   return {
     '@context': 'https://schema.org',
-    '@type': 'Attorney',
+    '@type': 'Person',
     '@id': `${base}/#attorney`,
     name: brand.attorneyName,
     knowsAbout: brand.seo.knowsAbout,
@@ -144,14 +147,6 @@ export function attorneyJsonLd() {
     jobTitle: 'עורכת דין',
     worksFor: { '@id': `${base}/#firm` },
     url: base,
-    telephone: `+${brand.phoneE164}`,
-    email: brand.email,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: brand.address.street,
-      addressLocality: brand.address.city,
-      addressCountry: brand.address.country,
-    },
   };
 }
 

@@ -18,6 +18,9 @@
  * =============================================================================
  */
 
+import introConfig from './avatar-intro.json';
+import videoTranscripts from './video-transcripts.json';
+
 export interface FaqItem {
   question: string;
   answer: string;
@@ -56,6 +59,73 @@ export interface Testimonial {
   text: string;
 }
 
+/** An article by the attorney, or about her, published on an outside site. */
+export interface PressArticle {
+  title: string;
+  /** Name of the publication, e.g. 'דבר ראשון'. */
+  outlet: string;
+  /** Publication date, ISO `YYYY-MM-DD`; leave out while it is not known (shown last, without a date). */
+  date?: string;
+  url: string;
+  /** Optional one or two sentences quoted from the piece. */
+  excerpt?: string;
+}
+
+/** One line of the intro video's script; `start` is in seconds from the start of the video. */
+export interface IntroSegment {
+  start: number;
+  text: string;
+  /** Lights up the matching item of the tour while this line plays. */
+  focus?: IntroFocus;
+}
+
+/** What the intro video points at on the site while a line plays (see components/ai/tour.ts). */
+export type IntroFocus = 'about' | 'chat' | 'voice' | 'questions' | 'articles' | 'faq' | 'reviews' | 'contact';
+
+export interface IntroConfig {
+  /** Path of the video in /public; empty switches the intro off. */
+  src: string;
+  poster: string;
+  segments: IntroSegment[];
+}
+
+/** A client's letter shown as a scanned image among the reviews (no rating). */
+export interface TestimonialLetter {
+  name: string;
+  /** Date of the letter, ISO `YYYY-MM-DD`. */
+  date: string;
+  /** Image in /public/images. */
+  image: string;
+  width: number;
+  height: number;
+  /** Text alternative for the scan: what the letter says, in words. */
+  alt: string;
+}
+
+/** One spoken line of a client video, with its times in seconds. */
+export interface VideoTranscriptLine {
+  start: number;
+  end: number;
+  text: string;
+}
+
+/** A client video: a local file, or a YouTube video played only after a click. */
+export type VideoReview = { label: string; landscape?: boolean } & (
+  | {
+      src: string;
+      poster: string;
+      /** What is said, line by line (see video-transcripts.json). Shown as captions and as a transcript. */
+      transcript?: VideoTranscriptLine[];
+      /** A short description under the video. Only text the attorney approved. */
+      note?: string;
+      youtubeId?: undefined;
+    }
+  | { youtubeId: string; poster?: string; src?: undefined; transcript?: undefined; note?: undefined }
+);
+
+/** The year she began practising (from her own "21 years" in 2026). The years-of-experience figure counts from it. */
+const PRACTISING_SINCE = 2005;
+
 export const brand = {
   // --- Identity ---
   firmName: 'משרד עורכת דין ליאור-קלואי ארז',
@@ -64,8 +134,8 @@ export const brand = {
   attorneyName: 'עו״ד ליאור-קלואי ארז',
   /** Short legal-services description — used in meta + JSON-LD. */
   description:
-    'משרד עורכת דין ליאור-קלואי ארז בחריש: אפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי. ' +
-    'ליווי אישי, מקצועי ודיסקרטי מהשיחה הראשונה.',
+    'משרד עורכת דין ליאור-קלואי ארז בחריש ובזום: משפט פלילי, נזיקין (רשלנות, אפליה, הטרדה מינית, לשון הרע) ומעמד אישי (צוואות וייפוי כוח מתמשך). ' +
+    'בוגרת הפרקליטות הפלילית, ליווי אישי ודיסקרטי מהשיחה הראשונה.',
   /** Public website address. */
   website: 'https://www.liorerezadv.com',
   /**
@@ -94,7 +164,7 @@ export const brand = {
     postalCode: '3786100',
     country: 'IL',
   },
-  hours: 'בתיאום מראש',
+  hours: 'בתיאום מראש, במשרד בחריש או בזום',
   /** Maps embed/link target. */
   mapUrl: 'https://maps.google.com/?q=%D7%A8%D7%99%D7%9E%D7%95%D7%9F+5+%D7%97%D7%A8%D7%99%D7%A9',
 
@@ -122,9 +192,11 @@ export const brand = {
 
   // --- Hero ---
   hero: {
+    /** The line above the headline. */
+    eyebrow: 'משרד עו״ד ליאור-קלואי ארז',
     title: 'ליווי משפטי ברגישות ובנחישות',
     subtitle:
-      'אפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי. ליווי אישי ודיסקרטי מהשיחה הראשונה, ' +
+      'משפט פלילי, נזיקין ומעמד אישי. ליווי אישי ודיסקרטי מהשיחה הראשונה, ' +
       'כדי שתדעו מה האפשרויות שלכם ותוכלו לפעול בביטחון.',
     primaryCta: 'לקביעת ייעוץ',
     secondaryCta: 'וואטסאפ',
@@ -154,6 +226,11 @@ export const brand = {
      * a glitch in its last frames (the duplicated figure). 0 = play to the end.
      */
     videoTrimEnd: 2,
+    /**
+     * Stretches of the clip to skip, in seconds from its start: [{ from: 7.5, to: 11 }] jumps from 7.5 s to 11 s.
+     * The close-up on the face is at 7.43 to 9.53 s in a re-encoded copy; the cut is wider (7.2 to 9.9 s) so it also covers any timing difference in the original file.
+     */
+    videoCuts: [{ from: 7.2, to: 9.9 }] as { from: number; to: number }[],
   },
 
   // --- AI chatbot ---
@@ -168,29 +245,57 @@ export const brand = {
     /** Quick-start suggestions shown as chips. */
     suggestedPrompts: [
       'נפגעתי בעבודה, מה אפשר לעשות?',
+      'הוזמנתי לחקירה, מה עושים?',
+      'קיבלתי זימון לשימוע',
+      'הטרדה מינית: מה האפשרויות?',
       'כמה עולה ייעוץ ראשוני?',
       'איך קובעים פגישה?',
+      'אני רוצה לדבר עם ליאור',
+      'לא בטוח לאיזה תחום זה שייך',
     ],
     disclaimer: 'המידע כללי ואינו מהווה ייעוץ משפטי.',
+    /**
+     * Welcome video in the chat: the virtual assistant introduces herself and the site. It starts
+     * two seconds after the chat opens, once per browser tab. Leave `src` empty to switch it off.
+     * It lives in avatar-intro.json, which `npm run avatar` writes: the video path, the poster and
+     * the script lines with their start times (captions, transcript and site highlights).
+     * See docs/avatar-script.md and .claude/skills/talking-avatar.
+     */
+    intro: introConfig as IntroConfig,
+    /**
+     * What the chat opens with, instead of the video: a still photo of the attorney while the welcome is
+     * read aloud (the audio track of the intro), with live captions, a transcript and the site highlights.
+     * Leave `audio` empty to switch it off. The video pipeline stays in the repo (`intro` above).
+     */
+    welcome: {
+      photo: '/images/lior-about.webp',
+      audio: '/audio/intro.mp3',
+      segments: (introConfig as IntroConfig).segments,
+    },
   },
 
   // --- Trust strip (E-E-A-T) ---
   // Shown only when it has items. Add verified numbers only (years of
   // experience, cases, etc.) — never placeholders.
-  trustStats: [] as { value: string; label: string }[],
+  trustStats: [{ value: String(new Date().getFullYear() - PRACTISING_SINCE), label: 'שנות ניסיון' }] as {
+    value: string;
+    label: string;
+  }[],
 
   // --- About ---
   about: {
     heading: 'אודות המשרד',
     body:
-      'עו״ד ליאור-קלואי ארז מנהלת משרד המתמחה באפליה והתעמרות בעבודה, בהטרדה מינית ובמשפט פלילי. ' +
+      'עו״ד ליאור-קלואי ארז מנהלת משרד המתמחה בהגנה על זכויות אדם בשלושה תחומים: משפט פלילי, נזיקין ומעמד אישי. ' +
       'אלה עניינים שבהם אדם נמצא לא פעם בנקודה קשה ורגישה בחייו, ולכן הדגש במשרד הוא על הקשבה, ' +
       'דיסקרטיות והסבר ברור של האפשרויות, כך שתוכלו לקבל החלטות בביטחון.',
     /** Pull quote, taken from the approach described in `body`. */
     quote: 'הקשבה, דיסקרטיות והסבר ברור של האפשרויות, כדי שתוכלו לקבל החלטות בביטחון.',
     credentials: [
       'עורכת דין, חברה בלשכת עורכי הדין בישראל',
-      'התמחות באפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי',
+      'בוגרת הפרקליטות הפלילית בתל אביב',
+      'תובעת במשרד הכלכלה לשעבר',
+      'התמחות בהגנה על זכויות אדם',
     ],
     /** Certificates shown under the credentials (images in /public/images). */
     certificates: [
@@ -204,7 +309,39 @@ export const brand = {
       },
     ] as { title: string; issuer: string; date: string; image: string; width: number; height: number }[],
     /** Cloudinary public ID for the attorney portrait. Local /public path or Cloudinary ID. Leave empty for a monogram panel. */
-    portraitId: '/images/lior-portrait.webp',
+    portraitId: '/images/lior-about.webp',
+    /** More about the attorney: short paragraphs shown after the main text. Only approved text; leave empty until then. */
+    more: [
+      'עו״ד ליאור-קלואי ארז היא בוגרת הפרקליטות הפלילית בתל אביב ותובעת במשרד הכלכלה לשעבר. ' +
+        'את הניסיון הזה היא מביאה גם לייצוג בנזיקין, כולל רשלנות רפואית, ובענייני צוואות וייפוי כוח מתמשך.',
+      'המשרד בחריש, ואפשר לקיים פגישות גם בזום.',
+    ] as string[],
+    practisingSince: PRACTISING_SINCE,
+    /** Other areas she works in, in her words (the three main areas have their own pages above). */
+    additionalAreas: [
+    ] as {
+      title: string;
+      text: string;
+      /** Short label for the chat's intake chips; empty = already covered by the main areas. */
+      topic: string;
+    }[],
+    /** Photos shown in a row under the text (images in /public/images). Empty caption = no caption. */
+    gallery: [
+      {
+        src: '/images/lior-lecture.webp',
+        width: 900,
+        height: 1193,
+        alt: 'עו״ד ליאור-קלואי ארז מדברת עם מיקרופון ליד דוכן, באולם עם דגל ישראל',
+        caption: 'על הבמה',
+      },
+      {
+        src: '/images/lior-portrait-2.webp',
+        width: 800,
+        height: 1223,
+        alt: 'דיוקן של עו״ד ליאור-קלואי ארז בגלימה שחורה',
+        caption: '',
+      },
+    ] as { src: string; width: number; height: number; alt: string; caption: string }[],
   },
 
   // --- Scrolling band under the hero (practice areas are added automatically) ---
@@ -239,8 +376,8 @@ export const brand = {
       icon: 'HeartHandshake',
     },
     {
-      title: 'התמחות ממוקדת',
-      description: 'המשרד מתמקד בשלושה תחומים: עבודה, הטרדה מינית ופלילי.',
+      title: 'ניסיון מהצד השני של השולחן',
+      description: 'בוגרת הפרקליטות הפלילית בתל אביב ותובעת לשעבר במשרד הכלכלה, עם ניסיון של שנים רבות.',
       icon: 'Award',
     },
     {
@@ -260,121 +397,34 @@ export const brand = {
   // a specific case, no promises, no results. Needs the attorney's approval.
   practiceAreas: [
     {
-      slug: 'workplace-discrimination',
-      title: 'אפליה והתעמרות בעבודה',
-      description:
-        'ליווי עובדות ועובדים שנפגעו באפליה, בהתעמרות או בפגיעה בזכויותיהם במקום העבודה.',
-      icon: 'Briefcase',
-      page: {
-        seoTitle: 'אפליה והתעמרות בעבודה: ליווי משפטי',
-        seoDescription:
-          'נפגעתם באפליה או בהתעמרות במקום העבודה? מה כדאי לתעד, מה האפשרויות ומתי לפנות לעורכת דין. עו״ד ליאור-קלואי ארז, חריש.',
-        intro: [
-          'אפליה והתעמרות בעבודה פוגעות לא רק בשכר ובקידום, אלא גם בתחושת הביטחון והכבוד של העובדת או העובד. אם אתם חווים יחס כזה, חשוב לדעת שיש דרכים לפעול ושאין חובה להתמודד לבד.',
-          'אפליה היא יחס פוגעני או לא שוויוני בשל מאפיין אישי, כמו מין, גיל, הריון, הורות, מוצא, דת, נטייה מינית או מוגבלות. התעמרות היא התנהגות חוזרת של השפלה, התנכלות או הדרה במקום העבודה. בתי הדין לעבודה בישראל דנים בתלונות מסוג זה.',
-        ],
-        handles: [
-          'בירור המצב והסבר ברור על האפשרויות העומדות בפניכם',
-          'ליווי בהגשת תלונה למעסיק ובהליכים הפנימיים בארגון',
-          'ייצוג מול המעסיק, כולל במשא ומתן',
-          'ליווי לקראת שימוע או לפני חתימה על מסמכים מטעם המעסיק',
-          'ייצוג בהליכים משפטיים, כשנדרש',
-        ],
-        steps: [
-          'לתעד: לרשום תאריכים, מה נאמר או נעשה ומי נכח, ולשמור הודעות, מיילים ומסמכים שנשלחו אליכם.',
-          'להימנע מהעתקת מסמכים סודיים של המעסיק לפני שהתייעצתם.',
-          'לבדוק אם בארגון יש נוהל לפנייה בנושא, ולפנות בכתב כשאפשר.',
-          'להתייעץ לפני שמגישים תלונה, חותמים על מסמך או מסכימים להצעה, כדי להבין את ההשלכות.',
-          'לא לחכות זמן רב, כי יש מועדים להגשת תביעות.',
-        ],
-        faq: [
-          {
-            question: 'מה ההבדל בין אפליה להתעמרות?',
-            answer:
-              'אפליה היא יחס שונה ופוגעני בשל מאפיין אישי של העובד, כמו מין, גיל או הריון. התעמרות היא התנהגות חוזרת ופוגענית, כמו השפלה או הדרה, גם אם אינה קשורה למאפיין כזה. לפעמים השתיים מתקיימות יחד.',
-          },
-          {
-            question: 'מה כדאי לתעד?',
-            answer:
-              'תאריכים, מה נאמר או נעשה, מי נכח והודעות כתובות. תיעוד שוטף ומדויק עוזר להבין את התמונה כבר בשלב מוקדם.',
-          },
-          {
-            question: 'אפשר לפנות לפני שהתפטרתי או פוטרתי?',
-            answer:
-              'כן, ואף מומלץ. התייעצות מוקדמת עוזרת להחליט איך לפעול לפני שמקבלים החלטות שקשה לחזור מהן, כמו התפטרות או חתימה על הסכם.',
-          },
-        ],
-      },
-    },
-    {
-      slug: 'sexual-harassment',
-      title: 'הטרדה מינית',
-      description: 'ייצוג וליווי בעניינים של הטרדה מינית, ברגישות ובדיסקרטיות מלאה.',
-      icon: 'ShieldCheck',
-      page: {
-        seoTitle: 'הטרדה מינית: ליווי משפטי ודיסקרטי',
-        seoDescription:
-          'פנייה בנושא הטרדה מינית דורשת רגישות. מה האפשרויות, איך פועלים ולמה כדאי להתייעץ. עו״ד ליאור-קלואי ארז, חריש.',
-        intro: [
-          'הטרדה מינית היא פגיעה קשה, והפנייה לעזרה היא צעד משמעותי. כאן אפשר להבין בקצרה מה האפשרויות, בלי צורך לתאר את האירוע.',
-          'הטרדה מינית מוסדרת בישראל בחוק למניעת הטרדה מינית. החוק חל במקום העבודה ובהקשרים נוספים, ומטיל חובות על מעסיקים, כמו הנחיות ונוהל לטיפול בתלונות. הדרך המתאימה תלויה בנסיבות: לעיתים תלונה במקום העבודה, לעיתים הליך משפטי, ובמקרים מסוימים תלונה במשטרה.',
-        ],
-        handles: [
-          'שיחה דיסקרטית שבה מבררים מה האפשרויות, בקצב שלכם',
-          'ליווי בתלונה במקום העבודה',
-          'ייצוג בהליכים משפטיים, כשבוחרים לפעול בדרך זו',
-          'ליווי בפנייה לגורמי האכיפה, כשזה רלוונטי',
-        ],
-        steps: [
-          'אם אתם בסכנה מיידית, להתקשר למשטרה בטלפון 100.',
-          'לשמור הודעות, תמונות ומסמכים הקשורים לאירוע, ולא למחוק כלום.',
-          'אין חובה להחליט מיד. אפשר לקבל מידע ולהתלבט.',
-          'אפשר גם לפנות לאדם קרוב או לגורם מקצועי לתמיכה נפשית.',
-          'להתייעץ לפני שמגישים תלונה או חותמים על מסמך.',
-        ],
-        faq: [
-          {
-            question: 'צריך לספר את כל הפרטים כבר בפנייה הראשונה?',
-            answer:
-              'לא. אפשר להתחיל בשיחה כללית, ולמסור פרטים בשיחה ישירה ודיסקרטית כשתרגישו מוכנים.',
-          },
-          {
-            question: 'האם הפנייה חסויה?',
-            answer:
-              'עורכת דין חבה בחובת סודיות כלפי לקוחותיה. ובכל זאת מומלץ לא לפרט את האירוע בהודעות באתר או בצ׳אט, ולהשאיר זאת לשיחה ישירה.',
-          },
-          {
-            question: 'אפשר לפעול גם אם האירוע היה לפני זמן?',
-            answer:
-              'ייתכן, וזה תלוי בנסיבות ובמועדים החלים על כל הליך. כדאי להתייעץ בהקדם כדי לברר.',
-          },
-        ],
-      },
-    },
-    {
       slug: 'criminal-law',
       title: 'משפט פלילי',
-      description: 'ייצוג וליווי בהליכים פליליים, משלב החקירה ועד סיום ההליך.',
+      description:
+        'ייצוג וליווי בהליכים פליליים, משלב החקירה ועד סיום ההליך, וליווי נפגעות ונפגעי עבירה בהליך הפלילי לפי חוק זכויות נפגעי עבירה.',
       icon: 'Gavel',
       page: {
-        seoTitle: 'משפט פלילי: ייצוג וליווי משפטי',
+        seoTitle: 'עורכת דין פלילי בחריש: חקירה, מעצר וייצוג',
         seoDescription:
-          'הוזמנתם לחקירה או נפתח הליך פלילי? מה חשוב לדעת על הזכויות ועל שלבי ההליך, ולמה כדאי להתייעץ מוקדם. עו״ד ליאור-קלואי ארז, חריש.',
+          'הוזמנתם לחקירה, נפתח הליך פלילי, או שנפגעתם מעבירה? מה חשוב לדעת על הזכויות ועל שלבי ההליך, ולמה כדאי להתייעץ מוקדם. עו״ד ליאור-קלואי ארז, חריש.',
         intro: [
           'הזמנה לחקירה או הליך פלילי הם מצב מלחיץ, והצעדים הראשונים חשובים. מידע ברור על הזכויות ועל שלבי ההליך עוזר לקבל החלטות ברוגע.',
           'הליך פלילי כולל בדרך כלל כמה שלבים: חקירה, לעיתים מעצר, החלטה אם להגיש כתב אישום, ניהול ההליך בבית המשפט, וגזר דין במקרה של הרשעה. בכל שלב יש החלטות שמשפיעות על ההמשך.',
+          'גם מי שנפגע מעבירה נמצא בהליך פלילי, ולא תמיד יודע מה מגיע לו. חוק זכויות נפגעי עבירה מעניק לנפגעים זכויות, כמו קבלת מידע על מהלך ההליך והשמעת קולם. ליווי משפטי עוזר להבין את ההליך ואת הזכויות, ולהתכונן לכל שלב בו, כולל מסירת עדות.',
         ],
         handles: [
           'ליווי לפני חקירה ובמהלכה',
           'ייצוג בהליכי מעצר',
           'ייצוג בבית המשפט, בשלבי ההליך השונים',
           'בחינת האפשרויות והסבר ברור של הסיכונים בכל שלב',
+          'ליווי נפגעות ונפגעי עבירה בהליך הפלילי, לפי חוק זכויות נפגעי עבירה',
+          'הסבר על הזכויות במהלך ההליך, והכנה למסירת עדות ולהצהרת נפגע',
         ],
         steps: [
           'לזכור שיש לכם זכות להיוועץ בעורך דין לפני חקירה.',
           'לפני שמוסרים גרסה או חותמים על הודעה, להבין מה ההשלכות.',
           'לא למחוק הודעות או חומרים הקשורים לעניין.',
           'לשמור את כל המסמכים שקיבלתם, כמו הזמנה לחקירה או כתב אישום.',
+          'מי שנפגע מעבירה: לשמור את מספר התיק ואת ההודעות שהגיעו מהמשטרה או מהתביעה.',
           'לא לתאר את העובדות בהודעות באתר או בצ׳אט. את זה עושים בשיחה ישירה.',
         ],
         faq: [
@@ -392,6 +442,151 @@ export const brand = {
             question: 'מתי כדאי לפנות לעורכת דין?',
             answer:
               'הכי טוב לפני החקירה, כי מה שנאמר בה משפיע על המשך ההליך. אבל גם בשלבים מאוחרים יותר אפשר לברר מה האפשרויות.',
+          },
+          {
+            question: 'מה הזכויות של מי שנפגע מעבירה?',
+            answer:
+              'חוק זכויות נפגעי עבירה מעניק לנפגעים זכויות, כמו קבלת מידע על מהלך ההליך והשמעת הצהרה לפני גזר הדין. הזכויות המדויקות תלויות בסוג העבירה ובשלב ההליך, ואפשר להתייעץ כדי להבין אותן.',
+          },
+          {
+            question: 'אפשר לקבל ליווי גם כשאני העד או הנפגע ולא החשוד?',
+            answer:
+              'כן. ליווי משפטי מתאים גם לנפגעות ולנפגעי עבירה. הוא עוזר להבין את ההליך, להתכונן למסירת עדות ולדעת מה אפשר לבקש.',
+          },
+        ],
+      },
+    },
+    {
+      slug: 'torts',
+      title: 'נזיקין',
+      description:
+        'רשלנות, אפליה והתעמרות בעבודה, הטרדה מינית, לשון הרע ותביעות בגין חיסוני פייזר.',
+      icon: 'Scale',
+      page: {
+        seoTitle: 'עורכת דין נזיקין בחריש: רשלנות ולשון הרע',
+        seoDescription:
+          'נפגעתם ברשלנות, באפליה או בהתעמרות בעבודה, בהטרדה מינית או בפרסום מזיק? מה האפשרויות ולמה כדאי להתייעץ. עו״ד ליאור-קלואי ארז, חריש.',
+        intro: [
+          'נזיקין הוא התחום שבו אדם שנפגע בגופו, בנפשו, בכבודו או ברכושו בגלל מעשה או מחדל של אחר בוחן אם יש מקום לתבוע פיצוי. המשרד מלווה בכמה סוגים של עניינים כאלה, ברגישות ובדיסקרטיות.',
+          'רשלנות: כשמי שחב חובת זהירות, כמו גורם רפואי, לא פעל כפי שהיה צפוי ממנו והדבר גרם נזק, אפשר לבחון תביעה. ברשלנות רפואית נדרשת בדרך כלל חוות דעת רפואית.',
+          'אפליה והתעמרות בעבודה: אפליה היא יחס פוגעני או לא שוויוני בשל מאפיין אישי, כמו מין, גיל, הריון, הורות, מוצא, דת, נטייה מינית או מוגבלות. התעמרות היא התנהגות חוזרת ומשפילה או מפחידה. שתיהן פוגעות בשכר, בקידום ובתחושת הביטחון.',
+          'הטרדה מינית: הטרדה מינית מוסדרת בישראל בחוק למניעת הטרדה מינית, שחל במקום העבודה ובהקשרים נוספים ומטיל חובות על מעסיקים. הפנייה לעזרה היא צעד משמעותי, ואין צורך לתאר את האירוע בפנייה הראשונה.',
+          'לשון הרע: פרסום שעלול לפגוע בשמו הטוב של אדם עשוי להיחשב לשון הרע לפי חוק איסור לשון הרע. אפשר לבחון תביעה, וגם הגנה למי שמואשם בכך.',
+          'תביעות בגין חיסוני פייזר: מי שחושב שנפגע בעקבות חיסון, ובהם חיסוני פייזר, יכול להתייעץ על האפשרות לתבוע. קיומו של קשר בין החיסון לנזק נבדק לפי חומר רפואי וחוות דעת מקצועיות, ואי אפשר לדעת מראש מה תהיה התוצאה.',
+        ],
+        handles: [
+          'בירור המצב והסבר ברור על האפשרויות העומדות בפניכם',
+          'בחינת תביעה בגין רשלנות, כולל רשלנות רפואית',
+          'ליווי עובדות ועובדים באפליה והתעמרות: תלונה למעסיק, משא ומתן וייצוג בהליכים',
+          'ליווי בעניינים של הטרדה מינית, בשיחה דיסקרטית ובהליכים כשבוחרים בהם',
+          'תביעות והגנה בעניין לשון הרע',
+          'בחינת תביעות בגין חיסוני פייזר, לפי החומר הרפואי',
+        ],
+        steps: [
+          'לתעד: לרשום תאריכים, מה נאמר או נעשה ומי נכח, ולשמור הודעות, מיילים, מסמכים רפואיים וצילומי מסך.',
+          'לא למחוק כלום, וגם להימנע מהעתקת מסמכים סודיים של המעסיק לפני שהתייעצתם.',
+          'אם אתם בסכנה מיידית, להתקשר למשטרה בטלפון 100.',
+          'להתייעץ לפני שמגישים תלונה, חותמים על מסמך או מסכימים להצעה, כדי להבין את ההשלכות.',
+          'אין חובה להחליט מיד. אפשר לקבל מידע ולהתלבט.',
+          'לא לחכות זמן רב, כי יש מועדים להגשת תביעות.',
+        ],
+        faq: [
+          {
+            question: 'מה ההבדל בין אפליה להתעמרות?',
+            answer:
+              'אפליה היא יחס שונה ופוגעני בשל מאפיין אישי של העובד, כמו מין, גיל או הריון. התעמרות היא התנהגות חוזרת ופוגענית, כמו השפלה או הטלת משימות מיותרות. לפעמים השתיים מופיעות יחד.',
+          },
+          {
+            question: 'מה כדאי לתעד?',
+            answer:
+              'תאריכים, מה נאמר או נעשה, מי נכח והודעות כתובות. תיעוד שוטף ומדויק עוזר להבין את התמונה כבר בשלב מוקדם.',
+          },
+          {
+            question: 'אפשר לפנות לפני שהתפטרתי או פוטרתי?',
+            answer:
+              'כן, ואף מומלץ. התייעצות מוקדמת עוזרת להחליט איך לפעול לפני שמקבלים החלטות שקשה לחזור מהן, כמו התפטרות או חתימה על מסמך.',
+          },
+          {
+            question: 'צריך לספר את כל הפרטים כבר בפנייה הראשונה בהטרדה מינית?',
+            answer:
+              'לא. אפשר להתחיל בשיחה כללית, ולמסור פרטים בשיחה ישירה ודיסקרטית כשתרגישו מוכנים.',
+          },
+          {
+            question: 'האם הפנייה חסויה?',
+            answer:
+              'עורכת דין חבה בחובת סודיות כלפי לקוחותיה. ובכל זאת מומלץ לא לפרט את האירוע בהודעות באתר או בצ׳אט, ולהשאיר זאת לשיחה ישירה.',
+          },
+          {
+            question: 'אפשר לפעול גם אם האירוע היה לפני זמן?',
+            answer:
+              'ייתכן, וזה תלוי בנסיבות ובמועדים החלים על כל הליך. כדאי להתייעץ בהקדם כדי לברר.',
+          },
+          {
+            question: 'מהו לשון הרע?',
+            answer:
+              'פרסום שעלול להשפיל אדם, לבזות אותו או לפגוע במשרתו או בפרנסתו הוא לשון הרע לפי החוק. כל מקרה נבחן לגופו, וגם אמירה נכונה לא תמיד פטורה. כדאי להתייעץ לפני שמגיבים או מוחקים.',
+          },
+          {
+            question: 'אפשר לתבוע בעקבות פגיעה מחיסון?',
+            answer:
+              'אפשר להתייעץ ולבדוק. השאלה אם יש קשר בין החיסון לנזק נבדקת לפי חומר רפואי וחוות דעת מקצועיות, ואין דרך לדעת מראש מה תהיה התוצאה. כדאי לשמור את כל המסמכים הרפואיים.',
+          },
+          {
+            question: 'תוך כמה זמן צריך להגיש תביעת נזיקין?',
+            answer:
+              'יש מועדי התיישנות, והם משתנים לפי סוג העניין. לכן כדאי לא לחכות ולברר בהקדם.',
+          },
+        ],
+      },
+    },
+    {
+      slug: 'personal-status',
+      title: 'מעמד אישי',
+      description: 'עריכת צוואות, ייפוי כוח מתמשך והצהרה על נעדר.',
+      icon: 'Users',
+      page: {
+        seoTitle: 'צוואות וייפוי כוח מתמשך בחריש',
+        seoDescription:
+          'איך עורכים צוואה, מה זה ייפוי כוח מתמשך ומה עושים כשאדם נעדר. מידע ברור והסבר על התהליך. עו״ד ליאור-קלואי ארז, חריש.',
+        intro: [
+          'תכנון והסדרת ענייניו של אדם ושל משפחתו הם צעד אחראי: מה יקרה לרכוש, מי יקבל החלטות כשהאדם לא יוכל להחליט בעצמו, ומה עושים כשאדם נעלם. המשרד מלווה בשלושה עניינים כאלה.',
+          'עריכת צוואה: צוואה קובעת איך יתחלק הרכוש אחרי מותו של אדם. כדי שתהיה תקפה יש דרישות צורה, ולכן עריכתה בליווי עורכת דין מונעת טעויות ומחלוקות בהמשך.',
+          'ייפוי כוח מתמשך: מסמך שמאפשר לקבוע מראש מי יקבל החלטות בשם האדם אם יאבד את היכולת לעשות זאת בעצמו. כך נמנעים בדרך כלל מהליכי אפוטרופסות. ייפוי כוח מתמשך נערך בליווי עורך דין ונרשם אצל האפוטרופוס הכללי.',
+          'הצהרה על נעדר: כשאדם נעלם ולא ידוע היכן הוא, משפחה צריכה לעיתים הליך משפטי כדי להסדיר את ענייניו. אפשר להבין בשיחה איך מתקדמים ומה צריך להכין.',
+          'המשרד אינו עוסק בנישואין ובגירושין.',
+        ],
+        handles: [
+          'שיחה שבה מבררים מה רוצים להסדיר, ומה אפשרי',
+          'ניסוח ועריכה של צוואה, כולל חתימה כנדרש',
+          'ליווי בעריכת ייפוי כוח מתמשך',
+          'ליווי בהליך של הצהרה על נעדר',
+        ],
+        steps: [
+          'לחשוב מה חשוב לכם להסדיר ומי האנשים שרוצים לשתף.',
+          'לאסוף מידע על הנכסים ועל בני המשפחה הרלוונטיים.',
+          'לא להסתפק בנוסח מוכן מהאינטרנט: טעות קטנה בצוואה עלולה לפסול אותה.',
+          'בענייני נעדר: לשמור את כל המסמכים וההודעות שקשורים להיעלמות ולמצוא אותם לפגישה.',
+        ],
+        faq: [
+          {
+            question: 'מה ההבדל בין צוואה לייפוי כוח מתמשך?',
+            answer:
+              'צוואה חלה אחרי מות האדם ונוגעת לרכושו. ייפוי כוח מתמשך חל בחיים, כשאדם לא יכול עוד להחליט בעצמו, ונוגע להחלטות בענייניו.',
+          },
+          {
+            question: 'אפשר לשנות צוואה?',
+            answer:
+              'בדרך כלל כן, כל עוד האדם כשיר לעשות זאת. כדאי לעשות זאת בליווי כדי שהשינוי יהיה תקף וברור.',
+          },
+          {
+            question: 'מתי כדאי לערוך ייפוי כוח מתמשך?',
+            answer:
+              'כשהאדם עדיין כשיר. אי אפשר לערוך אותו אחרי שהיכולת אבדה, ולכן הזמן הנכון הוא מוקדם.',
+          },
+          {
+            question: 'מה זו הצהרה על נעדר?',
+            answer:
+              'הליך משפטי שמסדיר את ענייניו של אדם שנעלם. הפרטים תלויים בנסיבות, ואפשר להבין בשיחה איך מתקדמים.',
           },
         ],
       },
@@ -468,14 +663,54 @@ export const brand = {
     },
   ] satisfies Testimonial[],
 
-  // --- Video reviews (files in /public/videos; add a `captions` .vtt path to show subtitles) ---
+  // Letters from clients, shown as scans in the reviews list (sorted with the reviews by date).
+  // Publish only with the writer's permission.
+  testimonialLetters: [
+    {
+      name: 'ליאה',
+      date: '2016-04-03',
+      image: '/images/letter-2016.webp',
+      width: 1400,
+      height: 778,
+      alt: 'מכתב תודה בכתב יד מלקוחה בשם ליאה, מתאריך 3.4.2016. היא כותבת שלפני הטיפול חייה היו סערה, ושמהיום הראשון הרגישה נחת, שלווה ותקווה; שהעורכת הייתה שם בשבילה בכל שעה, האזינה בקשב מלא ונתנה לה שקט נפשי.',
+    },
+  ] as TestimonialLetter[],
+
+  // --- Video reviews ---
+  // Local file: put it in /public/videos and add `captions` (.vtt path) to show subtitles.
+  // YouTube: { youtubeId: 'dQw4w9WgXcQ', label: '...', landscape: true } (the 11 characters
+  // after `v=` in the link, or after `youtu.be/` / `shorts/`). `landscape: true` for wide
+  // videos; leave it off for Shorts and vertical videos. Nothing from YouTube loads until
+  // a visitor presses play.
   videoReviews: [
     { src: '/videos/review-1.mp4', poster: '/videos/review-1.webp', label: 'ביקורת וידאו מלקוח' },
     { src: '/videos/review-2.mp4', poster: '/videos/review-2.webp', label: 'ביקורת וידאו מלקוח' },
     { src: '/videos/review-3.mp4', poster: '/videos/review-3.webp', label: 'ביקורת וידאו מלקוח' },
-    { src: '/videos/review-4.mp4', poster: '/videos/review-4.webp', label: 'ביקורת וידאו מלקוחה' },
+    {
+      src: '/videos/review-4.mp4',
+      poster: '/videos/review-4.webp',
+      label: 'ביקורת וידאו מלקוחה',
+      // The attorney's own description, without the court, the client's background or what the other side was accused of.
+      note: 'מפי עו״ד ליאור: תיק פלילי מורכב שנמשך כארבע שנים, שבסופו זוכו הלקוחה ובן זוגה מעבירות חמורות, והעונש בעבירה נוספת הופחת.',
+    },
     { src: '/videos/review-5.mp4', poster: '/videos/review-5.webp', label: 'ביקורת וידאו מלקוחה', landscape: true },
-  ] as { src: string; poster: string; label: string; captions?: string; landscape?: boolean }[],
+    { youtubeId: 'WgO6rikPJDQ', label: 'ביקורת וידאו מלקוח', landscape: true },
+    { youtubeId: 'y84XQuiUilE', label: 'ביקורת וידאו מלקוח' },
+    { youtubeId: '9dQtAxuUVqw', label: 'ביקורת וידאו מלקוח' },
+    { youtubeId: 'lMKBqDUAPoY', label: 'ביקורת וידאו מלקוח' },
+  ].map((v) => {
+    const transcript = 'src' in v && v.src ? (videoTranscripts as Record<string, VideoTranscriptLine[]>)[v.src] : undefined;
+    return transcript ? { ...v, transcript } : v;
+  }) as VideoReview[],
+
+  // --- In the press: pieces published elsewhere (shown under the guides, newest first) ---
+  press: [
+    {
+      title: 'כתבה מאת עו״ד ליאור-קלואי ארז',
+      outlet: 'דבר ראשון',
+      url: 'https://www.davar1.co.il/218421/',
+    },
+  ] as PressArticle[],
 
   // --- FAQ (also rendered as FAQPage JSON-LD) ---
   faq: [
@@ -506,7 +741,9 @@ export const brand = {
     {
       question: 'באילו תחומים עוסק המשרד?',
       answer:
-        'המשרד מתמקד בשלושה תחומים: אפליה והתעמרות בעבודה, הטרדה מינית ומשפט פלילי. ' +
+        'המשרד עוסק בשלושה תחומים. משפט פלילי, כולל ליווי נפגעי עבירה לפי חוק זכויות נפגעי עבירה. ' +
+        'נזיקין: רשלנות, אפליה והתעמרות בעבודה, הטרדה מינית, לשון הרע ותביעות בגין חיסוני פייזר. ' +
+        'ומעמד אישי: עריכת צוואות, ייפוי כוח מתמשך והצהרה על נעדר. המשרד אינו עוסק בנישואין ובגירושין. ' +
         'אם העניין שלכם בתחום אחר, אפשר לפנות ולברר, ונאמר בכנות אם הוא מחוץ להתמחות המשרד.',
     },
     {
@@ -548,13 +785,13 @@ export const brand = {
   // --- SEO ---
   seo: {
     /** Absolute <title> of the home page. Aim for about 50-60 characters. */
-    homeTitle: 'עורכת דין בחריש: אפליה בעבודה, הטרדה מינית, פלילי',
+    homeTitle: 'עורכת דין בחריש: פלילי, נזיקין וצוואות | ליאור-קלואי ארז',
     homeDescription:
-      'משרד עורכת דין ליאור-קלואי ארז בחריש: ליווי אישי ודיסקרטי באפליה והתעמרות בעבודה, בהטרדה מינית ובמשפט פלילי. אפשר לקבוע שיחת ייעוץ.',
+      'משרד עו״ד ליאור-קלואי ארז בחריש: ליווי אישי ודיסקרטי במשפט פלילי, נזיקין (רשלנות, לשון הרע) וצוואות וייפוי כוח מתמשך. אפשר לקבוע ייעוץ.',
     /** Appended to inner-page titles. */
     titleSuffix: 'ליאור-קלואי ארז',
     /** Update when public content changes; feeds sitemap lastmod. */
-    lastModified: '2026-10-26',
+    lastModified: '2026-10-30',
     /** What the firm is an authority on; feeds JSON-LD `knowsAbout` (confirmed topics only). */
     knowsAbout: [
       'אפליה בעבודה',
@@ -563,13 +800,22 @@ export const brand = {
       'הטרדה מינית',
       'משפט פלילי',
       'חקירה במשטרה',
+      'מעצרים',
+      'רשלנות רפואית',
+      'נפגעי עבירה',
+      'נזיקין',
+      'לשון הרע',
+      'תביעות חיסונים',
+      'צוואות',
+      'ייפוי כוח מתמשך',
+      'הצהרה על נעדר',
     ],
   },
 
   // --- Legal pages ---
   legal: {
     /** Date the privacy/terms/accessibility statements were last updated. */
-    lastUpdated: '2026-10-26',
+    lastUpdated: '2026-10-27',
     /** Accessibility coordinator (Israeli standard 5568 / accessibility regulations). */
     accessibilityCoordinator: 'עו״ד ליאור-קלואי ארז',
     accessibilityContact: 'Lioraere@gmail.com',
@@ -587,6 +833,7 @@ export const brand = {
     processors: [
       'Netlify (אחסון האתר)',
       'Cloudinary (שירות תמונות וסרטונים)',
+      'YouTube (Google) (הפעלת סרטוני לקוחות, רק לאחר לחיצה על ההפעלה)',
       'Google או Anthropic (עיבוד שיחות בצ׳אט באמצעות בינה מלאכותית, לפי ההגדרות)',
       'Meta WhatsApp Business (העברת פנייה בוואטסאפ, כשהאפשרות מופעלת)',
     ],

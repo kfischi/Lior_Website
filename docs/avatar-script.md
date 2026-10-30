@@ -1,0 +1,47 @@
+# Welcome video: script and recording notes
+
+The chat plays this video two seconds after it opens (once per browser tab). The script below is the same
+text as `src/lib/avatar-intro.json`, which is the source of truth: captions, transcript and the highlights on the
+site all read it. `npm run avatar` builds the video from it (see `.claude/skills/talking-avatar`).
+
+## Script (Hebrew, about 90 seconds, calm and warm pace)
+
+1. שלום, ברוכים הבאים. אני ליאור, העוזרת הווירטואלית של עורכת הדין ליאור קלואי ארז.
+2. אני כאן בשבילכם עשרים וארבע שעות ביממה, שבעה ימים בשבוע. גם כשליאור בפגישה או בבית משפט, וגם בלילה. מי שפונה אלינו אף פעם לא נשאר לבד.
+3. ואם אתם רוצים להכיר את ליאור ואת תחומי העיסוק שלה, הכול כאן באתר.  _(marks: about)_
+4. כל השיחה איתי מתנהלת כאן, בצ׳אט. אפשר לכתוב לי כל שאלה, בכל שעה.  _(marks: chat)_
+5. ואפשר גם ללחוץ על המיקרופון ולדבר, ואני אענה.  _(marks: voice)_
+6. מתחת לצ׳אט תראו שאלות מוכנות, ובמהלך השיחה אשאל כמה שאלות קצרות: מה קרה, עד כמה זה דחוף, ואיך חוזרים אליכם. זה עוזר לליאור להבין את העניין מראש, ולטפל בפנייה שלכם מהר יותר, לפי הדחיפות.  _(marks: questions)_
+7. באתר יש גם מדריכים ומאמרים על התעמרות בעבודה, אפליה, הטרדה מינית וחקירה במשטרה. אפשר לקרוא אותם בכל שעה, ואני אפנה אתכם לחומר המתאים.  _(marks: articles)_
+8. ובעמוד השאלות והתשובות תמצאו מענה מהיר לשאלות נפוצות.  _(marks: faq)_
+9. ואם אתם רוצים לשמוע מלקוחות, יש באתר המלצות וסרטונים של אנשים שסיפרו על החוויה שלהם.  _(marks: reviews)_
+10. ואם אתם מעדיפים לדבר ישירות עם ליאור, אפשר להתקשר או לשלוח הודעה בוואטסאפ, או להשאיר פרטים כאן בצ׳אט והיא תחזור אליכם.  _(marks: contact)_
+11. חשוב לדעת: אני עוזרת וירטואלית, ואיני מחליפה ייעוץ משפטי. אבל אעשה כל מה שאפשר כדי שתגיעו לליאור בצורה הנוחה והמהירה ביותר.
+12. אז איך אפשר לעזור לכם היום?
+
+The line that says she is a virtual assistant and not a substitute for legal advice must stay.
+
+## With a ready-made voice from a text-to-speech site
+
+1. Paste each numbered line separately into the site, with a Hebrew voice (name it "ליאור"; calm, warm, not fast).
+2. Download each result and name the files `01.mp3`, `02.mp3` ... in order (12 files), in one folder.
+3. `npm run avatar -- --tts recorded --lines-dir <folder> --provider local` animates the photo and writes the
+   captions' start times. The file count must equal the number of lines in `src/lib/avatar-intro.json`.
+
+## A finished video from a talking-avatar service
+
+Make the video there (photo plus the lines above, a Hebrew voice), download the MP4 (and the subtitles file if the
+service has one), then: `npm run avatar -- --video liora.mp4 [--srt liora.srt | --starts "0,6.4,..."]`.
+Without `--srt` or `--starts` the line starts are taken from the pauses between lines, so leave a clear pause
+(about a second) between them.
+
+## Recording by hand (instead of `npm run avatar`)
+
+- MP4 (H.264 + AAC), square (1:1, for example 1080x1080), face in the upper two thirds with room above the head.
+- 80-100 seconds, 4-8 MB, 720p is enough. A half-second pause between the numbered lines makes timing easy.
+- Written consent from the person whose face and voice are used; the player labels the video as AI-made.
+
+## After recording
+
+1. Put the file in `public/videos/` and set `src` and `poster` in `src/lib/avatar-intro.json`.
+2. Set each line's `start` (seconds) from the tool's subtitle export; see `.claude/skills/avatar-tour`.

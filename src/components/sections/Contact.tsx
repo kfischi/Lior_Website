@@ -3,6 +3,7 @@ import { Clock, MapPin, Mail, Phone, type LucideIcon } from 'lucide-react';
 import { brand, telHref, whatsappHref, mailHref } from '@/lib/brand';
 import { WhatsAppIcon } from '@/components/ui/whatsapp-icon';
 import { Reveal } from '@/components/motion/Reveal';
+import { CallbackForm } from './CallbackForm';
 
 interface ContactItem {
   label: string;
@@ -53,8 +54,17 @@ export function Contact() {
           </p>
         </Reveal>
 
+        <Reveal delay={0.05}>
+          <div className="mx-auto mt-10 max-w-2xl rounded-3xl border border-cream/15 bg-cream/5 p-6 md:p-8">
+            <h3 className="text-2xl text-cream">השאירו טלפון ונחזור אליכם</h3>
+            <div className="mt-5">
+              <CallbackForm />
+            </div>
+          </div>
+        </Reveal>
+
         <Reveal delay={0.1}>
-          <ul className="mt-12 grid gap-4 sm:grid-cols-2">
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2">
             {ITEMS.map(({ label, value, href, external, icon: Icon }) => {
               const body = (
                 <>

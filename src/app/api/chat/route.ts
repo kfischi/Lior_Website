@@ -13,6 +13,9 @@ import { retrieveContext } from '@/lib/ai/rag';
 import { chatTools } from '@/lib/ai/tools';
 import { localReply } from '@/lib/ai/local/reply';
 import { splitSuggestions } from '@/lib/ai/suggestions';
+import { splitSiteAction } from '@/lib/site-actions';
+import { redactPersonalDetails } from '@/lib/privacy/redact';
+import { recordChat } from '@/lib/learning/stats';
 import { brand } from '@/lib/brand';
 import { getLearnedPrompt } from '@/lib/learning/store';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
@@ -28,6 +31,10 @@ export const runtime = 'nodejs';
 let modelDownUntil = 0;
 const MODEL_COOLDOWN_MS = 60_000;
 export const maxDuration = 30;
+
+/** Shown when a visitor shared personal details in the chat. */
+const REDACTED_NOTE =
+  'שימו לב: הסרתי אוטומטית פרטים אישיים שכתבתם (כמו טלפון או מספר זהות). עדיף לא למסור אותם בצ׳אט, ואפשר להשאיר אותם בשיחה ישירה עם המשרד או בקליטת הפנייה.';
 
 /** Join the text parts of a UIMessage into a plain string. */
 function messageText(message: UIMessage | undefined): string {
@@ -80,26 +87,58 @@ export function GET() {
   return Response.json({ ok: true, engine: chatModelName() ?? 'local (no API)' });
 }
 
+/** Limits on what one request may carry. The chat box itself allows 500 characters. */
+const MAX_BODY_BYTES = 40_000;
+const MAX_USER_TEXT = 1_000;
+
 export async function POST(req: Request) {
   // The endpoint is public and every call costs money: cap it per address.
   if (!rateLimit(`chat:${clientIp(req.headers)}`, 40, 10 * 60 * 1000)) {
     return Response.json({ error: 'יותר מדי הודעות. נסו שוב בעוד כמה דקות.' }, { status: 429 });
   }
 
+  // A real conversation is a few kilobytes; refuse anything bigger before parsing or scanning it.
+  if (Number(req.headers.get('content-length') ?? 0) > MAX_BODY_BYTES) {
+    return Response.json({ error: 'ההודעה ארוכה מדי' }, { status: 413 });
+  }
+
   let body: { messages: UIMessage[]; sessionId?: string; page?: string };
   try {
-    body = await req.json();
+    const raw = await req.text();
+    if (raw.length > MAX_BODY_BYTES) {
+      return Response.json({ error: 'ההודעה ארוכה מדי' }, { status: 413 });
+    }
+    body = JSON.parse(raw) as typeof body;
   } catch {
     return Response.json({ error: 'בקשה לא תקינה' }, { status: 400 });
   }
 
   const { messages, sessionId, page } = body;
-  if (!Array.isArray(messages) || messages.length === 0) {
+  if (
+    !Array.isArray(messages) ||
+    messages.length === 0 ||
+    messages.some((m) => typeof m !== 'object' || m === null || !Array.isArray(m.parts))
+  ) {
     return Response.json({ error: 'אין הודעות' }, { status: 400 });
   }
 
+  // Personal details are removed here, before the model, the local engine, the logs or the database see them.
+  let redacted = false;
+  const clean: UIMessage[] = messages.slice(-12).map((m) => {
+    if (m.role !== 'user') return m;
+    return {
+      ...m,
+      parts: m.parts.map((p) => {
+        if (p.type !== 'text') return p;
+        const r = redactPersonalDetails(p.text.slice(0, MAX_USER_TEXT));
+        if (r.found.length > 0) redacted = true;
+        return { ...p, text: r.text };
+      }),
+    };
+  });
+
   // Token-window management: keep only the most recent turns in context.
-  const trimmed = messages.slice(-12);
+  const trimmed = clean;
   const userTurns = trimmed.filter((m) => m.role === 'user');
   const lastUserText = messageText(userTurns[userTurns.length - 1]);
   const previousUserText = messageText(userTurns[userTurns.length - 2]);
@@ -107,7 +146,9 @@ export async function POST(req: Request) {
   // No AI provider configured (or CHAT_PROVIDER=local): the local engine answers.
   const model = getChatModel();
   if (!model || Date.now() < modelDownUntil) {
-    return streamStaticReply(await localReply(lastUserText, previousUserText));
+    const reply = await localReply(lastUserText, previousUserText);
+    void recordChat(lastUserText, !reply.includes('לא מצאתי תשובה מדויקת'));
+    return streamStaticReply(redacted ? `${REDACTED_NOTE}\n\n${reply}` : reply);
   }
 
   // Which practice-area page the visitor is on (matched against known routes only).
@@ -129,7 +170,12 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model,
-    system: buildSystemPrompt(context, area, await withTimeout(getLearnedPrompt(), 1500, '')),
+    system:
+      buildSystemPrompt(context, area, await withTimeout(getLearnedPrompt(), 1500, '')) +
+      (redacted
+        ? '\n\n## הודעה אחרונה\nהמשתמש מסר פרטים אישיים (טלפון, זהות, כרטיס או דוא״ל) והם הוסרו אוטומטית. ' +
+          'אל תבקש אותם שוב. אמור במשפט אחד חם שעדיף לא למסור פרטים כאלה בצ׳אט, ושאפשר להשאיר אותם בשיחה ישירה עם המשרד או בקליטת הפנייה.'
+        : ''),
     messages: modelMessages,
     tools: chatTools,
     stopWhen: stepCountIs(4),
@@ -138,7 +184,8 @@ export async function POST(req: Request) {
     providerOptions: chatProviderOptions(),
     abortSignal: abort.signal,
     onFinish: ({ text }) => {
-      void persistExchange(sessionId, lastUserText, splitSuggestions(text).text);
+      void recordChat(lastUserText, true);
+      void persistExchange(sessionId, lastUserText, splitSiteAction(splitSuggestions(text).text).text);
     },
     onError: (err) => {
       console.error('streamText error:', err);

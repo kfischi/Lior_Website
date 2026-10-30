@@ -5,6 +5,7 @@ import { LeadSchema, buildLeadMessage, buildWhatsAppHref } from '@/lib/lead';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
 import { brand } from '@/lib/brand';
 import { isMetaWhatsAppConfigured, sendLeadViaMeta } from '@/lib/whatsapp';
+import { recordLead } from '@/lib/learning/stats';
 
 /**
  * Lead capture Server Action.
@@ -53,6 +54,7 @@ export async function submitLead(_prev: LeadState, formData: FormData): Promise<
 
   const lead = parsed.data;
   const waHref = buildWhatsAppHref(buildLeadMessage(lead));
+  void recordLead(lead.message.includes('דחוף'));
 
   if (isMetaWhatsAppConfigured()) {
     const result = await sendLeadViaMeta(lead);

@@ -39,3 +39,19 @@ next-env.d.ts
 
 # local learning-store fallback
 /.data/
+
+# talking-avatar pipeline scratch space
+/.avatar-work/
+/.avatar-venv/
+/.avatar-models/
+
+# agent worktrees
+/.claude/worktrees/
+
+# Voice recordings (personal data): keep them out of git
+*.opus
+*.ogg
+*.m4a
+
+# offline text-reading engine, copied from node_modules by scripts/copy-ocr-assets.mjs
+/public/ocr/

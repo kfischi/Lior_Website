@@ -46,10 +46,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const jsonLd = [legalServiceJsonLd(), attorneyJsonLd(), websiteJsonLd()];
 
+  // The hero image and video are served from another host: connect to it while the HTML is still arriving.
+  const heroOrigin = /^https?:\/\//.test(brand.hero.posterId) ? new URL(brand.hero.posterId).origin : '';
+
   return (
     <html lang="he" dir="rtl" className={`${rubik.variable} ${heebo.variable}`}>
       <head>
         <link rel="alternate" type="application/rss+xml" title="מדריכים" href="/feed.xml" />
+        {heroOrigin && <link rel="preconnect" href={heroOrigin} crossOrigin="anonymous" />}
         <style dangerouslySetInnerHTML={{ __html: brandVars() }} />
         <script
           type="application/ld+json"

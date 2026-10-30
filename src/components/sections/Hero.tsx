@@ -2,9 +2,13 @@
 
 import * as React from 'react';
 import Image from 'next/image';
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
-import { ChevronDown } from 'lucide-react';
-import { brand } from '@/lib/brand';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
+import { ChevronDown, MessagesSquare, Phone } from 'lucide-react';
+import { brand, telHref } from '@/lib/brand';
+import { Button } from '@/components/ui/button';
+import { OpenChatButton } from '@/components/ai/OpenChatButton';
+import { videoSources } from '@/lib/media';
 import { HeroVideo } from './HeroVideo';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -54,7 +58,12 @@ export function Hero() {
             className="object-cover"
           />
           {hasVideo && !reduced && (
-            <HeroVideo src={brand.hero.videoUrl} trimEnd={brand.hero.videoTrimEnd} />
+            <HeroVideo
+              sources={videoSources(brand.hero.videoUrl)}
+              poster={brand.hero.posterId}
+              trimEnd={brand.hero.videoTrimEnd}
+              cuts={brand.hero.videoCuts}
+            />
           )}
         </div>
       </motion.div>
@@ -70,13 +79,13 @@ export function Hero() {
         className="absolute inset-x-0 top-0 h-28 bg-linear-to-b from-navy/45 to-transparent"
       />
 
-      <div className="shell relative z-10 pb-48 pt-32 md:pb-28">
+      <div className="shell relative z-10 pb-72 pt-32 md:pb-28">
         <div className="max-w-4xl">
           <motion.p
             {...fade(0.1)}
             className="eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance max-sm:before:hidden max-sm:after:hidden md:text-4xl"
           >
-            {brand.firmName}
+            {brand.hero.eyebrow}
           </motion.p>
 
           <h1 className="text-[clamp(2.3rem,5.2vw,4.5rem)] font-semibold leading-[1.04] tracking-tight text-cream">
@@ -102,6 +111,20 @@ export function Hero() {
           >
             {brand.hero.subtitle}
           </motion.p>
+
+          {/* The first screen must say what to do next: talk to the assistant, or call. */}
+          <motion.div {...fade(0.95)} className="mt-7 flex flex-wrap gap-3">
+            <OpenChatButton size="lg" variant="accentOnDark">
+              <MessagesSquare className="h-5 w-5" />
+              {brand.hero.primaryCta}
+            </OpenChatButton>
+            <Button asChild size="lg" variant="onDark">
+              <a href={telHref}>
+                <Phone className="h-5 w-5" />
+                <span dir="ltr">{brand.phone}</span>
+              </a>
+            </Button>
+          </motion.div>
         </div>
       </div>
 

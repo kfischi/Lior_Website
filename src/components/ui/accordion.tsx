@@ -45,6 +45,8 @@ export const AccordionContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
+    // Closed answers stay in the HTML (hidden by CSS) so crawlers and AI engines read them, not only the JSON-LD.
+    forceMount
     className="overflow-hidden text-ink/75 data-[state=closed]:hidden"
     {...props}
   >

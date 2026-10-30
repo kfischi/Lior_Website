@@ -7,11 +7,11 @@ import { brand } from '@/lib/brand';
  */
 
 export const LeadSchema = z.object({
-  name: z.string().trim().min(2, 'נא להזין שם מלא'),
+  name: z.string().trim().min(2, 'נא להזין שם מלא').max(60, 'השם ארוך מדי'),
   phone: z
     .string()
     .trim()
-    .regex(/^[\d\s+()-]{9,15}$/, 'נא להזין מספר טלפון תקין'),
+    .regex(/^(?:\+?972|0)[\d\s-]{8,12}$/, 'נא להזין מספר טלפון תקין'),
   matter: z.string().trim().max(80).default(''),
   message: z.string().trim().max(1000).default(''),
 });

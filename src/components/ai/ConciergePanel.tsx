@@ -5,33 +5,80 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
-import { MessageCircle, Mic, Phone, RotateCcw, Send, Shield, Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X } from 'lucide-react';
+import { MapPin, MessageCircle, Mic, Phone, Play, RotateCcw, Send, Shield, Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X } from 'lucide-react';
 import type { UIMessage } from 'ai';
 import { brand, telHref, whatsappHref } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 import { splitSuggestions } from '@/lib/ai/suggestions';
+import { splitSiteAction, type SiteTarget } from '@/lib/site-actions';
 import { INTAKE_STEPS, useConcierge, type IntakeStep } from './ConciergeProvider';
+import { INTRO_START_DELAY_MS, IntroStage } from './IntroStage';
+import { DocumentReader } from './DocumentReader';
+import { useSiteNavigator } from './siteNav';
 import { useSpeechInput, useSpeechOutput } from './useVoice';
+
+const INTRO_SEEN_KEY = 'concierge-intro-seen-v1';
+
+/** The welcome opens (and speaks) once per browser tab, and only in the floating window. */
+function introWanted(enabled: boolean): boolean {
+  if (!enabled || !brand.chat.welcome.photo || typeof window === 'undefined') return false;
+  try {
+    return !sessionStorage.getItem(INTRO_SEEN_KEY);
+  } catch {
+    return true;
+  }
+}
 
 const PLACEHOLDER: Record<IntakeStep, string> = {
   name: 'השם שלך',
   topic: 'או כתבו תחום במילים שלכם',
   urgency: 'בחרו אחת מהאפשרויות',
   phone: '050-0000000',
+  meeting: 'בחרו אחת מהאפשרויות',
+  time: 'בחרו אחת מהאפשרויות',
   note: 'משפט אחד על העניין (לא חובה)',
   confirm: 'לחצו על אחת האפשרויות',
 };
 
 /** The assistant's round photo. It is a brand image, so it carries no alt text. */
-export function Avatar({ className }: { className?: string }) {
+export function Avatar({ className, speaking }: { className?: string; speaking?: boolean }) {
   return (
     <Image
       src={brand.chat.avatar}
       alt=""
       width={96}
       height={96}
-      className={cn('shrink-0 rounded-full object-cover ring-2 ring-accent-light/70', className)}
+      className={cn(
+        'shrink-0 rounded-full object-cover ring-2 ring-accent-light/70',
+        speaking && 'motion-safe:animate-speaking',
+        className,
+      )}
     />
+  );
+}
+
+const WAVE_DELAYS = [
+  '[animation-delay:0s]',
+  '[animation-delay:0.2s]',
+  '[animation-delay:0.1s]',
+  '[animation-delay:0.3s]',
+  '[animation-delay:0.15s]',
+];
+
+/** Sound bars beside the name while the answer is read aloud (decoration; the status text says it). */
+function VoiceWave() {
+  return (
+    <span aria-hidden="true" className="flex h-4 items-center gap-0.5">
+      {WAVE_DELAYS.map((delay) => (
+        <span
+          key={delay}
+          className={cn(
+            'h-full w-0.5 origin-center rounded-full bg-accent-light motion-safe:animate-wave',
+            delay,
+          )}
+        />
+      ))}
+    </span>
   );
 }
 
@@ -111,6 +158,20 @@ function WithLinks({ text, onNavigate }: { text: string; onNavigate: () => void 
   );
 }
 
+/** The assistant offers to take the visitor to a part of the site. */
+function SiteButton({ target, onGo }: { target: SiteTarget; onGo: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onGo}
+      className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-accent/40 bg-white px-3 py-2.5 text-sm font-medium text-navy transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+    >
+      <MapPin className="h-4 w-4 text-accent" aria-hidden="true" />
+      להצגה באתר: {target.label}
+    </button>
+  );
+}
+
 function Bubble({
   message,
   isLast,
@@ -124,6 +185,7 @@ function Bubble({
   showFeedback?: boolean;
 }) {
   const { extras, choose, startIntake, busy, closePanel } = useConcierge();
+  const goTo = useSiteNavigator();
   const [vote, setVote] = React.useState<'up' | 'down' | null>(null);
   const ex = extras[message.id];
   const isUser = message.role === 'user';
@@ -138,10 +200,11 @@ function Bubble({
   const content = message.parts.map((part, i) => {
     if (part.type === 'text') {
       if (isUser) return <span key={i}>{part.text}</span>;
-      const { text } = splitSuggestions(part.text);
-      return text ? (
+      const { text, target } = splitSiteAction(splitSuggestions(part.text).text);
+      return text || target ? (
         <span key={i}>
           <WithLinks text={text} onNavigate={closePanel} />
+          {target && <SiteButton target={target} onGo={() => goTo(target)} />}
         </span>
       ) : null;
     }
@@ -343,14 +406,49 @@ export function ConciergePanel({
   const pathname = usePathname();
   const area = brand.practiceAreas.find((a) => pathname === `/practice-areas/${a.slug}`);
   // On a practice-area page, offer that page's own questions first.
-  const starters = area ? area.page.faq.map((f) => f.question) : brand.chat.suggestedPrompts;
+  const starters = area ? area.page.faq.slice(0, 6).map((f) => f.question) : brand.chat.suggestedPrompts;
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const hasIntro = Boolean(brand.chat.welcome.photo);
+  const [docOpen, setDocOpen] = React.useState(false);
+  const [intro, setIntro] = React.useState(() => introWanted(autoFocus));
+  const [introDelay, setIntroDelay] = React.useState(INTRO_START_DELAY_MS);
+
+  const replayRef = React.useRef<HTMLButtonElement>(null);
+
+  // Counts as seen as soon as it opens, so closing and reopening the chat does not play it again with sound.
+  React.useEffect(() => {
+    if (!intro) return;
+    try {
+      sessionStorage.setItem(INTRO_SEEN_KEY, '1');
+    } catch {
+      // Private mode: the card may open again next time.
+    }
+  }, [intro]);
+
+  // The welcome card gives way as soon as the visitor has said something, so the answer is never hidden behind it.
+  const introVisible = intro && messages.length <= 1;
+
+  function closeIntro(reason: 'ended' | 'skipped') {
+    // Focus is lost when the card unmounts; put it back only if it was in the card (or nowhere).
+    const active = document.activeElement;
+    const focusWasInIntro =
+      !active || active === document.body || Boolean(active.closest('[data-intro-stage]'));
+    setIntro(false);
+    if (!focusWasInIntro) return;
+    window.requestAnimationFrame(() => (reason === 'skipped' ? replayRef.current : inputRef.current)?.focus());
+  }
 
   // Voice: dictate a message, and optionally hear the answers read aloud.
   const [readAloud, setReadAloud] = React.useState(false);
   const spokenId = React.useRef<string | null>(null);
-  const { supported: canSpeak, speak, cancel: cancelSpeech, unlock: unlockSpeech } = useSpeechOutput();
+  const {
+    supported: canSpeak,
+    speaking,
+    speak,
+    cancel: cancelSpeech,
+    unlock: unlockSpeech,
+  } = useSpeechOutput();
   const voice = useSpeechInput({
     onText: setInput,
     onDone: (text) => {
@@ -368,10 +466,26 @@ export function ConciergePanel({
     if (!last || last.role !== 'assistant' || spokenId.current === last.id) return;
     spokenId.current = last.id;
     const text = last.parts
-      .map((p) => (p.type === 'text' ? splitSuggestions(p.text).text : ''))
+      .map((p) => (p.type === 'text' ? splitSiteAction(splitSuggestions(p.text).text).text : ''))
       .join(' ');
     speak(text);
   }, [readAloud, status, messages, speak]);
+
+  // The floating assistant acts on what it says: when it offers a part of the site, it takes the visitor
+  // there (on a wide screen; on a phone the chat would cover it, so the button is shown instead).
+  const goTo = useSiteNavigator();
+  const handled = React.useRef<Set<string> | null>(null);
+  React.useEffect(() => {
+    if (!autoFocus) return;
+    handled.current ??= new Set(messages.map((m) => m.id));
+    const last = messages[messages.length - 1];
+    if (status !== 'ready' || !last || last.role !== 'assistant' || handled.current.has(last.id)) return;
+    handled.current.add(last.id);
+    const target = last.parts
+      .map((p) => (p.type === 'text' ? splitSiteAction(splitSuggestions(p.text).text).target : undefined))
+      .find(Boolean);
+    if (target && window.matchMedia('(min-width: 1024px)').matches) goTo(target, { auto: true });
+  }, [autoFocus, goTo, messages, status]);
 
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -403,15 +517,36 @@ export function ConciergePanel({
   return (
     <section
       aria-label="שיחה עם העוזרת של ליאור"
-      className={cn('flex flex-col overflow-hidden bg-cream', className)}
+      className={cn('relative flex flex-col overflow-hidden bg-cream', className)}
     >
       <header className="bg-navy text-cream">
         <div className="flex items-center gap-3 px-4 py-3.5">
-          <Avatar className="h-11 w-11" />
+          <Avatar className="h-11 w-11" speaking={speaking} />
           <div className="min-w-0 flex-1 leading-tight">
-            <p className="font-heading text-base font-semibold">{brand.chat.assistantName}</p>
+            <p className="flex items-center gap-2 font-heading text-base font-semibold">
+              {brand.chat.assistantName}
+              {speaking && <VoiceWave />}
+            </p>
             <p className="truncate text-xs text-cream/70">עוזרת וירטואלית · בינה מלאכותית</p>
+            <span role="status" className="sr-only">
+              {speaking ? 'העוזרת מקריאה את התשובה' : ''}
+            </span>
           </div>
+          {autoFocus && hasIntro && !introVisible && (
+            <button
+              ref={replayRef}
+              type="button"
+              onClick={() => {
+                setIntroDelay(0);
+                setIntro(true);
+              }}
+              aria-label={brand.chat.welcome.audio ? 'השמעת ההודעה הפותחת' : 'הצגת ההודעה הפותחת'}
+              title="הודעת פתיחה"
+              className="rounded-full p-2 text-cream/80 transition-colors hover:bg-cream/10 hover:text-cream"
+            >
+              <Play className="h-5 w-5" />
+            </button>
+          )}
           {messages.length > 1 && (
             <button
               type="button"
@@ -496,6 +631,7 @@ export function ConciergePanel({
           </div>
         )}
       </header>
+      {introVisible && <IntroStage onDone={closeIntro} delayMs={introDelay} focusOnShow={introDelay === 0} />}
 
       <div
         ref={scrollRef}
@@ -560,7 +696,14 @@ export function ConciergePanel({
       )}
 
       {/* Quick actions */}
-      <div className="flex flex-wrap items-center gap-2 border-t border-navy/10 px-4 pb-1 pt-3">
+      <div
+        data-tour-target="questions"
+        // While the video plays the chips scroll inside a short strip, so the message log and input keep room.
+        className={cn(
+          'flex max-h-[6.5rem] flex-wrap items-center gap-2 overflow-y-auto border-t border-navy/10 px-4 pb-1 pt-3 sm:max-h-[9rem]',
+          introVisible && 'max-h-[3.4rem] sm:max-h-[3.4rem]',
+        )}
+      >
         {intakeStep ? (
           <Chip onClick={cancelIntake}>ביטול</Chip>
         ) : (
@@ -568,6 +711,7 @@ export function ConciergePanel({
             <Chip tone="solid" onClick={startIntake}>
               קביעת ייעוץ
             </Chip>
+            <Chip onClick={() => setDocOpen(true)}>קריאת מכתב או מסמך</Chip>
             {firstOnly &&
               starters.map((p) => (
                 <Chip key={p} onClick={() => choose({ label: p, value: p })}>
@@ -584,7 +728,7 @@ export function ConciergePanel({
         </p>
       )}
 
-      <form onSubmit={submit} className="flex items-center gap-2 px-4 pb-2 pt-2">
+      <form onSubmit={submit} data-tour-target="chat" className="flex items-center gap-2 px-4 pb-2 pt-2">
         <label htmlFor={`concierge-input-${autoFocus ? 'float' : 'inline'}`} className="sr-only">
           הקלדת הודעה
         </label>
@@ -600,10 +744,11 @@ export function ConciergePanel({
           inputMode={intakeStep === 'phone' ? 'tel' : 'text'}
           autoComplete={intakeStep === 'name' ? 'name' : intakeStep === 'phone' ? 'tel' : 'off'}
           maxLength={500}
-          className="min-w-0 flex-1 rounded-full border border-navy/20 bg-background px-4 py-2.5 text-[0.9375rem] focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+          className="min-w-0 flex-1 rounded-full border border-navy/20 bg-background px-4 py-2.5 text-base focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
         />
         {voice.supported && (
           <button
+            data-tour-target="voice"
             type="button"
             onClick={() => {
               if (voice.listening) {
@@ -651,6 +796,15 @@ export function ConciergePanel({
         <Shield className="h-3 w-3 shrink-0" aria-hidden="true" />
         {brand.chat.disclaimer} הפרטים נשלחים רק באישורך.
       </p>
+      {docOpen && (
+        <DocumentReader
+          onClose={() => setDocOpen(false)}
+          onSend={(text) => {
+            setDocOpen(false);
+            send(text);
+          }}
+        />
+      )}
     </section>
   );
 }

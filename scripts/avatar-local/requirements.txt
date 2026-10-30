@@ -1,0 +1,10 @@
+# Installed by setup.sh. mediapipe itself is installed with --no-deps (its own dependency list
+# pulls in jax and a second OpenCV build and can take very long to resolve).
+numpy<2
+opencv-python-headless<4.10
+scipy
+absl-py
+attrs
+flatbuffers
+protobuf<5
+matplotlib

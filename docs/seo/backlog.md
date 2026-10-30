@@ -73,9 +73,10 @@ attorney approves each one under the Bar's advertising rules):
 | רחל בהרל, מחניים | 21.01.2024 | claims an outcome, health and public-policy matters |
 | חיים ק., גבעת זאב | 19.01.2024 | health matter, typos |
 
-A scanned handwritten-style letter from a client ("ליאה", dated 3.4.16) was also supplied.
-It is **not** published: it is a private letter, so the writer's permission is needed, and
-the scan is too blurry to quote word for word.
+A scanned client letter ("ליאה", dated 3.4.2016) is shown among the reviews as an image
+(`brand.testimonialLetters`), at the owner's request. The scan was cropped and cleaned up;
+the text is not retyped, so it is not misquoted. Confirm that the writer agreed to its
+publication, and replace the scan with a sharper one if she has the original.
 
 ## Done
 

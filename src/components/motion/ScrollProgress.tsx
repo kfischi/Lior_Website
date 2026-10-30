@@ -1,6 +1,7 @@
 'use client';
 
-import { motion, useReducedMotion, useScroll, useSpring } from 'motion/react';
+import { motion, useScroll, useSpring } from 'motion/react';
+import { useReducedMotion } from './useReducedMotionSafe';
 
 /** A hairline at the top of the page that fills as you read (from the right in RTL). */
 export function ScrollProgress() {
