@@ -192,6 +192,8 @@ export const brand = {
 
   // --- Hero ---
   hero: {
+    /** The line above the headline. */
+    eyebrow: 'משרד עו״ד ליאור-קלואי ארז',
     title: 'ליווי משפטי ברגישות ובנחישות',
     subtitle:
       'משפט פלילי, נזיקין ומעמד אישי. ליווי אישי ודיסקרטי מהשיחה הראשונה, ' +

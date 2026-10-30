@@ -82,7 +82,7 @@ export function Hero() {
             {...fade(0.1)}
             className="eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance max-sm:before:hidden max-sm:after:hidden md:text-4xl"
           >
-            {brand.firmName}
+            {brand.hero.eyebrow}
           </motion.p>
 
           <h1 className="text-[clamp(2.3rem,5.2vw,4.5rem)] font-semibold leading-[1.04] tracking-tight text-cream">
