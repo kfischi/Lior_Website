@@ -20,6 +20,24 @@ function Floating() {
   const reduced = useReducedMotion();
   const { panelOpen, openPanel, closePanel } = useConcierge();
   const cookiePending = useConsentPending();
+  const launcherRef = React.useRef<HTMLButtonElement>(null);
+  const wasOpen = React.useRef(false);
+
+  // Esc closes the conversation; focus goes back to the button that opened it (it is unmounted while open).
+  React.useEffect(() => {
+    if (panelOpen) {
+      wasOpen.current = true;
+      const onKey = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') closePanel();
+      };
+      document.addEventListener('keydown', onKey);
+      return () => document.removeEventListener('keydown', onKey);
+    }
+    if (wasOpen.current) {
+      wasOpen.current = false;
+      window.requestAnimationFrame(() => launcherRef.current?.focus());
+    }
+  }, [panelOpen, closePanel]);
 
   // Keep the launcher clear of the cookie banner while it is showing.
   const bottom = cookiePending ? 'bottom-52 sm:bottom-24' : 'bottom-5';
@@ -35,6 +53,7 @@ function Floating() {
             <ArrowDown className="h-7 w-7" strokeWidth={3} />
           </span>
           <button
+            ref={launcherRef}
             type="button"
             onClick={openPanel}
             aria-label="שיחה עם המשרד, פתיחת העוזרת של ליאור"
@@ -58,6 +77,8 @@ function Floating() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduced ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.98 }}
             transition={{ duration: 0.25, ease: EASE }}
+            role="dialog"
+            aria-label="שיחה עם העוזרת של ליאור"
             className="fixed inset-x-3 bottom-3 z-[60] sm:inset-x-auto sm:bottom-5 sm:end-5 sm:w-[24rem]"
           >
             <ConciergePanel

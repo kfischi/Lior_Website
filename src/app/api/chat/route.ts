@@ -87,21 +87,38 @@ export function GET() {
   return Response.json({ ok: true, engine: chatModelName() ?? 'local (no API)' });
 }
 
+/** Limits on what one request may carry. The chat box itself allows 500 characters. */
+const MAX_BODY_BYTES = 40_000;
+const MAX_USER_TEXT = 1_000;
+
 export async function POST(req: Request) {
   // The endpoint is public and every call costs money: cap it per address.
   if (!rateLimit(`chat:${clientIp(req.headers)}`, 40, 10 * 60 * 1000)) {
     return Response.json({ error: 'יותר מדי הודעות. נסו שוב בעוד כמה דקות.' }, { status: 429 });
   }
 
+  // A real conversation is a few kilobytes; refuse anything bigger before parsing or scanning it.
+  if (Number(req.headers.get('content-length') ?? 0) > MAX_BODY_BYTES) {
+    return Response.json({ error: 'ההודעה ארוכה מדי' }, { status: 413 });
+  }
+
   let body: { messages: UIMessage[]; sessionId?: string; page?: string };
   try {
-    body = await req.json();
+    const raw = await req.text();
+    if (raw.length > MAX_BODY_BYTES) {
+      return Response.json({ error: 'ההודעה ארוכה מדי' }, { status: 413 });
+    }
+    body = JSON.parse(raw) as typeof body;
   } catch {
     return Response.json({ error: 'בקשה לא תקינה' }, { status: 400 });
   }
 
   const { messages, sessionId, page } = body;
-  if (!Array.isArray(messages) || messages.length === 0) {
+  if (
+    !Array.isArray(messages) ||
+    messages.length === 0 ||
+    messages.some((m) => typeof m !== 'object' || m === null || !Array.isArray(m.parts))
+  ) {
     return Response.json({ error: 'אין הודעות' }, { status: 400 });
   }
 
@@ -113,7 +130,7 @@ export async function POST(req: Request) {
       ...m,
       parts: m.parts.map((p) => {
         if (p.type !== 'text') return p;
-        const r = redactPersonalDetails(p.text);
+        const r = redactPersonalDetails(p.text.slice(0, MAX_USER_TEXT));
         if (r.found.length > 0) redacted = true;
         return { ...p, text: r.text };
       }),

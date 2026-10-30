@@ -426,6 +426,9 @@ export function ConciergePanel({
     }
   }, [intro]);
 
+  // The welcome card gives way as soon as the visitor has said something, so the answer is never hidden behind it.
+  const introVisible = intro && messages.length <= 1;
+
   function closeIntro(reason: 'ended' | 'skipped') {
     // Focus is lost when the card unmounts; put it back only if it was in the card (or nowhere).
     const active = document.activeElement;
@@ -529,7 +532,7 @@ export function ConciergePanel({
               {speaking ? 'העוזרת מקריאה את התשובה' : ''}
             </span>
           </div>
-          {autoFocus && hasIntro && !intro && (
+          {autoFocus && hasIntro && !introVisible && (
             <button
               ref={replayRef}
               type="button"
@@ -628,7 +631,7 @@ export function ConciergePanel({
           </div>
         )}
       </header>
-      {intro && <IntroStage onDone={closeIntro} delayMs={introDelay} focusOnShow={introDelay === 0} />}
+      {introVisible && <IntroStage onDone={closeIntro} delayMs={introDelay} focusOnShow={introDelay === 0} />}
 
       <div
         ref={scrollRef}
@@ -698,7 +701,7 @@ export function ConciergePanel({
         // While the video plays the chips scroll inside a short strip, so the message log and input keep room.
         className={cn(
           'flex max-h-[6.5rem] flex-wrap items-center gap-2 overflow-y-auto border-t border-navy/10 px-4 pb-1 pt-3 sm:max-h-[9rem]',
-          intro && 'max-h-[3.4rem] sm:max-h-[3.4rem]',
+          introVisible && 'max-h-[3.4rem] sm:max-h-[3.4rem]',
         )}
       >
         {intakeStep ? (
@@ -741,7 +744,7 @@ export function ConciergePanel({
           inputMode={intakeStep === 'phone' ? 'tel' : 'text'}
           autoComplete={intakeStep === 'name' ? 'name' : intakeStep === 'phone' ? 'tel' : 'off'}
           maxLength={500}
-          className="min-w-0 flex-1 rounded-full border border-navy/20 bg-background px-4 py-2.5 text-[0.9375rem] focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+          className="min-w-0 flex-1 rounded-full border border-navy/20 bg-background px-4 py-2.5 text-base focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
         />
         {voice.supported && (
           <button

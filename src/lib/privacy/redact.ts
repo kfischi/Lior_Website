@@ -49,7 +49,8 @@ export function isIsraeliId(raw: string): boolean {
   return sum % 10 === 0;
 }
 
-const EMAIL = /[\p{L}\p{N}._%+-]+@[\p{L}\p{N}-]+(?:\.[\p{L}\p{N}-]+)+/gu;
+// Every part is length-bounded: an unbounded `+` before the `@` made a long text without any `@` quadratic (a denial of service).
+const EMAIL = /[\p{L}\p{N}._%+-]{1,64}@[\p{L}\p{N}-]{1,255}(?:\.[\p{L}\p{N}-]{1,63})+/gu;
 // Digits separated by single spaces or dashes: "4580 1234 5678 9010", "050-123-4567".
 const DIGIT_RUN = /(?<![\d])(?:\+?\d[\d -]{6,}\d)(?![\d])/g;
 // Israeli numbers: mobile 05x, landline 0[2-4,8,9], VoIP 07x, and +972 / 972 forms.
