@@ -228,9 +228,9 @@ export const brand = {
     videoTrimEnd: 2,
     /**
      * Stretches of the clip to skip, in seconds from its start: [{ from: 7.5, to: 11 }] jumps from 7.5 s to 11 s.
-     * The 7.43 to 9.53 s stretch is the close-up on the face (scene change to scene change), which is skipped.
+     * The close-up on the face is at 7.43 to 9.53 s in a re-encoded copy; the cut is wider (7.2 to 9.9 s) so it also covers any timing difference in the original file.
      */
-    videoCuts: [{ from: 7.43, to: 9.53 }] as { from: number; to: number }[],
+    videoCuts: [{ from: 7.2, to: 9.9 }] as { from: number; to: number }[],
   },
 
   // --- AI chatbot ---
