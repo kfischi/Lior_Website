@@ -228,9 +228,9 @@ export const brand = {
     videoTrimEnd: 2,
     /**
      * Stretches of the clip to skip, in seconds from its start: [{ from: 7.5, to: 11 }] jumps from 7.5 s to 11 s.
-     * Used to drop a part that does not belong in the loop (a close-up on the face, for example).
+     * The 7.43 to 9.53 s stretch is the close-up on the face (scene change to scene change), which is skipped.
      */
-    videoCuts: [] as { from: number; to: number }[],
+    videoCuts: [{ from: 7.43, to: 9.53 }] as { from: number; to: number }[],
   },
 
   // --- AI chatbot ---
