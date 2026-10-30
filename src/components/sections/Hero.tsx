@@ -62,6 +62,7 @@ export function Hero() {
               sources={videoSources(brand.hero.videoUrl)}
               poster={brand.hero.posterId}
               trimEnd={brand.hero.videoTrimEnd}
+              cuts={brand.hero.videoCuts}
             />
           )}
         </div>

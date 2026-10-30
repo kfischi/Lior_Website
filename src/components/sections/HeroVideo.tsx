@@ -11,6 +11,8 @@ type HeroVideoProps = {
   poster?: string;
   /** Seconds to cut from the end of every loop (hides glitches in the last frames). */
   trimEnd?: number;
+  /** Stretches of the clip (in seconds) that are skipped: playback jumps from `from` to `to`. */
+  cuts?: readonly { from: number; to: number }[];
 };
 
 /** A playing video whose clock has not moved for this long is treated as stuck. */
@@ -32,7 +34,9 @@ const RESUME_EVERY_MS = 1000;
  * It restarts `trimEnd` seconds before the file ends instead of using the
  * native `loop`, so the final frames are never shown.
  */
-export function HeroVideo({ sources, poster, trimEnd = 0 }: HeroVideoProps) {
+const NO_CUTS: readonly { from: number; to: number }[] = [];
+
+export function HeroVideo({ sources, poster, trimEnd = 0, cuts = NO_CUTS }: HeroVideoProps) {
   const ref = React.useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = React.useState(false);
   const [failed, setFailed] = React.useState(false);
@@ -121,6 +125,13 @@ export function HeroVideo({ sources, poster, trimEnd = 0 }: HeroVideoProps) {
           start();
         }
       }
+      // A skipped stretch (for example a close-up that does not belong in the loop): jump over it.
+      for (const cut of cuts) {
+        if (!paused && currentTime >= cut.from && currentTime < cut.to) {
+          video.currentTime = cut.to;
+          break;
+        }
+      }
       if (
         trimEnd > 0 &&
         Number.isFinite(duration) &&
@@ -162,7 +173,7 @@ export function HeroVideo({ sources, poster, trimEnd = 0 }: HeroVideoProps) {
       window.removeEventListener('touchstart', onGesture);
       window.removeEventListener('pointerdown', onGesture);
     };
-  }, [trimEnd, failed]);
+  }, [trimEnd, cuts, failed]);
 
   if (failed) return null;
 

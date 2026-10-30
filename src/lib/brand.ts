@@ -226,6 +226,11 @@ export const brand = {
      * a glitch in its last frames (the duplicated figure). 0 = play to the end.
      */
     videoTrimEnd: 2,
+    /**
+     * Stretches of the clip to skip, in seconds from its start: [{ from: 7.5, to: 11 }] jumps from 7.5 s to 11 s.
+     * Used to drop a part that does not belong in the loop (a close-up on the face, for example).
+     */
+    videoCuts: [] as { from: number; to: number }[],
   },
 
   // --- AI chatbot ---
