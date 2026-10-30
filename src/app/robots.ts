@@ -32,6 +32,5 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: AI_AND_SEARCH_BOTS, allow: '/', disallow: PRIVATE },
     ],
     sitemap: `${base}/sitemap.xml`,
-    host: base,
   };
 }

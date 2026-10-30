@@ -68,7 +68,7 @@ export default function ArticlesPage() {
             <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {articles.map((a) => (
                 <li key={a.slug}>
-                  <ArticleCard article={a} />
+                  <ArticleCard article={a} headingLevel="h2" />
                 </li>
               ))}
             </ul>
