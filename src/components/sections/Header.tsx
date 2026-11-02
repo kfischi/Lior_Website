@@ -20,7 +20,7 @@ const NAV = [
   ...(brand.testimonials.length > 0 ? [{ href: '/#reviews', label: 'המלצות' }] : []),
   { href: '/articles', label: 'מדריכים' },
   { href: '/#faq', label: 'שאלות' },
-  { href: '/#contact', label: 'צור קשר' },
+  { href: '/#contact', label: 'יצירת קשר' },
 ];
 
 export function Header() {

@@ -34,7 +34,7 @@ export function WhyUs() {
       <div className="shell relative">
         <Reveal className="mb-14 grid items-end gap-6 md:mb-20 md:grid-cols-2 md:gap-16">
           <div>
-            <p className="eyebrow mb-4">היתרונות שלנו</p>
+            <p className="eyebrow mb-4">העקרונות שלנו</p>
             <h2 id="why-title" className="display-xl text-navy">
               למה לבחור בנו
             </h2>

@@ -24,7 +24,7 @@ const ITEMS: ContactItem[] = [
     external: true,
     icon: MapPin,
   },
-  { label: 'שעות', value: brand.hours, icon: Clock },
+  { label: 'פגישות', value: brand.hours, icon: Clock },
 ];
 
 /** Direct contact details. The conversation itself lives in the floating chat. */
@@ -45,7 +45,7 @@ export function Contact() {
       />
       <div className="shell relative z-10 max-w-4xl">
         <Reveal className="text-center">
-          <p className="eyebrow mb-3 text-accent-light">זמינים עבורכם</p>
+          <p className="eyebrow mb-3 text-accent-light">יצירת קשר</p>
           <h2 id="contact-title" className="text-4xl text-cream md:text-5xl">
             נשמח לשמוע מכם
           </h2>
