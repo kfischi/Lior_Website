@@ -165,6 +165,24 @@ export const brand = {
     country: 'IL',
   },
   hours: 'בתיאום מראש, במשרד בחריש או בזום',
+  /**
+   * Appointment requests. These are REQUESTS, not confirmed slots: the office confirms each one.
+   * weekdays: 0 = Sunday ... 6 = Saturday.
+   */
+  booking: {
+    weekdays: [0, 1, 2, 3, 4],
+    horizonDays: 21,
+    windows: [
+      { id: 'morning', label: 'בוקר (9:00 עד 12:00)' },
+      { id: 'noon', label: 'צהריים (12:00 עד 15:00)' },
+      { id: 'afternoon', label: 'אחר הצהריים (15:00 עד 18:00)' },
+    ],
+    meetings: [
+      { id: 'phone', label: 'שיחת טלפון' },
+      { id: 'zoom', label: 'זום' },
+      { id: 'office', label: 'במשרד' },
+    ],
+  },
   /** Maps embed/link target. */
   mapUrl: 'https://maps.google.com/?q=%D7%A8%D7%99%D7%9E%D7%95%D7%9F+5+%D7%97%D7%A8%D7%99%D7%A9',
 

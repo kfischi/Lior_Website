@@ -3,6 +3,8 @@ import { brand } from '@/lib/brand';
 import { adminEnabled, isAdmin } from '@/lib/admin-auth';
 import { listNotes, listUnknown } from '@/lib/learning/store';
 import { getStats, type Stats } from '@/lib/learning/stats';
+import { VisitsPanel } from '@/components/admin/VisitsPanel';
+import { getVisits, type VisitDay } from '@/lib/analytics/store';
 import { StatsPanel } from '@/components/admin/StatsPanel';
 import { logoutAction } from '@/lib/actions/admin';
 import { LoginForm, LogoutButton, TestChatForm } from '@/components/admin/AdminForms';
@@ -55,9 +57,10 @@ async function Body({ q }: { q?: string }) {
   let notes: Awaited<ReturnType<typeof listNotes>> = [];
   let unknown: Awaited<ReturnType<typeof listUnknown>> = [];
   let stats: Stats | null = null;
+  let visits: VisitDay[] = [];
   let loadFailed = false;
   try {
-    [notes, unknown, stats] = await Promise.all([listNotes(), listUnknown(), getStats(30)]);
+    [notes, unknown, stats, visits] = await Promise.all([listNotes(), listUnknown(), getStats(30), getVisits(30)]);
   } catch (err) {
     console.error('Loading admin data failed:', err);
     loadFailed = true;
@@ -85,6 +88,8 @@ async function Body({ q }: { q?: string }) {
           שגיאה: לא הצלחנו לטעון את הרשימות. רעננו את הדף. האתר והצ׳אט ממשיכים לעבוד.
         </p>
       )}
+
+      <VisitsPanel days={visits} />
 
       {stats && <StatsPanel stats={stats} />}
 

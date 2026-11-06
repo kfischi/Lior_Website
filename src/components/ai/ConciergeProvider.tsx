@@ -1,5 +1,6 @@
 'use client';
 
+import { track } from '@/lib/analytics/track';
 import * as React from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
@@ -452,7 +453,10 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
       busy,
       intakeStep: intake?.step ?? null,
       panelOpen,
-      openPanel: () => setPanelOpen(true),
+      openPanel: () => {
+        track('chat_open');
+        setPanelOpen(true);
+      },
       closePanel: () => setPanelOpen(false),
       send,
       choose,

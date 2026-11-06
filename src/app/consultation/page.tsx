@@ -10,6 +10,7 @@ import { Process } from "@/components/sections/Process";
 import { Faq } from "@/components/sections/Faq";
 import { Contact } from "@/components/sections/Contact";
 import { Footer } from "@/components/sections/Footer";
+import { BookingBlock } from '@/components/sections/BookingBlock';
 import { CallbackForm } from "@/components/sections/CallbackForm";
 import { Icon } from "@/components/sections/Icon";
 import { Button } from "@/components/ui/button";
@@ -88,6 +89,13 @@ export default async function ConsultationPage() {
                 <CallbackForm />
               </div>
             </div>
+
+              <div className="mt-6 rounded-3xl border border-cream/15 bg-cream/5 p-6 md:p-8">
+                <h2 className="text-2xl text-cream">רוצים לקבוע פגישת ייעוץ?</h2>
+                <div className="mt-5">
+                  <BookingBlock />
+                </div>
+              </div>
           </div>
           <p className="shell mt-10 text-sm leading-relaxed text-cream/70 md:mt-14 md:pe-[40%]">
             האתר מציע מידע כללי בלבד ואינו מהווה ייעוץ משפטי. העוזרת הווירטואלית
