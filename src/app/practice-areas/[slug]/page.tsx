@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ChevronLeft, MessageCircle, MessagesSquare } from 'lucide-react';
 import { brand, whatsappHref } from '@/lib/brand';
 import { articlesForArea } from '@/lib/articles';
+import { getSiteContent } from '@/lib/sanity/content';
 import { ArticleCard } from '@/components/sections/ArticleCard';
 import { breadcrumbJsonLd, buildMetadata, faqJsonLd, serviceJsonLd } from '@/lib/seo';
 import { Header } from '@/components/sections/Header';
@@ -58,7 +59,7 @@ export default async function PracticeAreaPage({ params }: { params: Promise<Par
   const { page } = area;
   const others = brand.practiceAreas.filter((a) => a.slug !== area.slug);
   const path = `/practice-areas/${area.slug}`;
-  const guides = articlesForArea(area.slug);
+  const guides = articlesForArea(area.slug, (await getSiteContent()).articles);
 
   return (
     <>

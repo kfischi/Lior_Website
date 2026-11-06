@@ -1,14 +1,15 @@
 import { brand } from '@/lib/brand';
-import { articles } from '@/lib/articles';
+import { getSiteContent } from '@/lib/sanity/content';
 import { siteUrl } from '@/lib/utils';
 
 /**
  * /llms.txt: a concise map of the site for AI and answer engines (GEO), in the
  * llms.txt convention: H1, a summary blockquote, then sections of links.
  */
-export const dynamic = 'force-static';
+export const revalidate = 60;
 
-export function GET() {
+export async function GET() {
+  const { articles } = await getSiteContent();
   const base = siteUrl();
   const areas = brand.practiceAreas
     .map((a) => `- [${a.title}](${base}/practice-areas/${a.slug}): ${a.description}`)

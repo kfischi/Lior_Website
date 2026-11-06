@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { brand } from '@/lib/brand';
-import { articles } from '@/lib/articles';
+import { getSiteContent } from '@/lib/sanity/content';
 import { breadcrumbJsonLd, buildMetadata } from '@/lib/seo';
 import { siteUrl } from '@/lib/utils';
 import { Header } from '@/components/sections/Header';
@@ -16,7 +16,8 @@ export const metadata: Metadata = buildMetadata({
   path: '/articles',
 });
 
-export default function ArticlesPage() {
+export default async function ArticlesPage() {
+  const { articles } = await getSiteContent();
   const base = siteUrl();
   const collection = {
     '@context': 'https://schema.org',

@@ -1,13 +1,15 @@
 import Link from 'next/link';
 import { brand } from '@/lib/brand';
 import { newestArticles, type Article } from '@/lib/articles';
+import { getSiteContent } from '@/lib/sanity/content';
 import { ArticleCard } from './ArticleCard';
 import { PressList } from './PressList';
 
 /** Home page teaser for the guides hub. */
-export function Articles() {
+export async function Articles() {
+  const { articles } = await getSiteContent();
   // One guide per practice area first, so every visitor finds something for their own case; then the newest.
-  const all = newestArticles(100);
+  const all = newestArticles(100, articles);
   const items: Article[] = [];
   for (const area of brand.practiceAreas) {
     const first = all.find((a) => a.areaSlug === area.slug && !items.includes(a));

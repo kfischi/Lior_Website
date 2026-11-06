@@ -1,4 +1,5 @@
-import { brand, type VideoReview } from '@/lib/brand';
+import type { VideoReview } from '@/lib/brand';
+import { getSiteContent } from '@/lib/sanity/content';
 import { VideoCard } from './VideoCard';
 import { YouTubeCard } from './YouTubeCard';
 
@@ -39,8 +40,8 @@ function Row({ items, offset, wide }: { items: VideoReview[]; offset: number; wi
  * Client video reviews: native controls, nothing loads until a visitor presses play. Tall videos
  * share one row and wide ones another, so the cards line up instead of mixing shapes.
  */
-export function VideoReviews() {
-  const items = brand.videoReviews;
+export async function VideoReviews() {
+  const items = (await getSiteContent()).videoReviews;
   if (items.length === 0) return null;
   const tall = items.filter((v) => !v.landscape);
   const wide = items.filter((v) => v.landscape);

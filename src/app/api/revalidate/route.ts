@@ -25,6 +25,6 @@ export async function POST(request: Request) {
     return Response.json({ ok: false }, { status: 401 });
   }
   revalidateTag(SANITY_TAG, 'max');
-  for (const path of ['/', '/faq', '/articles']) revalidatePath(path);
+  for (const path of ['/', '/faq', '/articles', '/consultation']) revalidatePath(path);
   return Response.json({ ok: true, revalidated: true });
 }

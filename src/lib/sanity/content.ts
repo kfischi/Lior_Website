@@ -2,7 +2,9 @@ import 'server-only';
 import { cache } from 'react';
 import { createClient } from '@sanity/client';
 import { z } from 'zod';
-import { brand, type FaqItem, type PressArticle, type Testimonial } from '@/lib/brand';
+import { brand, type FaqItem, type PressArticle, type Testimonial, type VideoReview, type VideoTranscriptLine } from '@/lib/brand';
+import videoTranscripts from '@/lib/video-transcripts.json';
+import { articles as staticArticles, type Article } from '@/lib/articles';
 import { sanityEnv } from '@/sanity/env';
 import { withTimeout } from '@/lib/with-timeout';
 
@@ -25,8 +27,10 @@ export interface SiteContent {
   faq: FaqItem[];
   testimonials: Testimonial[];
   press: PressArticle[];
+  articles: Article[];
+  videoReviews: VideoReview[];
   /** Where each list came from, for the health check and the docs. */
-  source: { faq: 'sanity' | 'brand'; testimonials: 'sanity' | 'brand'; press: 'sanity' | 'brand' };
+  source: Record<'faq' | 'testimonials' | 'press' | 'articles' | 'videoReviews', 'sanity' | 'brand'>;
 }
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
@@ -47,10 +51,68 @@ const pressSchema = z.object({
   excerpt: z.string().trim().max(400).nullish().transform((e) => e || undefined),
 });
 
+const articleSchema = z.object({
+  slug: z.string().regex(/^[a-z0-9-]+$/),
+  areaSlug: z.string().refine((slug) => brand.practiceAreas.some((a) => a.slug === slug)),
+  title: text(200),
+  seoTitle: text(100),
+  seoDescription: text(300),
+  tldr: text(900),
+  published: isoDate,
+  updated: isoDate,
+  readingMinutes: z.number().int().min(1).max(60),
+  sections: z
+    .array(
+      z.object({
+        heading: text(200),
+        paragraphs: z.array(text(3000)).min(1),
+        bullets: z
+          .array(text(500))
+          .nullish()
+          .transform((b) => (b && b.length > 0 ? b : undefined)),
+      }),
+    )
+    .min(1),
+  faq: z
+    .array(faqSchema)
+    .nullish()
+    .transform((f) => f ?? []),
+});
+
+const videoSchema = z
+  .object({
+    label: text(100),
+    youtubeId: z.string().regex(/^[A-Za-z0-9_-]{11}$/).nullish(),
+    src: z.string().startsWith('/').nullish(),
+    poster: z.string().startsWith('/').nullish(),
+    landscape: z.boolean().nullish(),
+    note: z.string().trim().max(500).nullish(),
+  })
+  .refine((v) => Boolean(v.youtubeId || v.src));
+
+function toVideoReview(v: z.infer<typeof videoSchema>): VideoReview {
+  const base = { label: v.label, ...(v.landscape ? { landscape: true } : {}) };
+  if (v.youtubeId) return { ...base, youtubeId: v.youtubeId, ...(v.poster ? { poster: v.poster } : {}) };
+  const src = v.src as string;
+  const transcript = (videoTranscripts as Record<string, VideoTranscriptLine[]>)[src];
+  return {
+    ...base,
+    src,
+    poster: v.poster ?? '',
+    ...(v.note ? { note: v.note } : {}),
+    ...(transcript ? { transcript } : {}),
+  };
+}
+
 const QUERY = `{
   "faq": *[_type == "faqItem"] | order(order asc, _createdAt asc){question, answer},
   "testimonials": *[_type == "testimonial"] | order(date desc){name, date, rating, text},
-  "press": *[_type == "pressArticle"] | order(date desc){title, outlet, date, url, excerpt}
+  "press": *[_type == "pressArticle"] | order(date desc){title, outlet, date, url, excerpt},
+  "articles": *[_type == "article"] | order(order asc, published desc){
+    "slug": slug.current, areaSlug, title, seoTitle, seoDescription, tldr, published, updated, readingMinutes,
+    sections[]{heading, paragraphs, bullets}, faq[]{question, answer}
+  },
+  "videoReviews": *[_type == "videoReview"] | order(order asc, _createdAt asc){label, youtubeId, src, poster, landscape, note}
 }`;
 
 function parseList<T>(schema: z.ZodType<T>, raw: unknown): T[] {
@@ -76,7 +138,9 @@ const fromBrand = (): SiteContent => ({
   faq: brand.faq,
   testimonials: brand.testimonials,
   press: brand.press,
-  source: { faq: 'brand', testimonials: 'brand', press: 'brand' },
+  articles: staticArticles,
+  videoReviews: brand.videoReviews,
+  source: { faq: 'brand', testimonials: 'brand', press: 'brand', articles: 'brand', videoReviews: 'brand' },
 });
 
 /** Turns a raw Sanity answer into the site's lists, dropping bad items and filling gaps from brand.ts. */
@@ -88,12 +152,18 @@ export function parseSiteContent(raw: unknown): SiteContent {
   const faq = parseList(faqSchema, data.faq);
   const testimonials = parseList(testimonialSchema, data.testimonials);
   const press = parseList(pressSchema, data.press);
+  const articles = parseList(articleSchema, data.articles);
+  const videos = parseList(videoSchema, data.videoReviews).map(toVideoReview);
 
   return {
     faq: faq.length > 0 ? faq : fallback.faq,
     testimonials: testimonials.length > 0 ? testimonials : fallback.testimonials,
     press: press.length > 0 ? press : fallback.press,
+    articles: articles.length > 0 ? articles : fallback.articles,
+    videoReviews: videos.length > 0 ? videos : fallback.videoReviews,
     source: {
+      articles: articles.length > 0 ? 'sanity' : 'brand',
+      videoReviews: videos.length > 0 ? 'sanity' : 'brand',
       faq: faq.length > 0 ? 'sanity' : 'brand',
       testimonials: testimonials.length > 0 ? 'sanity' : 'brand',
       press: press.length > 0 ? 'sanity' : 'brand',
