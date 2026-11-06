@@ -55,3 +55,7 @@ next-env.d.ts
 
 # offline text-reading engine, copied from node_modules by scripts/copy-ocr-assets.mjs
 /public/ocr/
+
+# sanity local dev
+.sanity/
+hub/dist/
