@@ -1,11 +1,12 @@
 import { ArrowUpLeft } from 'lucide-react';
-import { brand } from '@/lib/brand';
 import { formatHebrewDate } from '@/lib/articles';
+import { getSiteContent } from '@/lib/sanity/content';
 
-/** Pieces published on other sites. Renders nothing while `brand.press` is empty. */
-export function PressList({ headingId }: { headingId: string }) {
+/** Pieces published on other sites. Renders nothing while the list is empty. */
+export async function PressList({ headingId }: { headingId: string }) {
+  const { press } = await getSiteContent();
   // Newest first; pieces without a known date come last.
-  const items = [...brand.press].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
+  const items = [...press].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
   if (items.length === 0) return null;
 
   return (

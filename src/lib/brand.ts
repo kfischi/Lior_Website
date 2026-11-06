@@ -184,6 +184,17 @@ export const brand = {
     ink: '#17242B', // blue-black body text
   },
 
+  // --- Content management (Sanity) ---
+  // The editing screen lives at /studio on the site itself, in the site's own colors.
+  // FAQ, testimonials and press pieces are read from here when the dataset has them;
+  // everything falls back to the lists in this file, so the site never depends on Sanity being up.
+  // Both values are public identifiers (not secrets). Leave projectId empty to switch the CMS off.
+  cms: {
+    projectId: 'pqddwskg',
+    dataset: 'production',
+    apiVersion: '2025-02-19',
+  },
+
   // --- Fonts (next/font keys; see src/app/layout.tsx) ---
   fonts: {
     headingName: 'Rubik',

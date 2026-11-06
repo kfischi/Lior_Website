@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { MessagesSquare } from 'lucide-react';
-import { brand } from '@/lib/brand';
+import type { FaqItem } from '@/lib/brand';
 import {
   Accordion,
   AccordionItem,
@@ -14,7 +14,7 @@ import { OpenChatButton } from '@/components/ai/OpenChatButton';
 /** The most common questions; the full list lives on /faq. */
 const SHOWN = 7;
 
-export function Faq() {
+export function Faq({ items }: { items: FaqItem[] }) {
   return (
     <section id="faq" aria-labelledby="faq-title" className="section bg-cream">
       <div className="shell grid gap-12 lg:grid-cols-[1fr_1.7fr] lg:gap-20">
@@ -38,7 +38,7 @@ export function Faq() {
         </div>
 
         <Accordion type="single" collapsible className="w-full border-t border-navy/15">
-          {brand.faq.slice(0, SHOWN).map((item, i) => (
+          {items.slice(0, SHOWN).map((item, i) => (
             <AccordionItem key={item.question} value={`item-${i}`}>
               <AccordionTrigger>{item.question}</AccordionTrigger>
               <AccordionContent>{item.answer}</AccordionContent>

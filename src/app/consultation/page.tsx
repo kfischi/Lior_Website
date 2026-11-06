@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft, MessageCircle, Phone } from 'lucide-react';
 import { brand, telHref, whatsappHref } from '@/lib/brand';
 import { buildMetadata, faqJsonLd } from '@/lib/seo';
+import { getSiteContent } from '@/lib/sanity/content';
 import { Header } from '@/components/sections/Header';
 import { TrustBar } from '@/components/sections/TrustBar';
 import { Process } from '@/components/sections/Process';
@@ -26,10 +27,11 @@ export const metadata: Metadata = buildMetadata({
   noindex: true,
 });
 
-export default function ConsultationPage() {
+export default async function ConsultationPage() {
+  const { faq } = await getSiteContent();
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(faq)) }} />
       <Header />
       <main id="main">
         <section aria-labelledby="lp-title" className="relative overflow-hidden bg-navy pb-16 pt-32 text-cream md:pb-24 md:pt-40">
@@ -103,7 +105,7 @@ export default function ConsultationPage() {
         </section>
 
         <Process />
-        <Faq />
+        <Faq items={faq} />
         <Contact />
       </main>
       <Footer />

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { Quote, Star } from 'lucide-react';
-import { brand, type TestimonialLetter } from '@/lib/brand';
+import { brand, type Testimonial, type TestimonialLetter } from '@/lib/brand';
+import { getSiteContent } from '@/lib/sanity/content';
 import { cn } from '@/lib/utils';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 
@@ -10,9 +11,6 @@ const dateFormat = new Intl.DateTimeFormat('he-IL', {
   year: 'numeric',
   timeZone: 'UTC',
 });
-
-/** Newest first; ISO dates compare correctly as strings. */
-const testimonials = [...brand.testimonials].sort((a, b) => b.date.localeCompare(a.date));
 
 /** Five stars, each filled by the share of the rating that falls on it (4.6 → last star 60%). */
 function Stars({ rating, onDark }: { rating: number; onDark?: boolean }) {
@@ -48,17 +46,19 @@ type ReviewItem =
   | { kind: 'text'; key: string; date: string; name: string; rating: number; text: string }
   | { kind: 'letter'; key: string; date: string; name: string; letter: TestimonialLetter };
 
-/** Reviews and scanned letters in one list, newest first. */
-const items: ReviewItem[] = [
-  ...testimonials.map((t) => ({ kind: 'text' as const, key: `${t.date}-${t.name}`, ...t })),
-  ...brand.testimonialLetters.map((letter) => ({
-    kind: 'letter' as const,
-    key: `${letter.date}-${letter.name}`,
-    date: letter.date,
-    name: letter.name,
-    letter,
-  })),
-].sort((a, b) => b.date.localeCompare(a.date));
+/** Reviews and scanned letters in one list, newest first (ISO dates compare correctly as strings). */
+function buildItems(testimonials: Testimonial[]): ReviewItem[] {
+  return [
+    ...testimonials.map((t) => ({ kind: 'text' as const, key: `${t.date}-${t.name}`, ...t })),
+    ...brand.testimonialLetters.map((letter) => ({
+      kind: 'letter' as const,
+      key: `${letter.date}-${letter.name}`,
+      date: letter.date,
+      name: letter.name,
+      letter,
+    })),
+  ].sort((a, b) => b.date.localeCompare(a.date));
+}
 
 /** One review or letter card. `index` 0 is the featured (dark) card. */
 function renderItem(item: ReviewItem, i: number) {
@@ -155,7 +155,8 @@ function renderItem(item: ReviewItem, i: number) {
 /** How many reviews show at first; the rest open with one tap, so the page stays short. */
 const VISIBLE = 6;
 
-export function Reviews() {
+export async function Reviews() {
+  const items = buildItems((await getSiteContent()).testimonials);
   // Never show placeholder reviews: the section appears only with real ones.
   if (items.length === 0) return null;
 

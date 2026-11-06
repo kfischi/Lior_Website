@@ -4,11 +4,7 @@ import './globals.css';
 
 import { brand } from '@/lib/brand';
 import { buildMetadata, legalServiceJsonLd, attorneyJsonLd, websiteJsonLd } from '@/lib/seo';
-import { CookieConsent } from '@/components/legal/CookieConsent';
-import { ChatBot } from '@/components/ai/ChatBot';
-import { ConciergeProvider } from '@/components/ai/ConciergeProvider';
-import { AccessibilityWidget } from '@/components/a11y/AccessibilityWidget';
-import { ScrollProgress } from '@/components/motion/ScrollProgress';
+import { SiteChrome } from '@/components/layout/SiteChrome';
 
 /*
  * Fonts self-host at build time via next/font — no runtime requests to Google.
@@ -61,16 +57,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <a href="#main" className="skip-link">
-          דלג לתוכן הראשי
-        </a>
-        <ScrollProgress />
-        <ConciergeProvider>
-          {children}
-          <ChatBot />
-          <AccessibilityWidget />
-        </ConciergeProvider>
-        <CookieConsent />
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );

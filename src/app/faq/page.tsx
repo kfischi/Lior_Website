@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { brand } from '@/lib/brand';
 import { articles } from '@/lib/articles';
 import { breadcrumbJsonLd, buildMetadata, faqJsonLd } from '@/lib/seo';
+import { getSiteContent } from '@/lib/sanity/content';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
 import {
@@ -25,16 +26,17 @@ interface Group {
   items: { question: string; answer: string }[];
 }
 
-function groups(): Group[] {
+function groups(general: Group['items']): Group[] {
   return [
-    { id: 'general', title: 'שאלות כלליות', items: brand.faq },
+    { id: 'general', title: 'שאלות כלליות', items: general },
     ...brand.practiceAreas.map((a) => ({ id: a.slug, title: a.title, items: a.page.faq })),
     { id: 'guides', title: 'מתוך המדריכים', items: articles.flatMap((a) => a.faq) },
   ];
 }
 
-export default function FaqPage() {
-  const all = groups();
+export default async function FaqPage() {
+  const { faq } = await getSiteContent();
+  const all = groups(faq);
   return (
     <>
       <script

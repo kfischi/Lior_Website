@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { brand } from '@/lib/brand';
 import { buildMetadata, faqJsonLd } from '@/lib/seo';
+import { getSiteContent } from '@/lib/sanity/content';
 import { Header } from '@/components/sections/Header';
 import { Hero } from '@/components/sections/Hero';
 import { Marquee } from '@/components/sections/Marquee';
@@ -22,12 +23,13 @@ export const metadata: Metadata = buildMetadata({
   path: '/',
 });
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { faq } = await getSiteContent();
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(faq)) }}
       />
       <Header />
       <main id="main">
@@ -41,7 +43,7 @@ export default function HomePage() {
         <Reviews />
         <VideoReviews />
         <Articles />
-        <Faq />
+        <Faq items={faq} />
         <Contact />
       </main>
       <Footer />
