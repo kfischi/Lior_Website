@@ -8,7 +8,8 @@ export const revalidate = 60;
 
 export async function GET() {
   const base = siteUrl();
-  const faq = (await getSiteContent()).faq.map((f) => `ש: ${f.question}\nת: ${f.answer}`).join('\n\n');
+  const content = await getSiteContent();
+  const faq = content.faq.map((f) => `ש: ${f.question}\nת: ${f.answer}`).join('\n\n');
   const body = `# ${brand.firmName}
 
 > ${brand.description}
@@ -23,7 +24,7 @@ ${brand.about.body}
 ${faq}
 
 ## תוכן
-${siteContentAsMarkdown()}
+${siteContentAsMarkdown(content.articles)}
 
 ${brand.chat.disclaimer}
 `;

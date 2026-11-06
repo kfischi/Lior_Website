@@ -5,7 +5,8 @@ import { sanitizeQuestion } from '@/lib/learning/sanitize';
 import { withTimeout } from '@/lib/with-timeout';
 import { SITE_TARGETS, splitSiteAction, withSiteAction, type SiteTarget } from '@/lib/site-actions';
 import { withSuggestions } from '../suggestions';
-import { search, type Hit, type Note } from './engine';
+import { search, type EngineContent, type Hit, type Note } from './engine';
+import { getSiteContent } from '@/lib/sanity/content';
 import { splitSuggestions } from '../suggestions';
 import { analyze, normalizeText, tokens } from './text';
 
@@ -227,8 +228,8 @@ function unknown(): string {
 }
 
 /** Passages for a question, best first: BM25, then clear intents, then specific answers over broad overviews. */
-function rankHits(q: string, notes: Note[]): Hit[] {
-  let hits = search(q, notes);
+function rankHits(q: string, notes: Note[], content: EngineContent): Hit[] {
+  let hits = search(q, notes, content);
   const present = new Set(tokens(q));
   // A passage about a topic the visitor did not raise (pregnancy for "I was fired") or that lacks the topic they did
   // raise (a hearing for "summoned to an investigation") ranks lower.
@@ -289,6 +290,8 @@ function pick(hits: Hit[], present: Set<string>): { hit: Hit; hedge: boolean } |
 export interface LocalReplyOptions {
   /** Use these notes instead of the stored ones (the admin "test the chat" box). */
   notes?: Note[];
+  /** Use this content instead of the live one (tests). */
+  content?: EngineContent;
   /** False for dry runs: do not add the question to the unanswered list. */
   recordUnknown?: boolean;
 }
@@ -332,12 +335,13 @@ export async function localReply(
   const followUp = analyze(question).length <= 1 || (words.length <= 5 && /^(?:ו|אז |ומה|ואם|והאם)/.test(norm));
   if (followUp && previousQuestion) q = `${previousQuestion} ${question}`;
 
-  const hits = rankHits(q, notes);
+  const content = options.content ?? (await getSiteContent());
+  const hits = rankHits(q, notes, content);
   const picked = pick(hits, new Set(tokens(q)));
 
   // Never repeat the answer just given: take another passage, or ask for the one detail that would change it.
   if (picked && previousQuestion && picked.hit.doc.kind !== 'taught') {
-    const before = pick(rankHits(previousQuestion, notes), new Set(tokens(previousQuestion)));
+    const before = pick(rankHits(previousQuestion, notes, content), new Set(tokens(previousQuestion)));
     if (before && before.hit.doc.id === picked.hit.doc.id) {
       const rest = hits.filter((h) => h.doc.id !== picked.hit.doc.id);
       const other = pick(rest, new Set(tokens(q)));

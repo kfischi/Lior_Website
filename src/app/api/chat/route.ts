@@ -20,6 +20,7 @@ import { brand } from '@/lib/brand';
 import { getLearnedPrompt } from '@/lib/learning/store';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
 import { withTimeout } from '@/lib/with-timeout';
+import { getSiteContent } from '@/lib/sanity/content';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
@@ -171,7 +172,7 @@ export async function POST(req: Request) {
   const result = streamText({
     model,
     system:
-      buildSystemPrompt(context, area, await withTimeout(getLearnedPrompt(), 1500, '')) +
+      buildSystemPrompt(context, area, await withTimeout(getLearnedPrompt(), 1500, ''), await getSiteContent()) +
       (redacted
         ? '\n\n## הודעה אחרונה\nהמשתמש מסר פרטים אישיים (טלפון, זהות, כרטיס או דוא״ל) והם הוסרו אוטומטית. ' +
           'אל תבקש אותם שוב. אמור במשפט אחד חם שעדיף לא למסור פרטים כאלה בצ׳אט, ושאפשר להשאיר אותם בשיחה ישירה עם המשרד או בקליטת הפנייה.'

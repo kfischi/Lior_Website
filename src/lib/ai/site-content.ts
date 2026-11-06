@@ -1,5 +1,5 @@
 import { brand } from '@/lib/brand';
-import { articles } from '@/lib/articles';
+import { articles as staticArticles, type Article } from '@/lib/articles';
 
 /**
  * One plain-text rendering of the whole public site (practice pages, guides,
@@ -23,7 +23,7 @@ function practiceAreaText(): string {
     .join('\n\n');
 }
 
-function articleText(): string {
+function articleText(articles: Article[]): string {
   return articles
     .map((a) =>
       [
@@ -48,10 +48,10 @@ function additionalSection(heading: string): string {
   return text ? `${heading}${text}\n\n` : '';
 }
 
-export function siteContentAsPrompt(): string {
-  return `## תחומי העיסוק\n${practiceAreaText()}\n\n${additionalSection('## תחומים נוספים\n')}## מדריכים באתר\nכשהנושא רלוונטי, הפנה את המשתמש למדריך המתאים בכתיבת הנתיב (למשל /articles/hearing-before-dismissal).\n${articleText()}`;
+export function siteContentAsPrompt(articles: Article[] = staticArticles): string {
+  return `## תחומי העיסוק\n${practiceAreaText()}\n\n${additionalSection('## תחומים נוספים\n')}## מדריכים באתר\nכשהנושא רלוונטי, הפנה את המשתמש למדריך המתאים בכתיבת הנתיב (למשל /articles/hearing-before-dismissal).\n${articleText(articles)}`;
 }
 
-export function siteContentAsMarkdown(): string {
-  return `${practiceAreaText()}\n\n${additionalSection('## תחומים נוספים\n\n')}${articleText()}`;
+export function siteContentAsMarkdown(articles: Article[] = staticArticles): string {
+  return `${practiceAreaText()}\n\n${additionalSection('## תחומים נוספים\n\n')}${articleText(articles)}`;
 }

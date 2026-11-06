@@ -1,5 +1,5 @@
-import { brand } from '@/lib/brand';
-import { articles } from '@/lib/articles';
+import { brand, type FaqItem } from '@/lib/brand';
+import { articles as staticArticles, type Article } from '@/lib/articles';
 import { knowledge } from '@/lib/knowledge';
 import type { Note as StoredNote } from '@/lib/learning/types';
 import { analyze } from './text';
@@ -57,14 +57,29 @@ function makeDoc(
   return { ...base, tf, len };
 }
 
-let staticDocs: Doc[] | null = null;
+/** The editable part of what the engine answers from. Defaults to the lists in the code. */
+export interface EngineContent {
+  faq: FaqItem[];
+  articles: Article[];
+}
+
+const DEFAULT_CONTENT: EngineContent = { faq: brand.faq, articles: staticArticles };
+
+let staticDocs: { key: string; docs: Doc[] } | null = null;
+
+/** The index is rebuilt only when the editable content actually changed. */
+function staticDocsFor(content: EngineContent): Doc[] {
+  const key = JSON.stringify([content.faq, content.articles]);
+  if (!staticDocs || staticDocs.key !== key) staticDocs = { key, docs: buildStatic(content) };
+  return staticDocs.docs;
+}
 
 /** Every fixed document the engine can answer from (for exporting what has to be recorded). */
 export function allStaticDocs(): Doc[] {
   return buildStatic();
 }
 
-function buildStatic(): Doc[] {
+function buildStatic(content: EngineContent = DEFAULT_CONTENT): Doc[] {
   const docs: Doc[] = [];
 
   for (const k of knowledge) {
@@ -89,7 +104,7 @@ function buildStatic(): Doc[] {
     );
   }
 
-  brand.faq.forEach((f, i) =>
+  content.faq.forEach((f, i) =>
     docs.push(
       makeDoc(
         { id: `faq:${i}`, kind: 'faq', title: f.question, answer: f.answer, link: '/faq', boost: 1.15 },
@@ -132,7 +147,7 @@ function buildStatic(): Doc[] {
     );
   }
 
-  for (const a of articles) {
+  for (const a of content.articles) {
     const link = `/articles/${a.slug}`;
     docs.push(
       makeDoc(
@@ -196,9 +211,8 @@ const K1 = 1.4;
 const B = 0.75;
 
 /** Ranks every passage for the question. Highest first. */
-export function search(question: string, notes: Note[]): Hit[] {
-  staticDocs ??= buildStatic();
-  const docs = [...staticDocs, ...taughtDocs(notes)];
+export function search(question: string, notes: Note[], content: EngineContent = DEFAULT_CONTENT): Hit[] {
+  const docs = [...staticDocsFor(content), ...taughtDocs(notes)];
   const groups = analyze(question);
   if (groups.length === 0) return [];
 

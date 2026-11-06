@@ -1,4 +1,5 @@
-import { brand, telHref, whatsappHref, type PracticeArea } from '@/lib/brand';
+import { brand, telHref, whatsappHref, type FaqItem, type PracticeArea } from '@/lib/brand';
+import type { Article } from '@/lib/articles';
 import { knowledgeAsPrompt } from '@/lib/knowledge';
 import { siteContentAsPrompt } from '@/lib/ai/site-content';
 import { siteTargetsForPrompt } from '@/lib/site-actions';
@@ -15,6 +16,7 @@ export function buildSystemPrompt(
   context?: string,
   page?: PracticeArea,
   learned?: string,
+  content?: { faq: FaqItem[]; articles: Article[] },
 ): string {
   return `את "${brand.chat.assistantName}", העוזרת הווירטואלית של ${brand.firmName}, משרד עורכת דין בראשות ${brand.attorneyName}.
 את הפנים הראשונות שפוגשים באתר, ותפקידך להרגיש כמו איש צוות חם ומקצועי של המשרד, לא כמו בוט.
@@ -113,10 +115,10 @@ ${siteTargetsForPrompt()}
 ${knowledgeAsPrompt()}
 
 ## תוכן האתר (גם הוא מקור ידע שלך)
-${siteContentAsPrompt()}
+${siteContentAsPrompt(content?.articles)}
 
 ## שאלות נפוצות
-${brand.faq.map((f) => `ש: ${f.question}\nת: ${f.answer}`).join('\n\n')}
+${(content?.faq ?? brand.faq).map((f) => `ש: ${f.question}\nת: ${f.answer}`).join('\n\n')}
 
 ${
     learned
