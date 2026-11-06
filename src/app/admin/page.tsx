@@ -1,16 +1,14 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { brand } from '@/lib/brand';
 import { adminEnabled, isAdmin } from '@/lib/admin-auth';
 import { listNotes, listUnknown } from '@/lib/learning/store';
-import {
-  deleteNoteAction,
-  dismissUnknownAction,
-  logoutAction,
-  toggleNoteAction,
-} from '@/lib/actions/admin';
-import { LoginForm, TeachForm, TestChatForm } from '@/components/admin/AdminForms';
-import { Button } from '@/components/ui/button';
+import { getStats, type Stats } from '@/lib/learning/stats';
+import { StatsPanel } from '@/components/admin/StatsPanel';
+import { logoutAction } from '@/lib/actions/admin';
+import { LoginForm, LogoutButton, TestChatForm } from '@/components/admin/AdminForms';
+import { NoteCard } from '@/components/admin/NoteCard';
+import { NoteEditor } from '@/components/admin/NoteEditor';
+import { UnknownRow } from '@/components/admin/UnknownRow';
 
 export const metadata: Metadata = {
   title: 'ניהול העוזרת של ליאור',
@@ -27,7 +25,7 @@ export default async function AdminPage({
   const { q } = await searchParams;
 
   return (
-    <main id="main" className="min-h-screen bg-cream py-12">
+    <main id="main" className="min-h-screen bg-cream py-8 sm:py-12">
       <div className="shell max-w-3xl">
         <p className="eyebrow mb-2">{brand.firmName}</p>
         <h1 className="text-3xl text-navy md:text-4xl">ניהול העוזרת של ליאור</h1>
@@ -54,106 +52,91 @@ async function Body({ q }: { q?: string }) {
     );
   }
 
-  const [notes, unknown] = await Promise.all([listNotes(), listUnknown()]);
+  let notes: Awaited<ReturnType<typeof listNotes>> = [];
+  let unknown: Awaited<ReturnType<typeof listUnknown>> = [];
+  let stats: Stats | null = null;
+  let loadFailed = false;
+  try {
+    [notes, unknown, stats] = await Promise.all([listNotes(), listUnknown(), getStats(30)]);
+  } catch (err) {
+    console.error('Loading admin data failed:', err);
+    loadFailed = true;
+  }
+
+  // Drafts first: they are the ones waiting for a decision.
+  const ordered = [...notes].sort(
+    (a, b) => Number(a.status === 'approved') - Number(b.status === 'approved'),
+  );
+  const drafts = notes.filter((n) => n.status === 'draft').length;
 
   return (
-    <div className="mt-6 space-y-12">
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-ink/75">
-          כאן מלמדים את העוזרת. כל מה שנשמר נכנס לשיחות הבאות, ועדיף על הידע הקיים.
+    <div className="mt-6 space-y-10">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-ink/80">
+          כאן מלמדים את העוזרת. כל תשובה מתחילה כטיוטה, ורק תשובה שאישרת נכנסת לשיחות.
         </p>
         <form action={logoutAction}>
-          <Button type="submit" variant="outline" size="sm">
-            יציאה
-          </Button>
+          <LogoutButton />
         </form>
       </div>
 
-      <section aria-labelledby="status-title" className="rounded-2xl border border-navy/10 bg-white p-6">
-        <h2 id="status-title" className="mb-1 text-2xl text-navy">
-          מצב הצ׳אט
-        </h2>
-        <p className="mb-4 text-sm text-ink/75">בודק שהמודל מחובר, וכמה זמן לוקחת תשובה קצרה.</p>
-        <TestChatForm />
-      </section>
+      {loadFailed && (
+        <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 font-medium text-red-800">
+          שגיאה: לא הצלחנו לטעון את הרשימות. רעננו את הדף. האתר והצ׳אט ממשיכים לעבוד.
+        </p>
+      )}
 
-      <section aria-labelledby="teach-title" className="rounded-2xl border border-navy/10 bg-white p-6">
+      {stats && <StatsPanel stats={stats} />}
+
+      <section aria-labelledby="teach-title" className="rounded-2xl border border-navy/15 bg-white p-4 sm:p-6">
         <h2 id="teach-title" className="mb-4 text-2xl text-navy">
           ללמד משהו חדש
         </h2>
-        <TeachForm prefill={q} />
+        <NoteEditor key={q ?? 'blank'} prefill={q} />
+      </section>
+
+      <section aria-labelledby="notes-title">
+        <h2 id="notes-title" className="mb-1 text-2xl text-navy">
+          מה העוזרת למדה ({notes.length})
+        </h2>
+        <p className="mb-4 text-sm text-ink/75">
+          {drafts} טיוטות שמחכות לאישור, {notes.length - drafts} מאושרות ובשימוש.
+        </p>
+        {ordered.length === 0 ? (
+          <p className="text-ink/70">עוד לא לימדת אותה כלום.</p>
+        ) : (
+          <ul className="space-y-4">
+            {ordered.map((note) => (
+              <NoteCard key={note.id} note={note} />
+            ))}
+          </ul>
+        )}
       </section>
 
       <section aria-labelledby="unknown-title">
         <h2 id="unknown-title" className="mb-1 text-2xl text-navy">
           שאלות שהעוזרת לא ידעה לענות עליהן
         </h2>
-        <p className="mb-4 text-sm text-ink/65">
+        <p className="mb-4 text-sm text-ink/75">
           שאלות כלליות שנשמרו אוטומטית, בלי פרטים מזהים. לחצי &quot;ללמד&quot; כדי לענות עליהן.
         </p>
         {unknown.length === 0 ? (
-          <p className="text-ink/60">אין שאלות ממתינות.</p>
+          <p className="text-ink/70">אין שאלות ממתינות.</p>
         ) : (
           <ul className="space-y-3">
             {unknown.map((item) => (
-              <li
-                key={item.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-navy/10 bg-white p-4"
-              >
-                <div>
-                  <p className="font-medium text-navy">{item.question}</p>
-                  <p className="text-xs text-ink/55">נשאלה {item.count} פעמים</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button asChild size="sm" variant="accent">
-                    <Link href={`/admin?q=${encodeURIComponent(item.question)}`}>ללמד</Link>
-                  </Button>
-                  <form action={dismissUnknownAction}>
-                    <input type="hidden" name="id" value={item.id} />
-                    <Button type="submit" size="sm" variant="outline">
-                      התעלם
-                    </Button>
-                  </form>
-                </div>
-              </li>
+              <UnknownRow key={item.id} id={item.id} question={item.question} count={item.count} />
             ))}
           </ul>
         )}
       </section>
 
-      <section aria-labelledby="notes-title">
-        <h2 id="notes-title" className="mb-4 text-2xl text-navy">
-          מה העוזרת כבר למדה ({notes.length})
+      <section aria-labelledby="status-title" className="rounded-2xl border border-navy/15 bg-white p-4 sm:p-6">
+        <h2 id="status-title" className="mb-1 text-2xl text-navy">
+          מצב הצ׳אט
         </h2>
-        {notes.length === 0 ? (
-          <p className="text-ink/60">עוד לא לימדת אותו כלום.</p>
-        ) : (
-          <ul className="space-y-3">
-            {notes.map((note) => (
-              <li key={note.id} className="rounded-xl border border-navy/10 bg-white p-4">
-                {note.question && <p className="font-medium text-navy">{note.question}</p>}
-                <p className={note.enabled ? 'mt-1 text-ink/85' : 'mt-1 text-ink/45 line-through'}>
-                  {note.answer}
-                </p>
-                <div className="mt-3 flex gap-2">
-                  <form action={toggleNoteAction}>
-                    <input type="hidden" name="id" value={note.id} />
-                    <input type="hidden" name="enabled" value={String(!note.enabled)} />
-                    <Button type="submit" size="sm" variant="outline">
-                      {note.enabled ? 'השבתה' : 'הפעלה'}
-                    </Button>
-                  </form>
-                  <form action={deleteNoteAction}>
-                    <input type="hidden" name="id" value={note.id} />
-                    <Button type="submit" size="sm" variant="ghost">
-                      מחיקה
-                    </Button>
-                  </form>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+        <p className="mb-4 text-sm text-ink/75">בודק שהמודל מחובר, וכמה זמן לוקחת תשובה קצרה.</p>
+        <TestChatForm />
       </section>
     </div>
   );

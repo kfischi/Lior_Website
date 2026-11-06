@@ -1,4 +1,5 @@
 import { logUnknown } from '@/lib/learning/store';
+import { recordDown } from '@/lib/learning/stats';
 import { sanitizeQuestion } from '@/lib/learning/sanitize';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
 
@@ -22,6 +23,7 @@ export async function POST(req: Request) {
     return new Response(null, { status: 400 });
   }
   if (question.length < 4) return new Response(null, { status: 400 });
+  void recordDown();
   try {
     await logUnknown(question);
   } catch (err) {

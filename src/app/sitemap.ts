@@ -1,13 +1,15 @@
 import type { MetadataRoute } from 'next';
-import { brand } from '@/lib/brand';
-import { articles } from '@/lib/articles';
+import { getSiteContent } from '@/lib/sanity/content';
 import { siteUrl } from '@/lib/utils';
 
 /**
  * lastmod comes from brand.seo.lastModified (bump it when public content
  * changes), not from the build time, so crawlers see honest change dates.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export const revalidate = 60;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { articles, brand } = await getSiteContent();
   const base = siteUrl();
   const lastModified = new Date(brand.seo.lastModified);
 

@@ -6,7 +6,7 @@ import { siteUrl } from '@/lib/utils';
  * is part of the strategy (GEO). Each named group repeats the disallow list,
  * because a crawler that matches a specific group ignores the "*" group.
  */
-const PRIVATE = ['/api/', '/admin'];
+const PRIVATE = ['/api/', '/admin', '/studio'];
 
 const AI_AND_SEARCH_BOTS = [
   'Googlebot',
@@ -32,6 +32,5 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: AI_AND_SEARCH_BOTS, allow: '/', disallow: PRIVATE },
     ],
     sitemap: `${base}/sitemap.xml`,
-    host: base,
   };
 }

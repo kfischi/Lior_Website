@@ -1,8 +1,11 @@
 import Image from 'next/image';
 import { Clock, MapPin, Mail, Phone, type LucideIcon } from 'lucide-react';
-import { brand, telHref, whatsappHref, mailHref } from '@/lib/brand';
+import { links } from '@/lib/brand';
+import type { Brand } from '@/lib/sanity/settings';
+import { getBrand } from '@/lib/sanity/content';
 import { WhatsAppIcon } from '@/components/ui/whatsapp-icon';
 import { Reveal } from '@/components/motion/Reveal';
+import { CallbackForm } from './CallbackForm';
 
 interface ContactItem {
   label: string;
@@ -12,7 +15,9 @@ interface ContactItem {
   icon: LucideIcon | typeof WhatsAppIcon;
 }
 
-const ITEMS: ContactItem[] = [
+function contactItems(brand: Brand): ContactItem[] {
+  const { tel: telHref, whatsapp: whatsappHref, mail: mailHref } = links(brand);
+  return [
   { label: 'טלפון', value: brand.phone, href: telHref, icon: Phone },
   { label: 'וואטסאפ', value: brand.phone, href: whatsappHref, external: true, icon: WhatsAppIcon },
   { label: 'דוא״ל', value: brand.email, href: mailHref, icon: Mail },
@@ -23,11 +28,14 @@ const ITEMS: ContactItem[] = [
     external: true,
     icon: MapPin,
   },
-  { label: 'שעות', value: brand.hours, icon: Clock },
+  { label: 'פגישות', value: brand.hours, icon: Clock },
 ];
+}
 
 /** Direct contact details. The conversation itself lives in the floating chat. */
-export function Contact() {
+export async function Contact() {
+  const brand = await getBrand();
+  const ITEMS = contactItems(brand);
   return (
     <section
       id="contact"
@@ -44,7 +52,7 @@ export function Contact() {
       />
       <div className="shell relative z-10 max-w-4xl">
         <Reveal className="text-center">
-          <p className="eyebrow mb-3 text-accent-light">זמינים עבורכם</p>
+          <p className="eyebrow mb-3 text-accent-light">יצירת קשר</p>
           <h2 id="contact-title" className="text-4xl text-cream md:text-5xl">
             נשמח לשמוע מכם
           </h2>
@@ -53,8 +61,17 @@ export function Contact() {
           </p>
         </Reveal>
 
+        <Reveal delay={0.05}>
+          <div className="mx-auto mt-10 max-w-2xl rounded-3xl border border-cream/15 bg-cream/5 p-6 md:p-8">
+            <h3 className="text-2xl text-cream">השאירו טלפון ונחזור אליכם</h3>
+            <div className="mt-5">
+              <CallbackForm />
+            </div>
+          </div>
+        </Reveal>
+
         <Reveal delay={0.1}>
-          <ul className="mt-12 grid gap-4 sm:grid-cols-2">
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2">
             {ITEMS.map(({ label, value, href, external, icon: Icon }) => {
               const body = (
                 <>

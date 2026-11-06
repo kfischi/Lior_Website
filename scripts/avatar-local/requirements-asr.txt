@@ -1,0 +1,2 @@
+# Added by `npm run avatar:setup -- --asr` (speech to text).
+faster-whisper

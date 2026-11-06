@@ -1,13 +1,15 @@
-import { brand } from '@/lib/brand';
 import { siteContentAsMarkdown } from '@/lib/ai/site-content';
 import { siteUrl } from '@/lib/utils';
+import { getSiteContent } from '@/lib/sanity/content';
 
 /** /llms-full.txt: the full public content of the site as one plain document. */
-export const dynamic = 'force-static';
+export const revalidate = 60;
 
-export function GET() {
+export async function GET() {
   const base = siteUrl();
-  const faq = brand.faq.map((f) => `ש: ${f.question}\nת: ${f.answer}`).join('\n\n');
+  const content = await getSiteContent();
+  const brand = content.brand;
+  const faq = content.faq.map((f) => `ש: ${f.question}\nת: ${f.answer}`).join('\n\n');
   const body = `# ${brand.firmName}
 
 > ${brand.description}
@@ -22,7 +24,7 @@ ${brand.about.body}
 ${faq}
 
 ## תוכן
-${siteContentAsMarkdown()}
+${siteContentAsMarkdown(content.articles, content.brand)}
 
 ${brand.chat.disclaimer}
 `;

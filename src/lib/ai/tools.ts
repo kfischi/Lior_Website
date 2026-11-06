@@ -1,6 +1,7 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import { brand, telHref, whatsappHref, mailHref } from '@/lib/brand';
+import { links } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 import { buildWhatsAppHref } from '@/lib/lead';
 import { logUnknown } from '@/lib/learning/store';
 import { sanitizeQuestion } from '@/lib/learning/sanitize';
@@ -15,22 +16,31 @@ export const chatTools = {
       'החזר את דרכי יצירת הקשר של המשרד (טלפון, וואטסאפ, דוא"ל, כתובת, שעות). ' +
       'השתמש כשהמשתמש מבקש פרטי קשר, כתובת או שעות פעילות.',
     inputSchema: z.object({}),
-    execute: async () => ({
-      phone: brand.phone,
-      telHref,
-      whatsapp: whatsappHref,
-      email: brand.email,
-      mailHref,
-      address: `${brand.address.street}, ${brand.address.city}`,
-      hours: brand.hours,
-    }),
+    execute: async () => {
+      const brand = await getBrand();
+      const { tel: telHref, whatsapp: whatsappHref, mail: mailHref } = links(brand);
+      return {
+        phone: brand.phone,
+        telHref,
+        whatsapp: whatsappHref,
+        email: brand.email,
+        mailHref,
+        address: `${brand.address.street}, ${brand.address.city}`,
+        hours: brand.hours,
+      };
+    },
   }),
 
   listPracticeAreas: tool({
     description: 'החזר את רשימת תחומי העיסוק של המשרד עם תיאור קצר לכל תחום.',
     inputSchema: z.object({}),
-    execute: async () =>
-      brand.practiceAreas.map((a) => ({ title: a.title, description: a.description })),
+    execute: async () => {
+      const brand = await getBrand();
+      return [
+        ...brand.practiceAreas.map((a) => ({ title: a.title, description: a.description })),
+        ...brand.about.additionalAreas.map((a) => ({ title: a.title, description: a.text })),
+      ];
+    },
   }),
 
   flagUnknownQuestion: tool({
@@ -75,6 +85,7 @@ export const chatTools = {
         .describe('סיכום של 1–2 משפטים של מה שהמשתמש סיפר. בלי פרטים רגישים כמו ת"ז'),
     }),
     execute: async ({ name, topic, summary }) => {
+      const brand = await getBrand();
       const text = [
         `שלום, פונה דרך האתר של ${brand.firmName}.`,
         name ? `שמי ${name}.` : '',

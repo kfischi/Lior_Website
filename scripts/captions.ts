@@ -44,7 +44,8 @@ function clean(text: string): string | null {
 
 async function main() {
   for (const video of brand.videoReviews) {
-    if (!video.src.startsWith('/videos/')) continue;
+    // YouTube entries have no local file; YouTube serves its own captions.
+    if (!video.src?.startsWith('/videos/')) continue;
     const file = join(process.cwd(), 'public', video.src);
     const out = file.replace(/\.mp4$/, '.he.vtt');
     console.log(`Transcribing ${video.src} ...`);

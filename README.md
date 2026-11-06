@@ -91,6 +91,10 @@ npm run dev                  # http://localhost:3000
 
 בלי הצעדים האלה — הצ'אטבוט עדיין עונה על בסיס הידע המובנה שב-`brand.ts`.
 
+## ניהול תוכן (Sanity)
+
+שאלות נפוצות, המלצות וכתבות נערכות ב-`/studio` באתר, בצבעי האתר. האתר קורא רק תוכן שפורסם ועובר ל-`brand.ts` אם Sanity לא זמין. פירוט, הרשאות ורענון מיידי: `docs/cms.md`.
+
 ## שכפול ללקוח חדש
 
 1. שכפלו את הריפו.
@@ -128,6 +132,12 @@ npm run ingest     # הטמעת ידע ל-RAG (דורש Supabase + OpenAI)
 מדריכים ב-`src/lib/articles.ts` (עמודי `/articles`), שאלות ותשובות ב-`/faq`, `llms.txt`, `llms-full.txt`, `feed.xml`, sitemap,
 robots שמאפשר זחלני חיפוש ובינה מלאכותית, ו-JSON-LD (Article, FAQPage, LegalService, Attorney, WebSite).
 כל טקסט משפטי חייב אישור של עורכת הדין לפני הסתמכות עליו.
+
+## סרטוני YouTube בביקורות וידאו
+
+מוסיפים ל-`brand.videoReviews` שורה כמו `{ youtubeId: 'XXXXXXXXXXX', label: 'ביקורת וידאו', landscape: true }`
+(11 התווים אחרי `v=` או `youtu.be/` או `shorts/`; `landscape` לסרטון לרוחב, בלי זה הכרטיס אנכי). הנגן נטען מ-`youtube-nocookie.com`
+רק אחרי לחיצה, ומבקש כתוביות בעברית אם קיימות ב-YouTube.
 
 ## כתוביות לביקורות וידאו
 

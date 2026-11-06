@@ -1,14 +1,14 @@
-import { brand } from '@/lib/brand';
-import { articles } from '@/lib/articles';
+import { getSiteContent } from '@/lib/sanity/content';
 import { siteUrl } from '@/lib/utils';
 
 /** RSS feed of the guides, so crawlers and readers can discover new ones. */
-export const dynamic = 'force-static';
+export const revalidate = 60;
 
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-export function GET() {
+export async function GET() {
+  const { articles, brand } = await getSiteContent();
   const base = siteUrl();
   const items = [...articles]
     .sort((a, b) => b.published.localeCompare(a.published))

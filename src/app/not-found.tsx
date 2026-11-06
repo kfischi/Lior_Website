@@ -1,10 +1,13 @@
 import Link from 'next/link';
-import { brand, telHref } from '@/lib/brand';
+import { links } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
 import { Button } from '@/components/ui/button';
 
-export default function NotFound() {
+export default async function NotFound() {
+  const brand = await getBrand();
+  const telHref = links(brand).tel;
   return (
     <>
       <Header />

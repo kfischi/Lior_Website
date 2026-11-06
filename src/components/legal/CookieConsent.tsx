@@ -66,10 +66,10 @@ export function CookieConsent() {
           .
         </p>
         <div className="flex shrink-0 gap-2">
-          <Button size="sm" variant="outline" onClick={() => decide('declined')}>
+          <Button size="md" variant="outline" onClick={() => decide('declined')}>
             רק חיוניות
           </Button>
-          <Button size="sm" variant="accent" onClick={() => decide('accepted')}>
+          <Button size="md" variant="accent" onClick={() => decide('accepted')}>
             אישור
           </Button>
         </div>

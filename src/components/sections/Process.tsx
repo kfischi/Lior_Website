@@ -1,8 +1,9 @@
-import { brand } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 
 /** Three calm steps that make the first move feel small. */
-export function Process() {
+export async function Process() {
+  const brand = await getBrand();
   const { eyebrow, heading, steps } = brand.process;
 
   return (

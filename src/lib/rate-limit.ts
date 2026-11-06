@@ -33,8 +33,9 @@ export function rateLimit(key: string, limit: number, windowMs: number): boolean
 export function clientIp(headers: Headers): string {
   return (
     headers.get('x-nf-client-connection-ip') ||
-    headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     headers.get('x-real-ip') ||
+    // The first entry is whatever the caller sent; the last is the one the nearest proxy appended.
+    headers.get('x-forwarded-for')?.split(',').at(-1)?.trim() ||
     'unknown'
   );
 }

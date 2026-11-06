@@ -1,6 +1,7 @@
-import { brand } from '@/lib/brand';
-import { articles } from '@/lib/articles';
+import { brand, type FaqItem, type PracticeArea } from '@/lib/brand';
+import { articles as staticArticles, type Article } from '@/lib/articles';
 import { knowledge } from '@/lib/knowledge';
+import type { Note as StoredNote } from '@/lib/learning/types';
 import { analyze } from './text';
 
 /**
@@ -23,17 +24,15 @@ export interface Doc {
   link?: string;
   suggestions?: string[];
   followUp?: string;
+  /** A tappable question for this topic (knowledge entries). */
+  chip?: string;
   boost: number;
   tf: Map<string, number>;
   len: number;
 }
 
-export interface Note {
-  id: string;
-  question: string;
-  answer: string;
-  enabled: boolean;
-}
+/** What the engine needs of a taught note. Only approved notes are ever indexed. */
+export type Note = Pick<StoredNote, 'id' | 'question' | 'answer' | 'status'>;
 
 /** Cut text to about `max` characters at a sentence boundary. */
 function brief(text: string, max = 420): string {
@@ -58,9 +57,31 @@ function makeDoc(
   return { ...base, tf, len };
 }
 
-let staticDocs: Doc[] | null = null;
+/** The editable part of what the engine answers from. Defaults to the lists in the code. */
+export interface EngineContent {
+  faq: FaqItem[];
+  articles: Article[];
+  /** Defaults to the areas in brand.ts when left out. */
+  brand?: { practiceAreas: PracticeArea[] };
+}
 
-function buildStatic(): Doc[] {
+const DEFAULT_CONTENT: EngineContent = { faq: brand.faq, articles: staticArticles };
+
+let staticDocs: { key: string; docs: Doc[] } | null = null;
+
+/** The index is rebuilt only when the editable content actually changed. */
+function staticDocsFor(content: EngineContent): Doc[] {
+  const key = JSON.stringify([content.faq, content.articles, content.brand?.practiceAreas]);
+  if (!staticDocs || staticDocs.key !== key) staticDocs = { key, docs: buildStatic(content) };
+  return staticDocs.docs;
+}
+
+/** Every fixed document the engine can answer from (for exporting what has to be recorded). */
+export function allStaticDocs(): Doc[] {
+  return buildStatic();
+}
+
+function buildStatic(content: EngineContent = DEFAULT_CONTENT): Doc[] {
   const docs: Doc[] = [];
 
   for (const k of knowledge) {
@@ -73,6 +94,7 @@ function buildStatic(): Doc[] {
           answer: k.answer,
           followUp: k.followUp,
           suggestions: k.suggestions,
+          chip: k.chip,
           boost: Math.sqrt(k.weight ?? 1),
         },
         [
@@ -84,7 +106,7 @@ function buildStatic(): Doc[] {
     );
   }
 
-  brand.faq.forEach((f, i) =>
+  content.faq.forEach((f, i) =>
     docs.push(
       makeDoc(
         { id: `faq:${i}`, kind: 'faq', title: f.question, answer: f.answer, link: '/faq', boost: 1.15 },
@@ -96,7 +118,7 @@ function buildStatic(): Doc[] {
     ),
   );
 
-  for (const area of brand.practiceAreas) {
+  for (const area of content.brand?.practiceAreas ?? brand.practiceAreas) {
     const link = `/practice-areas/${area.slug}`;
     docs.push(
       makeDoc(
@@ -127,7 +149,7 @@ function buildStatic(): Doc[] {
     );
   }
 
-  for (const a of articles) {
+  for (const a of content.articles) {
     const link = `/articles/${a.slug}`;
     docs.push(
       makeDoc(
@@ -168,7 +190,7 @@ function buildStatic(): Doc[] {
 
 function taughtDocs(notes: Note[]): Doc[] {
   return notes
-    .filter((n) => n.enabled && n.question.trim().length > 0)
+    .filter((n) => n.status === 'approved' && n.question.trim().length > 0)
     .map((n) =>
       makeDoc(
         { id: `note:${n.id}`, kind: 'taught', title: n.question, answer: n.answer, boost: 1.8 },
@@ -191,9 +213,8 @@ const K1 = 1.4;
 const B = 0.75;
 
 /** Ranks every passage for the question. Highest first. */
-export function search(question: string, notes: Note[]): Hit[] {
-  staticDocs ??= buildStatic();
-  const docs = [...staticDocs, ...taughtDocs(notes)];
+export function search(question: string, notes: Note[], content: EngineContent = DEFAULT_CONTENT): Hit[] {
+  const docs = [...staticDocsFor(content), ...taughtDocs(notes)];
   const groups = analyze(question);
   if (groups.length === 0) return [];
 

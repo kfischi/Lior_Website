@@ -2,13 +2,11 @@ import type { Metadata, Viewport } from 'next';
 import { Rubik, Heebo } from 'next/font/google';
 import './globals.css';
 
-import { brand } from '@/lib/brand';
+import { toClientBrand } from '@/lib/client-brand';
+import { getSiteContent } from '@/lib/sanity/content';
+import type { Brand } from '@/lib/sanity/settings';
 import { buildMetadata, legalServiceJsonLd, attorneyJsonLd, websiteJsonLd } from '@/lib/seo';
-import { CookieConsent } from '@/components/legal/CookieConsent';
-import { ChatBot } from '@/components/ai/ChatBot';
-import { ConciergeProvider } from '@/components/ai/ConciergeProvider';
-import { AccessibilityWidget } from '@/components/a11y/AccessibilityWidget';
-import { ScrollProgress } from '@/components/motion/ScrollProgress';
+import { SiteChrome } from '@/components/layout/SiteChrome';
 
 /*
  * Fonts self-host at build time via next/font — no runtime requests to Google.
@@ -27,46 +25,42 @@ const heebo = Heebo({
   display: 'swap',
 });
 
-export const metadata: Metadata = buildMetadata();
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMetadata({ brand: (await getSiteContent()).brand });
+}
 
-export const viewport: Viewport = {
-  themeColor: brand.colors.navy,
-  width: 'device-width',
-  initialScale: 1,
-};
+export async function generateViewport(): Promise<Viewport> {
+  return { themeColor: (await getSiteContent()).brand.colors.navy, width: 'device-width', initialScale: 1 };
+}
 
 /** Inject brand.ts colors as CSS variables so one file re-themes the whole site. */
-function brandVars(): string {
+function brandVars(brand: Brand): string {
   const { navy, cream, accent, accentLight, ink } = brand.colors;
   return `:root{--brand-navy:${navy};--brand-cream:${cream};--brand-accent:${accent};--brand-accent-light:${accentLight};--brand-ink:${ink};}`;
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const jsonLd = [legalServiceJsonLd(), attorneyJsonLd(), websiteJsonLd()];
+  const { brand, testimonials } = await getSiteContent();
+  const jsonLd = [legalServiceJsonLd(brand), attorneyJsonLd(brand), websiteJsonLd(brand)];
+
+  // The hero image and video are served from another host: connect to it while the HTML is still arriving.
+  const heroOrigin = /^https?:\/\//.test(brand.hero.posterId) ? new URL(brand.hero.posterId).origin : '';
 
   return (
     <html lang="he" dir="rtl" className={`${rubik.variable} ${heebo.variable}`}>
       <head>
         <link rel="alternate" type="application/rss+xml" title="מדריכים" href="/feed.xml" />
-        <style dangerouslySetInnerHTML={{ __html: brandVars() }} />
+        {heroOrigin && <link rel="preconnect" href={heroOrigin} crossOrigin="anonymous" />}
+        <style dangerouslySetInnerHTML={{ __html: brandVars(brand) }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body>
-        <a href="#main" className="skip-link">
-          דלג לתוכן הראשי
-        </a>
-        <ScrollProgress />
-        <ConciergeProvider>
-          {children}
-          <ChatBot />
-          <AccessibilityWidget />
-        </ConciergeProvider>
-        <CookieConsent />
+        <SiteChrome brand={toClientBrand(brand, testimonials.length > 0)}>{children}</SiteChrome>
       </body>
     </html>
   );

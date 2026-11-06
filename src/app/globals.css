@@ -164,6 +164,35 @@
   --animate-arrow: arrow-bob 1.6s ease-in-out infinite;
   --animate-ring: ring-pulse 2s ease-out infinite;
   --animate-ring-green: ring-pulse-green 2.2s ease-out infinite;
+  /* The assistant's photo while she is speaking: a soft breath and a spreading ring. */
+  --animate-speaking: talk 1.3s ease-in-out infinite, voice-ring 1.3s ease-out infinite;
+  --animate-wave: wave 0.9s ease-in-out infinite;
+  @keyframes talk {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.07);
+    }
+  }
+  @keyframes voice-ring {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-accent-light) 70%, transparent);
+    }
+    100% {
+      box-shadow: 0 0 0 14px transparent;
+    }
+  }
+  @keyframes wave {
+    0%,
+    100% {
+      transform: scaleY(0.3);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+  }
   @keyframes blink {
     0%,
     100% {
@@ -209,6 +238,30 @@
     to {
       transform: translateX(50%);
     }
+  }
+}
+
+/* The welcome video marks what she is talking about (see components/ai/tour.ts). */
+[data-tour-on] {
+  outline: 3px solid var(--brand-accent-light);
+  outline-offset: 4px;
+  animation: tour-glow 1.6s ease-in-out infinite;
+}
+section[data-tour-on] {
+  outline-offset: -8px;
+}
+@keyframes tour-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: 0 0 28px 6px color-mix(in srgb, var(--brand-accent-light) 65%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-tour-on] {
+    animation: none;
   }
 }
 

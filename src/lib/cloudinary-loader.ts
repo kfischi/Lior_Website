@@ -26,7 +26,12 @@ const CLOUD_NAME =
   '';
 
 export default function cloudinaryLoader({ src, width, quality }: LoaderArgs): string {
-  // Pass through absolute URLs and local public assets unchanged.
+  // An absolute Cloudinary URL that already carries a width (w_1920) gets the width the browser asked for,
+  // so a phone does not download the desktop image.
+  if (/^https:\/\/res\.cloudinary\.com\/[^/]+\/(?:image|video)\/upload\//.test(src) && /,w_\d+/.test(src)) {
+    return src.replace(/,w_\d+/, `,w_${width}`);
+  }
+  // Pass through other absolute URLs and local public assets unchanged.
   if (/^https?:\/\//.test(src) || src.startsWith('/')) {
     return src;
   }

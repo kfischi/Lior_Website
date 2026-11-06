@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { brand } from '@/lib/brand';
+import { PHONE_PATTERN } from '@/lib/phone';
 
 /**
  * Shared lead helpers (safe for client and server). The WhatsApp message is
@@ -7,11 +8,11 @@ import { brand } from '@/lib/brand';
  */
 
 export const LeadSchema = z.object({
-  name: z.string().trim().min(2, 'נא להזין שם מלא'),
+  name: z.string().trim().min(2, 'נא להזין שם מלא').max(60, 'השם ארוך מדי'),
   phone: z
     .string()
     .trim()
-    .regex(/^[\d\s+()-]{9,15}$/, 'נא להזין מספר טלפון תקין'),
+    .regex(PHONE_PATTERN, 'נא להזין מספר טלפון תקין'),
   matter: z.string().trim().max(80).default(''),
   message: z.string().trim().max(1000).default(''),
 });

@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ChevronLeft, MessageCircle, MessagesSquare } from 'lucide-react';
-import { brand, whatsappHref } from '@/lib/brand';
-import { articles, articlesForArea, formatHebrewDate, getArticle } from '@/lib/articles';
+import { links } from '@/lib/brand';
+import { articlesForArea, formatHebrewDate, getArticle } from '@/lib/articles';
+import { getSiteContent } from '@/lib/sanity/content';
 import { articleJsonLd, breadcrumbJsonLd, buildMetadata, faqJsonLd } from '@/lib/seo';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
@@ -19,16 +20,18 @@ import {
 
 type Params = { slug: string };
 
-export const dynamicParams = false;
-
-export function generateStaticParams(): Params[] {
+// A guide published after the last build is rendered on its first visit.
+export async function generateStaticParams(): Promise<Params[]> {
+  const { articles } = await getSiteContent();
   return articles.map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
-  const article = getArticle((await params).slug);
+  const { articles, brand } = await getSiteContent();
+  const article = getArticle((await params).slug, articles);
   if (!article) return {};
   return buildMetadata({
+    brand,
     title: article.seoTitle,
     description: article.seoDescription,
     path: `/articles/${article.slug}`,
@@ -41,16 +44,18 @@ function JsonLd({ data }: { data: unknown }) {
 }
 
 export default async function ArticlePage({ params }: { params: Promise<Params> }) {
-  const article = getArticle((await params).slug);
+  const { articles, brand } = await getSiteContent();
+  const whatsappHref = links(brand).whatsapp;
+  const article = getArticle((await params).slug, articles);
   if (!article) notFound();
 
   const area = brand.practiceAreas.find((a) => a.slug === article.areaSlug);
-  const related = articlesForArea(article.areaSlug).filter((a) => a.slug !== article.slug);
+  const related = articlesForArea(article.areaSlug, articles).filter((a) => a.slug !== article.slug);
   const path = `/articles/${article.slug}`;
 
   return (
     <>
-      <JsonLd data={articleJsonLd(article)} />
+      <JsonLd data={articleJsonLd(article, brand)} />
       <JsonLd data={faqJsonLd(article.faq)} />
       <JsonLd
         data={breadcrumbJsonLd([

@@ -1,5 +1,6 @@
-import { brand } from '@/lib/brand';
-import { articles } from '@/lib/articles';
+import { brand as staticBrand } from '@/lib/brand';
+import type { Brand } from '@/lib/sanity/settings';
+import { articles as staticArticles, type Article } from '@/lib/articles';
 
 /**
  * One plain-text rendering of the whole public site (practice pages, guides,
@@ -7,7 +8,7 @@ import { articles } from '@/lib/articles';
  * assistant says always matches what is published.
  */
 
-function practiceAreaText(): string {
+function practiceAreaText(brand: Brand): string {
   return brand.practiceAreas
     .map((a) => {
       const p = a.page;
@@ -23,7 +24,7 @@ function practiceAreaText(): string {
     .join('\n\n');
 }
 
-function articleText(): string {
+function articleText(articles: Article[]): string {
   return articles
     .map((a) =>
       [
@@ -38,10 +39,20 @@ function articleText(): string {
     .join('\n\n');
 }
 
-export function siteContentAsPrompt(): string {
-  return `## תחומי העיסוק\n${practiceAreaText()}\n\n## מדריכים באתר\nכשהנושא רלוונטי, הפנה את המשתמש למדריך המתאים בכתיבת הנתיב (למשל /articles/hearing-before-dismissal).\n${articleText()}`;
+function additionalAreasText(brand: Brand): string {
+  return brand.about.additionalAreas.map((a) => `### ${a.title}\n${a.text}`).join('\n\n');
 }
 
-export function siteContentAsMarkdown(): string {
-  return `${practiceAreaText()}\n\n${articleText()}`;
+/** Empty when there are no other areas, so no empty heading is sent. */
+function additionalSection(heading: string, brand: Brand): string {
+  const text = additionalAreasText(brand);
+  return text ? `${heading}${text}\n\n` : '';
+}
+
+export function siteContentAsPrompt(articles: Article[] = staticArticles, brand: Brand = staticBrand): string {
+  return `## תחומי העיסוק\n${practiceAreaText(brand)}\n\n${additionalSection('## תחומים נוספים\n', brand)}## מדריכים באתר\nכשהנושא רלוונטי, הפנה את המשתמש למדריך המתאים בכתיבת הנתיב (למשל /articles/hearing-before-dismissal).\n${articleText(articles)}`;
+}
+
+export function siteContentAsMarkdown(articles: Article[] = staticArticles, brand: Brand = staticBrand): string {
+  return `${practiceAreaText(brand)}\n\n${additionalSection('## תחומים נוספים\n\n', brand)}${articleText(articles)}`;
 }

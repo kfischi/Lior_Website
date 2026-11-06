@@ -1,11 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { brand } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 import { Icon } from './Icon';
 
-export function PracticeAreas() {
+export async function PracticeAreas() {
+  const brand = await getBrand();
   return (
     <section
       id="practice"
@@ -64,6 +65,20 @@ export function PracticeAreas() {
             </StaggerItem>
           ))}
         </Stagger>
+
+        {brand.about.additionalAreas.length > 0 && (
+          <Reveal className="mt-14 border-t border-cream/15 pt-10">
+            <h3 className="font-heading text-2xl font-semibold text-cream">ובתחומים נוספים</h3>
+            <ul className="mt-6 grid gap-5 md:grid-cols-2">
+              {brand.about.additionalAreas.map((a) => (
+                <li key={a.title} className="rounded-xl border border-cream/10 bg-cream/[0.04] p-6">
+                  <h4 className="font-semibold text-accent-light">{a.title}</h4>
+                  <p className="mt-2 leading-relaxed text-cream/80">{a.text}</p>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        )}
       </div>
     </section>
   );

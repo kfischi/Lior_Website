@@ -32,7 +32,8 @@ hypothesis to validate in Google Search Console once it is connected.
 
 - [ ] Verify the site in Google Search Console and Bing Webmaster Tools, submit `/sitemap.xml`
 - [ ] Create and complete the Google Business Profile (address in Harish, phone, categories)
-- [ ] Confirm `SITE_URL=https://www.liorerezadv.com` is set in the hosting environment
+- [ ] Confirm `SITE_URL=https://liorerez-adv.co.il` and `REDIRECT_FROM_HOSTS=liorerezadv.com,www.liorerezadv.com` are set in the hosting environment (the redirects need them)
+- [ ] Lazy-load the chat library (about 100-130 KB gzip) once the owner agrees; see reports/2026-11-06.md
 - [ ] Provide verified facts for the About page: experience, education, areas served, hours
 - [ ] **Confirm with the attorney that publishing client reviews on her own site is allowed
       under the Bar's advertising rules**, and that she is comfortable with the reviewers'
@@ -73,9 +74,10 @@ attorney approves each one under the Bar's advertising rules):
 | רחל בהרל, מחניים | 21.01.2024 | claims an outcome, health and public-policy matters |
 | חיים ק., גבעת זאב | 19.01.2024 | health matter, typos |
 
-A scanned handwritten-style letter from a client ("ליאה", dated 3.4.16) was also supplied.
-It is **not** published: it is a private letter, so the writer's permission is needed, and
-the scan is too blurry to quote word for word.
+A scanned client letter ("ליאה", dated 3.4.2016) is shown among the reviews as an image
+(`brand.testimonialLetters`), at the owner's request. The scan was cropped and cleaned up;
+the text is not retyped, so it is not misquoted. Confirm that the writer agreed to its
+publication, and replace the scan with a sharper one if she has the original.
 
 ## Done
 

@@ -2,16 +2,21 @@
 
 import * as React from 'react';
 import Image from 'next/image';
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
-import { ChevronDown } from 'lucide-react';
-import { brand } from '@/lib/brand';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
+import { ChevronDown, MessagesSquare, Phone } from 'lucide-react';
+import { useBrand } from '@/components/layout/BrandProvider';
+import { Button } from '@/components/ui/button';
+import { OpenChatButton } from '@/components/ai/OpenChatButton';
+import { videoSources } from '@/lib/media';
 import { HeroVideo } from './HeroVideo';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function Hero() {
+  const live = useBrand();
   const reduced = useReducedMotion();
-  const hasVideo = Boolean(brand.hero.videoUrl);
+  const hasVideo = Boolean(live.hero.videoUrl);
   const ref = React.useRef<HTMLElement>(null);
 
   // The background drifts and grows slightly as the page scrolls.
@@ -19,7 +24,7 @@ export function Hero() {
   const mediaY = useTransform(scrollYProgress, [0, 1], ['0%', '14%']);
   const mediaScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
-  const words = brand.hero.title.split(' ');
+  const words = live.hero.title.split(' ');
   const fade = (delay: number) => ({
     initial: reduced ? false : { opacity: 0, y: 24 },
     animate: { opacity: 1, y: 0 },
@@ -41,12 +46,12 @@ export function Hero() {
         <div
           className="absolute inset-0"
           style={{
-            transform: `scale(${brand.hero.mediaFrame.zoom})`,
-            transformOrigin: brand.hero.mediaFrame.origin,
+            transform: `scale(${live.hero.mediaFrame.zoom})`,
+            transformOrigin: live.hero.mediaFrame.origin,
           }}
         >
           <Image
-            src={brand.hero.posterId || brand.hero.imageId}
+            src={live.hero.posterId || live.hero.imageId}
             alt=""
             fill
             priority
@@ -54,7 +59,12 @@ export function Hero() {
             className="object-cover"
           />
           {hasVideo && !reduced && (
-            <HeroVideo src={brand.hero.videoUrl} trimEnd={brand.hero.videoTrimEnd} />
+            <HeroVideo
+              sources={videoSources(live.hero.videoUrl)}
+              poster={live.hero.posterId}
+              trimEnd={live.hero.videoTrimEnd}
+              cuts={live.hero.videoCuts}
+            />
           )}
         </div>
       </motion.div>
@@ -70,13 +80,13 @@ export function Hero() {
         className="absolute inset-x-0 top-0 h-28 bg-linear-to-b from-navy/45 to-transparent"
       />
 
-      <div className="shell relative z-10 pb-48 pt-32 md:pb-28">
+      <div className="shell relative z-10 pb-72 pt-32 md:pb-28">
         <div className="max-w-4xl">
           <motion.p
             {...fade(0.1)}
             className="eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance max-sm:before:hidden max-sm:after:hidden md:text-4xl"
           >
-            {brand.firmName}
+            {live.hero.eyebrow}
           </motion.p>
 
           <h1 className="text-[clamp(2.3rem,5.2vw,4.5rem)] font-semibold leading-[1.04] tracking-tight text-cream">
@@ -100,8 +110,22 @@ export function Hero() {
             {...fade(0.8)}
             className="mt-5 max-w-xl text-base leading-relaxed text-cream/95 md:text-lg"
           >
-            {brand.hero.subtitle}
+            {live.hero.subtitle}
           </motion.p>
+
+          {/* The first screen must say what to do next: talk to the assistant, or call. */}
+          <motion.div {...fade(0.95)} className="mt-7 flex flex-wrap gap-3">
+            <OpenChatButton size="lg" variant="accentOnDark">
+              <MessagesSquare className="h-5 w-5" />
+              {live.hero.primaryCta}
+            </OpenChatButton>
+            <Button asChild size="lg" variant="onDark">
+              <a href={live.href.tel}>
+                <Phone className="h-5 w-5" />
+                <span dir="ltr">{live.phone}</span>
+              </a>
+            </Button>
+          </motion.div>
         </div>
       </div>
 

@@ -39,7 +39,7 @@ export interface Article {
 export const articles: Article[] = [
   {
     slug: 'workplace-bullying',
-    areaSlug: 'workplace-discrimination',
+    areaSlug: 'torts',
     title: 'התעמרות בעבודה: מה זה, איך מזהים ומה אפשר לעשות',
     seoTitle: 'התעמרות בעבודה: איך מזהים ומה עושים',
     seoDescription:
@@ -106,7 +106,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'workplace-discrimination',
-    areaSlug: 'workplace-discrimination',
+    areaSlug: 'torts',
     title: 'אפליה בעבודה: מה אסור למעסיק ואיך מתעדים',
     seoTitle: 'אפליה בעבודה: מה אסור ואיך מתעדים',
     seoDescription:
@@ -169,7 +169,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'hearing-before-dismissal',
-    areaSlug: 'workplace-discrimination',
+    areaSlug: 'torts',
     title: 'שימוע לפני פיטורים: זכויות העובד ומה עושים כשמוזמנים אליו',
     seoTitle: 'שימוע לפני פיטורים: מה זכויותיך',
     seoDescription:
@@ -225,7 +225,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'sexual-harassment-at-work',
-    areaSlug: 'sexual-harassment',
+    areaSlug: 'torts',
     title: 'הטרדה מינית במקום העבודה: מה החוק קובע ומה האפשרויות',
     seoTitle: 'הטרדה מינית בעבודה: החוק והאפשרויות',
     seoDescription:
@@ -397,17 +397,17 @@ export const articles: Article[] = [
   },
 ];
 
-export function getArticle(slug: string): Article | undefined {
-  return articles.find((a) => a.slug === slug);
+export function getArticle(slug: string, list: Article[] = articles): Article | undefined {
+  return list.find((a) => a.slug === slug);
 }
 
-export function articlesForArea(areaSlug: string): Article[] {
-  return articles.filter((a) => a.areaSlug === areaSlug);
+export function articlesForArea(areaSlug: string, list: Article[] = articles): Article[] {
+  return list.filter((a) => a.areaSlug === areaSlug);
 }
 
 /** Dates are ISO strings so they can be passed to JSON-LD, RSS and the sitemap as-is. */
-export function newestArticles(count: number): Article[] {
-  return [...articles].sort((a, b) => b.published.localeCompare(a.published)).slice(0, count);
+export function newestArticles(count: number, list: Article[] = articles): Article[] {
+  return [...list].sort((a, b) => b.published.localeCompare(a.published)).slice(0, count);
 }
 
 /** Hebrew long date, e.g. "26 באוקטובר 2026". */
