@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
-import { brand } from '@/lib/brand';
+import { useBrand } from '@/components/layout/BrandProvider';
 import { LeadSchema } from '@/lib/lead';
 import { submitLead } from '@/lib/actions/lead';
 
@@ -87,11 +87,11 @@ function loadSaved(): UIMessage[] {
   }
 }
 
-const greeting: UIMessage = {
-  id: 'greeting',
-  role: 'assistant',
-  parts: [{ type: 'text', text: brand.chat.greeting }],
-};
+function greetingMessage(text: string): UIMessage {
+  return { id: 'greeting', role: 'assistant', parts: [{ type: 'text', text }] };
+}
+
+const GREETING_ID = 'greeting';
 
 function uid(): string {
   return typeof crypto !== 'undefined' && crypto.randomUUID
@@ -129,6 +129,7 @@ export function useConcierge(): Concierge {
 }
 
 export function ConciergeProvider({ children }: { children: React.ReactNode }) {
+  const brand = useBrand();
   const [sessionId] = React.useState(uid);
   const [panelOpen, setPanelOpen] = React.useState(false);
   const [intake, setIntake] = React.useState<{ step: IntakeStep; data: IntakeData } | null>(null);
@@ -151,6 +152,7 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
     [sessionId],
   );
 
+  const greeting = React.useMemo(() => greetingMessage(brand.chat.greeting), [brand.chat.greeting]);
   const chat = useChat({ transport, messages: [greeting] });
   const { setMessages } = chat;
 
@@ -162,7 +164,7 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
     restored.current = true;
     const saved = loadSaved();
     if (saved.length > 0) setMessages([greeting, ...saved]);
-  }, [setMessages]);
+  }, [setMessages, greeting]);
 
   React.useEffect(() => {
     if (!restored.current || chat.status !== 'ready') return;
@@ -172,7 +174,7 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
     } catch {
       /* storage unavailable: the chat still works */
     }
-  }, [chat.messages, chat.status]);
+  }, [chat.messages, chat.status, greeting.id]);
 
   const say = React.useCallback(
     (role: 'user' | 'assistant', text: string, ex?: Extras) => {
@@ -189,7 +191,7 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
       ...brand.about.additionalAreas.filter((a) => a.topic).map((a) => ({ value: a.topic, label: a.topic })),
       { value: 'לא בטוח/ת', label: 'לא בטוח/ת' },
     ],
-    [],
+    [brand.practiceAreas, brand.about.additionalAreas],
   );
 
   const finish = React.useCallback(
@@ -240,7 +242,7 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
         setIntake(null);
       }
     },
-    [say],
+    [say, brand.phone],
   );
 
   /** Advances the intake by one step. `shown` is what the visitor sees as their reply. */
@@ -400,7 +402,7 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
     } catch {
       /* storage unavailable: nothing to clear */
     }
-  }, [submitting, chat, setMessages]);
+  }, [submitting, chat, setMessages, greeting]);
 
   const aiBusy = chat.status === 'submitted' || chat.status === 'streaming';
   const busy = aiBusy || submitting;

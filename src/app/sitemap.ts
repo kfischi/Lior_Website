@@ -1,5 +1,4 @@
 import type { MetadataRoute } from 'next';
-import { brand } from '@/lib/brand';
 import { getSiteContent } from '@/lib/sanity/content';
 import { siteUrl } from '@/lib/utils';
 
@@ -10,7 +9,7 @@ import { siteUrl } from '@/lib/utils';
 export const revalidate = 60;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { articles } = await getSiteContent();
+  const { articles, brand } = await getSiteContent();
   const base = siteUrl();
   const lastModified = new Date(brand.seo.lastModified);
 

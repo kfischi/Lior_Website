@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { brand, type PracticeArea } from './brand';
+import { brand as staticBrand, type PracticeArea } from './brand';
+import type { Brand } from './sanity/settings';
 import type { Article } from './articles';
 import { siteUrl } from './utils';
 
@@ -13,6 +14,8 @@ import { siteUrl } from './utils';
  */
 
 interface PageMetaInput {
+  /** The brand with edited settings applied. Defaults to brand.ts. */
+  brand?: Brand;
   /** Inner-page title; the brand suffix is appended. */
   title?: string;
   /** Full <title>, used as-is (home page). Wins over `title`. */
@@ -43,6 +46,7 @@ function verificationTags(): Pick<Metadata, 'verification'> {
 }
 
 export function buildMetadata({
+  brand: b = staticBrand,
   title,
   absoluteTitle,
   description,
@@ -53,17 +57,17 @@ export function buildMetadata({
 }: PageMetaInput = {}): Metadata {
   const base = siteUrl();
   const fullTitle =
-    absoluteTitle ?? (title ? `${title} | ${brand.seo.titleSuffix}` : brand.firmName);
-  const desc = description || brand.description;
+    absoluteTitle ?? (title ? `${title} | ${b.seo.titleSuffix}` : b.firmName);
+  const desc = description || b.description;
   const url = `${base}${path === '/' ? '' : path}` || base;
-  const image = { url: ogImage, width: 1200, height: 630, alt: brand.firmName };
+  const image = { url: ogImage, width: 1200, height: 630, alt: b.firmName };
 
   return {
     metadataBase: new URL(base),
     title: absoluteTitle || title ? { absolute: fullTitle } : fullTitle,
     description: desc,
-    applicationName: brand.firmName,
-    authors: [{ name: brand.attorneyName }],
+    applicationName: b.firmName,
+    authors: [{ name: b.attorneyName }],
     alternates: { canonical: path },
     robots: noindex ? { index: false, follow: false } : { index: true, follow: true },
     ...verificationTags(),
@@ -72,7 +76,7 @@ export function buildMetadata({
         ? { type: 'article' as const, publishedTime: article.published, modifiedTime: article.modified }
         : { type: 'website' as const }),
       locale: 'he_IL',
-      siteName: brand.firmName,
+      siteName: b.firmName,
       title: fullTitle,
       description: desc,
       url,
@@ -88,44 +92,44 @@ export function buildMetadata({
 }
 
 /** Organization-level structured data: LegalService. */
-export function legalServiceJsonLd() {
+export function legalServiceJsonLd(b: Brand = staticBrand) {
   const base = siteUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'LegalService',
     '@id': `${base}/#firm`,
-    name: brand.firmName,
-    description: brand.description,
+    name: b.firmName,
+    description: b.description,
     url: base,
     image: `${base}${DEFAULT_OG_IMAGE}`,
-    telephone: `+${brand.phoneE164}`,
-    faxNumber: brand.fax,
-    email: brand.email,
+    telephone: `+${b.phoneE164}`,
+    faxNumber: b.fax,
+    email: b.email,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: brand.address.street,
-      addressLocality: brand.address.city,
-      postalCode: brand.address.postalCode,
-      addressCountry: brand.address.country,
+      streetAddress: b.address.street,
+      addressLocality: b.address.city,
+      postalCode: b.address.postalCode,
+      addressCountry: b.address.country,
     },
     knowsLanguage: 'he',
-    serviceType: brand.practiceAreas.map((a) => a.title),
-    knowsAbout: brand.seo.knowsAbout,
-    hasMap: brand.mapUrl,
+    serviceType: b.practiceAreas.map((a) => a.title),
+    knowsAbout: b.seo.knowsAbout,
+    hasMap: b.mapUrl,
     founder: { '@id': `${base}/#attorney` },
-    sameAs: Object.values(brand.social).filter(Boolean),
+    sameAs: Object.values(b.social).filter(Boolean),
   };
 }
 
 /** The site itself, linked to the firm as publisher (helps entity resolution). */
-export function websiteJsonLd() {
+export function websiteJsonLd(b: Brand = staticBrand) {
   const base = siteUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     '@id': `${base}/#website`,
     url: base,
-    name: brand.firmName,
+    name: b.firmName,
     inLanguage: 'he-IL',
     publisher: { '@id': `${base}/#firm` },
   };
@@ -135,15 +139,15 @@ export function websiteJsonLd() {
  * The attorney as a schema.org Person who works for the firm. (schema.org's `Attorney` type is a local business,
  * not a person, so it would duplicate the firm's address and phone as a second business.)
  */
-export function attorneyJsonLd() {
+export function attorneyJsonLd(b: Brand = staticBrand) {
   const base = siteUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
     '@id': `${base}/#attorney`,
-    name: brand.attorneyName,
-    knowsAbout: brand.seo.knowsAbout,
-    image: `${base}${brand.about.portraitId}`,
+    name: b.attorneyName,
+    knowsAbout: b.seo.knowsAbout,
+    image: `${base}${b.about.portraitId}`,
     jobTitle: 'עורכת דין',
     worksFor: { '@id': `${base}/#firm` },
     url: base,
@@ -165,7 +169,7 @@ export function serviceJsonLd(area: PracticeArea) {
 }
 
 /** FAQPage structured data. Must match the FAQ visible on the same page. */
-export function faqJsonLd(items: { question: string; answer: string }[] = brand.faq) {
+export function faqJsonLd(items: { question: string; answer: string }[] = staticBrand.faq) {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -193,7 +197,7 @@ export function breadcrumbJsonLd(crumbs: { name: string; path: string }[]) {
 }
 
 /** A guide as schema.org Article. Author and publisher are the firm's attorney and firm. */
-export function articleJsonLd(article: Article) {
+export function articleJsonLd(article: Article, b: Brand = staticBrand) {
   const base = siteUrl();
   const url = `${base}/articles/${article.slug}`;
   return {
@@ -212,7 +216,7 @@ export function articleJsonLd(article: Article) {
     author: { '@id': `${base}/#attorney` },
     publisher: { '@id': `${base}/#firm` },
     isPartOf: { '@id': `${base}/#website` },
-    about: brand.practiceAreas.find((a) => a.slug === article.areaSlug)?.title,
+    about: b.practiceAreas.find((a) => a.slug === article.areaSlug)?.title,
     speakable: {
       '@type': 'SpeakableSpecification',
       cssSelector: ['[data-speakable]'],

@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
 import { MapPin, MessageCircle, Mic, Phone, Play, RotateCcw, Send, Shield, Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X } from 'lucide-react';
 import type { UIMessage } from 'ai';
-import { brand, telHref, whatsappHref } from '@/lib/brand';
+import { useBrand } from '@/components/layout/BrandProvider';
 import { cn } from '@/lib/utils';
 import { splitSuggestions } from '@/lib/ai/suggestions';
 import { splitSiteAction, type SiteTarget } from '@/lib/site-actions';
@@ -20,8 +20,8 @@ import { useSpeechInput, useSpeechOutput } from './useVoice';
 const INTRO_SEEN_KEY = 'concierge-intro-seen-v1';
 
 /** The welcome opens (and speaks) once per browser tab, and only in the floating window. */
-function introWanted(enabled: boolean): boolean {
-  if (!enabled || !brand.chat.welcome.photo || typeof window === 'undefined') return false;
+function introWanted(enabled: boolean, welcomePhoto: string): boolean {
+  if (!enabled || !welcomePhoto || typeof window === 'undefined') return false;
   try {
     return !sessionStorage.getItem(INTRO_SEEN_KEY);
   } catch {
@@ -42,6 +42,7 @@ const PLACEHOLDER: Record<IntakeStep, string> = {
 
 /** The assistant's round photo. It is a brand image, so it carries no alt text. */
 export function Avatar({ className, speaking }: { className?: string; speaking?: boolean }) {
+  const brand = useBrand();
   return (
     <Image
       src={brand.chat.avatar}
@@ -184,6 +185,8 @@ function Bubble({
   question?: string;
   showFeedback?: boolean;
 }) {
+  const brand = useBrand();
+  const { tel: telHref } = brand.href;
   const { extras, choose, startIntake, busy, closePanel } = useConcierge();
   const goTo = useSiteNavigator();
   const [vote, setVote] = React.useState<'up' | 'down' | null>(null);
@@ -388,6 +391,8 @@ export function ConciergePanel({
   onClose?: () => void;
   autoFocus?: boolean;
 }) {
+  const brand = useBrand();
+  const { tel: telHref, whatsapp: whatsappHref } = brand.href;
   const {
     messages,
     status,
@@ -411,7 +416,7 @@ export function ConciergePanel({
   const inputRef = React.useRef<HTMLInputElement>(null);
   const hasIntro = Boolean(brand.chat.welcome.photo);
   const [docOpen, setDocOpen] = React.useState(false);
-  const [intro, setIntro] = React.useState(() => introWanted(autoFocus));
+  const [intro, setIntro] = React.useState(() => introWanted(autoFocus, brand.chat.welcome.photo));
   const [introDelay, setIntroDelay] = React.useState(INTRO_START_DELAY_MS);
 
   const replayRef = React.useRef<HTMLButtonElement>(null);

@@ -1,11 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { brand } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 import { Icon } from './Icon';
 
-export function PracticeAreas() {
+export async function PracticeAreas() {
+  const brand = await getBrand();
   return (
     <section
       id="practice"

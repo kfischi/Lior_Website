@@ -854,6 +854,15 @@ export const brand = {
 export type Brand = typeof brand;
 
 /** Convenience helpers used across the app. */
+/** Contact links built from any brand-shaped object, so edited phone numbers and emails are used. */
+export function links(b: { phoneE164: string; whatsapp: string; email: string }) {
+  return {
+    tel: `tel:+${b.phoneE164}`,
+    whatsapp: `https://wa.me/${b.whatsapp}`,
+    mail: `mailto:${b.email}`,
+  };
+}
+
 export const telHref = `tel:+${brand.phoneE164}`;
 export const whatsappHref = `https://wa.me/${brand.whatsapp}`;
 export const mailHref = `mailto:${brand.email}`;

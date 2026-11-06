@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { brand } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 import { formatHebrewDate, type Article } from '@/lib/articles';
 
 /** Card linking to a guide; used on the home page, the hub and related lists. */
-export function ArticleCard({ article, headingLevel: Heading = 'h3' }: { article: Article; headingLevel?: 'h2' | 'h3' }) {
+export async function ArticleCard({ article, headingLevel: Heading = 'h3' }: { article: Article; headingLevel?: 'h2' | 'h3' }) {
+  const brand = await getBrand();
   const area = brand.practiceAreas.find((a) => a.slug === article.areaSlug);
   return (
     <Link

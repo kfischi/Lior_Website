@@ -1,4 +1,3 @@
-import { brand } from '@/lib/brand';
 import { getSiteContent } from '@/lib/sanity/content';
 import { siteUrl } from '@/lib/utils';
 
@@ -9,7 +8,7 @@ import { siteUrl } from '@/lib/utils';
 export const revalidate = 60;
 
 export async function GET() {
-  const { articles } = await getSiteContent();
+  const { articles, brand } = await getSiteContent();
   const base = siteUrl();
   const areas = brand.practiceAreas
     .map((a) => `- [${a.title}](${base}/practice-areas/${a.slug}): ${a.description}`)

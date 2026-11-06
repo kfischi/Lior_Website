@@ -7,6 +7,7 @@ import { SITE_TARGETS, splitSiteAction, withSiteAction, type SiteTarget } from '
 import { withSuggestions } from '../suggestions';
 import { search, type EngineContent, type Hit, type Note } from './engine';
 import { getSiteContent } from '@/lib/sanity/content';
+import type { Brand } from '@/lib/sanity/settings';
 import { splitSuggestions } from '../suggestions';
 import { analyze, normalizeText, tokens } from './text';
 
@@ -296,8 +297,34 @@ export interface LocalReplyOptions {
   recordUnknown?: boolean;
 }
 
+/**
+ * The fixed answers in knowledge.ts are written with the contact details of brand.ts. When the office
+ * edits them in the Studio, the same details are swapped in here, so the chat never quotes an old number.
+ */
+function withLiveContact(text: string, live: Brand): string {
+  const swaps: [string, string][] = [
+    [brand.phone, live.phone],
+    [brand.email, live.email],
+    [brand.address.street, live.address.street],
+    [brand.address.city, live.address.city],
+    [brand.firmName, live.firmName],
+    [brand.attorneyName, live.attorneyName],
+  ];
+  return swaps.reduce((out, [from, to]) => (from && to && from !== to ? out.split(from).join(to) : out), text);
+}
+
 /** Answer a question from the site and from what the attorney taught. */
 export async function localReply(
+  question: string,
+  previousQuestion?: string,
+  options: LocalReplyOptions = {},
+): Promise<string> {
+  const content = options.content ?? (await getSiteContent());
+  const reply = await answerLocally(question, previousQuestion, { ...options, content });
+  return withLiveContact(reply, 'brand' in content && content.brand ? (content.brand as Brand) : brand);
+}
+
+async function answerLocally(
   question: string,
   previousQuestion?: string,
   options: LocalReplyOptions = {},

@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { MapPin, Phone, Mail, Clock, Printer } from 'lucide-react';
-import { brand, telHref, mailHref } from '@/lib/brand';
+import { links } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 
 /** Inline brand glyphs (lucide dropped brand logos in v1). */
 function Facebook({ className }: { className?: string }) {
@@ -34,7 +35,9 @@ const LEGAL_LINKS = [
   { href: '/legal/terms', label: 'תנאי שימוש' },
 ];
 
-export function Footer() {
+export async function Footer() {
+  const brand = await getBrand();
+  const { tel: telHref, mail: mailHref } = links(brand);
   const year = new Date().getFullYear();
   const { facebook, linkedin, instagram } = brand.social;
 

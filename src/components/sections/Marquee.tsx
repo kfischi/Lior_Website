@@ -1,11 +1,12 @@
-import { brand } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 
 /**
  * A slow band of the practice areas and values, directly under the hero.
  * Pure CSS motion (see --animate-marquee); the second copy is hidden from
  * assistive technology, and reduced-motion users get it static.
  */
-export function Marquee() {
+export async function Marquee() {
+  const brand = await getBrand();
   const words = [...brand.practiceAreas.map((a) => a.title), ...brand.marquee];
   // Repeat the list so one copy is always wider than the viewport.
   const row = [...words, ...words];

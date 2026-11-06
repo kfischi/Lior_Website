@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ChevronLeft, MessageCircle, MessagesSquare } from 'lucide-react';
-import { brand, whatsappHref } from '@/lib/brand';
+import { links } from '@/lib/brand';
 import { articlesForArea } from '@/lib/articles';
-import { getSiteContent } from '@/lib/sanity/content';
+import { getBrand, getSiteContent } from '@/lib/sanity/content';
 import { ArticleCard } from '@/components/sections/ArticleCard';
 import { breadcrumbJsonLd, buildMetadata, faqJsonLd, serviceJsonLd } from '@/lib/seo';
 import { Header } from '@/components/sections/Header';
@@ -21,9 +21,9 @@ import {
 
 type Params = { slug: string };
 
-export const dynamicParams = false;
-
-export function generateStaticParams(): Params[] {
+// An area added in the Studio after the last build renders on its first visit.
+export async function generateStaticParams(): Promise<Params[]> {
+  const brand = await getBrand();
   return brand.practiceAreas.map((a) => ({ slug: a.slug }));
 }
 
@@ -33,9 +33,11 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const brand = await getBrand();
   const area = brand.practiceAreas.find((a) => a.slug === slug);
   if (!area) return {};
   return buildMetadata({
+    brand,
     title: area.page.seoTitle,
     description: area.page.seoDescription,
     path: `/practice-areas/${area.slug}`,
@@ -53,6 +55,8 @@ function JsonLd({ data }: { data: unknown }) {
 
 export default async function PracticeAreaPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
+  const brand = await getBrand();
+  const whatsappHref = links(brand).whatsapp;
   const area = brand.practiceAreas.find((a) => a.slug === slug);
   if (!area) notFound();
 

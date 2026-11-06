@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
 import { ChevronDown, MessagesSquare, Phone } from 'lucide-react';
-import { brand, telHref } from '@/lib/brand';
+import { brand } from '@/lib/brand';
+import { useBrand } from '@/components/layout/BrandProvider';
 import { Button } from '@/components/ui/button';
 import { OpenChatButton } from '@/components/ai/OpenChatButton';
 import { videoSources } from '@/lib/media';
@@ -14,6 +15,7 @@ import { HeroVideo } from './HeroVideo';
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function Hero() {
+  const live = useBrand();
   const reduced = useReducedMotion();
   const hasVideo = Boolean(brand.hero.videoUrl);
   const ref = React.useRef<HTMLElement>(null);
@@ -23,7 +25,7 @@ export function Hero() {
   const mediaY = useTransform(scrollYProgress, [0, 1], ['0%', '14%']);
   const mediaScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
-  const words = brand.hero.title.split(' ');
+  const words = live.hero.title.split(' ');
   const fade = (delay: number) => ({
     initial: reduced ? false : { opacity: 0, y: 24 },
     animate: { opacity: 1, y: 0 },
@@ -85,7 +87,7 @@ export function Hero() {
             {...fade(0.1)}
             className="eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance max-sm:before:hidden max-sm:after:hidden md:text-4xl"
           >
-            {brand.hero.eyebrow}
+            {live.hero.eyebrow}
           </motion.p>
 
           <h1 className="text-[clamp(2.3rem,5.2vw,4.5rem)] font-semibold leading-[1.04] tracking-tight text-cream">
@@ -109,19 +111,19 @@ export function Hero() {
             {...fade(0.8)}
             className="mt-5 max-w-xl text-base leading-relaxed text-cream/95 md:text-lg"
           >
-            {brand.hero.subtitle}
+            {live.hero.subtitle}
           </motion.p>
 
           {/* The first screen must say what to do next: talk to the assistant, or call. */}
           <motion.div {...fade(0.95)} className="mt-7 flex flex-wrap gap-3">
             <OpenChatButton size="lg" variant="accentOnDark">
               <MessagesSquare className="h-5 w-5" />
-              {brand.hero.primaryCta}
+              {live.hero.primaryCta}
             </OpenChatButton>
             <Button asChild size="lg" variant="onDark">
-              <a href={telHref}>
+              <a href={live.href.tel}>
                 <Phone className="h-5 w-5" />
-                <span dir="ltr">{brand.phone}</span>
+                <span dir="ltr">{live.phone}</span>
               </a>
             </Button>
           </motion.div>

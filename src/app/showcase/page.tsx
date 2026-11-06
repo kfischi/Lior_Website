@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CheckCircle2, Hammer, Lightbulb } from 'lucide-react';
-import { brand } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 import { buildMetadata } from '@/lib/seo';
 import { showcase, type Capability, type CapabilityGroup, type CapabilityStatus } from '@/lib/showcase';
 import { Reveal } from '@/components/motion/Reveal';
@@ -47,7 +47,8 @@ function Card({ item }: { item: Capability }) {
   );
 }
 
-export default function ShowcasePage() {
+export default async function ShowcasePage() {
+  const brand = await getBrand();
   const live = showcase.capabilities.filter((c) => c.status === 'live').length;
   const next = showcase.capabilities.length - live;
   const { whatsapp, email } = showcase.contact;

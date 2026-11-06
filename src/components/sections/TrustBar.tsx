@@ -1,5 +1,5 @@
 import { Award, Gavel, Landmark, Scale, type LucideIcon } from 'lucide-react';
-import { brand } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 import { Reveal } from '@/components/motion/Reveal';
 
 /** One icon per credential, in the order they are listed in `brand.about.credentials`. */
@@ -9,7 +9,8 @@ const ICONS: LucideIcon[] = [Scale, Landmark, Gavel, Award];
  * The proof a visitor looks for in the first seconds: how long, and where from. It shows only what the brand file
  * states (years of experience, listed credentials), never a placeholder.
  */
-export function TrustBar() {
+export async function TrustBar() {
+  const brand = await getBrand();
   const stats = brand.trustStats;
   const credentials = brand.about.credentials.slice(0, 3);
   if (stats.length === 0 && credentials.length === 0) return null;

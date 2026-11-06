@@ -4,7 +4,8 @@ import * as React from 'react';
 import Image from 'next/image';
 import { Captions, CaptionsOff, FileText, Play, Volume2, VolumeX, X } from 'lucide-react';
 import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
-import { brand, type IntroSegment } from '@/lib/brand';
+import { type IntroSegment } from '@/lib/brand';
+import { useBrand } from '@/components/layout/BrandProvider';
 import { cn } from '@/lib/utils';
 import { applyTour, clearTour } from './tour';
 
@@ -26,6 +27,7 @@ export function IntroStage({
   /** Move keyboard focus into the card when it opens (a replay the visitor asked for). */
   focusOnShow?: boolean;
 }) {
+  const brand = useBrand();
   const { photo, audio, segments } = brand.chat.welcome;
   // Without a recording the card still opens, as a photo with the welcome text.
   const hasAudio = Boolean(audio);

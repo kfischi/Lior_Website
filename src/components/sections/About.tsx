@@ -1,9 +1,10 @@
 import Image from 'next/image';
 import { Check, Scale } from 'lucide-react';
-import { brand } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 import { Reveal } from '@/components/motion/Reveal';
 
-export function About() {
+export async function About() {
+  const brand = await getBrand();
   return (
     <section id="about" aria-labelledby="about-title" className="section overflow-hidden bg-cream">
       <div className="shell">

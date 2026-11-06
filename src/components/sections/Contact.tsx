@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import { Clock, MapPin, Mail, Phone, type LucideIcon } from 'lucide-react';
-import { brand, telHref, whatsappHref, mailHref } from '@/lib/brand';
+import { links } from '@/lib/brand';
+import type { Brand } from '@/lib/sanity/settings';
+import { getBrand } from '@/lib/sanity/content';
 import { WhatsAppIcon } from '@/components/ui/whatsapp-icon';
 import { Reveal } from '@/components/motion/Reveal';
 import { CallbackForm } from './CallbackForm';
@@ -13,7 +15,9 @@ interface ContactItem {
   icon: LucideIcon | typeof WhatsAppIcon;
 }
 
-const ITEMS: ContactItem[] = [
+function contactItems(brand: Brand): ContactItem[] {
+  const { tel: telHref, whatsapp: whatsappHref, mail: mailHref } = links(brand);
+  return [
   { label: 'טלפון', value: brand.phone, href: telHref, icon: Phone },
   { label: 'וואטסאפ', value: brand.phone, href: whatsappHref, external: true, icon: WhatsAppIcon },
   { label: 'דוא״ל', value: brand.email, href: mailHref, icon: Mail },
@@ -26,9 +30,12 @@ const ITEMS: ContactItem[] = [
   },
   { label: 'פגישות', value: brand.hours, icon: Clock },
 ];
+}
 
 /** Direct contact details. The conversation itself lives in the floating chat. */
-export function Contact() {
+export async function Contact() {
+  const brand = await getBrand();
+  const ITEMS = contactItems(brand);
   return (
     <section
       id="contact"

@@ -1,4 +1,3 @@
-import { brand } from '@/lib/brand';
 import { getSiteContent } from '@/lib/sanity/content';
 import { siteUrl } from '@/lib/utils';
 
@@ -9,7 +8,7 @@ const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 export async function GET() {
-  const { articles } = await getSiteContent();
+  const { articles, brand } = await getSiteContent();
   const base = siteUrl();
   const items = [...articles]
     .sort((a, b) => b.published.localeCompare(a.published))

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { FileText, Loader2, Phone, X } from 'lucide-react';
-import { brand, telHref } from '@/lib/brand';
+import { useBrand } from '@/components/layout/BrandProvider';
 import { readDocument, summaryForChat, type DocumentReading } from '@/lib/document/analyze';
 
 type State =
@@ -41,6 +41,8 @@ function relative(days: number): string {
  * never leave the device unless the visitor chooses to send a one-line summary to the chat.
  */
 export function DocumentReader({ onClose, onSend }: { onClose: () => void; onSend: (text: string) => void }) {
+  const brand = useBrand();
+  const { tel: telHref } = brand.href;
   const [state, setState] = React.useState<State>({ step: 'idle' });
   const inputRef = React.useRef<HTMLInputElement>(null);
   const closeRef = React.useRef<HTMLButtonElement>(null);

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { brand } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 import { newestArticles, type Article } from '@/lib/articles';
 import { getSiteContent } from '@/lib/sanity/content';
 import { ArticleCard } from './ArticleCard';
@@ -7,6 +7,7 @@ import { PressList } from './PressList';
 
 /** Home page teaser for the guides hub. */
 export async function Articles() {
+  const brand = await getBrand();
   const { articles } = await getSiteContent();
   // One guide per practice area first, so every visitor finds something for their own case; then the newest.
   const all = newestArticles(100, articles);

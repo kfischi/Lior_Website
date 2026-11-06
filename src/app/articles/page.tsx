@@ -1,35 +1,37 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { brand } from '@/lib/brand';
-import { getSiteContent } from '@/lib/sanity/content';
-import { breadcrumbJsonLd, buildMetadata } from '@/lib/seo';
-import { siteUrl } from '@/lib/utils';
-import { Header } from '@/components/sections/Header';
-import { Footer } from '@/components/sections/Footer';
-import { ArticleCard } from '@/components/sections/ArticleCard';
-import { PressList } from '@/components/sections/PressList';
+import type { Metadata } from "next";
+import Link from "next/link";
+import { getSiteContent } from "@/lib/sanity/content";
+import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
+import { siteUrl } from "@/lib/utils";
+import { Header } from "@/components/sections/Header";
+import { Footer } from "@/components/sections/Footer";
+import { ArticleCard } from "@/components/sections/ArticleCard";
+import { PressList } from "@/components/sections/PressList";
 
-export const metadata: Metadata = buildMetadata({
-  title: 'מדריכים ומאמרים משפטיים',
-  description:
-    'מדריכים ברורים בעברית על התעמרות ואפליה בעבודה, שימוע לפני פיטורים, הטרדה מינית וחקירה במשטרה. מידע כללי מעורכת דין בחריש.',
-  path: '/articles',
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMetadata({
+    brand: (await getSiteContent()).brand,
+    title: "מדריכים ומאמרים משפטיים",
+    description:
+      "מדריכים ברורים בעברית על התעמרות ואפליה בעבודה, שימוע לפני פיטורים, הטרדה מינית וחקירה במשטרה. מידע כללי מעורכת דין בחריש.",
+    path: "/articles",
+  });
+}
 
 export default async function ArticlesPage() {
-  const { articles } = await getSiteContent();
+  const { articles, brand } = await getSiteContent();
   const base = siteUrl();
   const collection = {
-    '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: 'מדריכים ומאמרים משפטיים',
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "מדריכים ומאמרים משפטיים",
     url: `${base}/articles`,
-    inLanguage: 'he-IL',
-    isPartOf: { '@id': `${base}/#website` },
+    inLanguage: "he-IL",
+    isPartOf: { "@id": `${base}/#website` },
     mainEntity: {
-      '@type': 'ItemList',
+      "@type": "ItemList",
       itemListElement: articles.map((a, i) => ({
-        '@type': 'ListItem',
+        "@type": "ListItem",
         position: i + 1,
         url: `${base}/articles/${a.slug}`,
         name: a.title,
@@ -39,28 +41,38 @@ export default async function ArticlesPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collection) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collection) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
             breadcrumbJsonLd([
-              { name: 'ראשי', path: '/' },
-              { name: 'מדריכים', path: '/articles' },
+              { name: "ראשי", path: "/" },
+              { name: "מדריכים", path: "/articles" },
             ]),
           ),
         }}
       />
       <Header />
       <main id="main">
-        <section aria-labelledby="hub-title" className="bg-navy pb-16 pt-36 text-cream md:pb-20">
+        <section
+          aria-labelledby="hub-title"
+          className="bg-navy pb-16 pt-36 text-cream md:pb-20"
+        >
           <div className="shell max-w-4xl">
             <p className="eyebrow mb-4 text-accent-light">{brand.firmName}</p>
-            <h1 id="hub-title" className="text-4xl font-semibold text-cream md:text-6xl">
+            <h1
+              id="hub-title"
+              className="text-4xl font-semibold text-cream md:text-6xl"
+            >
               מדריכים ומאמרים
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-cream/85">
-              מידע כללי וברור על הזכויות שלכם בעבודה, בהטרדה מינית ובהליך הפלילי. כל מדריך נפתח בתשובה קצרה, ואחריה הסבר מסודר.
+              מידע כללי וברור על הזכויות שלכם בעבודה, בהטרדה מינית ובהליך
+              הפלילי. כל מדריך נפתח בתשובה קצרה, ואחריה הסבר מסודר.
             </p>
           </div>
         </section>
@@ -75,7 +87,11 @@ export default async function ArticlesPage() {
             </ul>
             <PressList headingId="press-hub-title" />
             <p className="mt-12 text-sm text-ink/75">
-              {brand.chat.disclaimer} יש לכם שאלה אחרת? <Link href="/faq" className="text-accent underline">לכל השאלות והתשובות</Link>.
+              {brand.chat.disclaimer} יש לכם שאלה אחרת?{" "}
+              <Link href="/faq" className="text-accent underline">
+                לכל השאלות והתשובות
+              </Link>
+              .
             </p>
           </div>
         </section>

@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { practiceArea, siteSettings } from './settings-schema';
 
 /**
  * Content types the office edits in the Studio (/studio).
@@ -278,4 +279,14 @@ export const videoReview = defineType({
   preview: { select: { title: 'label', subtitle: 'youtubeId' } },
 });
 
-export const schemaTypes = [faqItem, testimonial, pressArticle, article, videoReview, faqEntry, articleSection];
+export const schemaTypes = [
+  siteSettings,
+  practiceArea,
+  article,
+  faqItem,
+  testimonial,
+  videoReview,
+  pressArticle,
+  faqEntry,
+  articleSection,
+];

@@ -7,6 +7,7 @@ import videoTranscripts from '@/lib/video-transcripts.json';
 import { articles as staticArticles, type Article } from '@/lib/articles';
 import { sanityEnv } from '@/sanity/env';
 import { withTimeout } from '@/lib/with-timeout';
+import { mergeSettings, parseAreas, type Brand } from './settings';
 
 /**
  * Editable content, read from Sanity on the server.
@@ -29,6 +30,8 @@ export interface SiteContent {
   press: PressArticle[];
   articles: Article[];
   videoReviews: VideoReview[];
+  /** brand.ts with the edited site settings and practice areas applied. Same shape, so it can be used like `brand`. */
+  brand: Brand;
   /** Where each list came from, for the health check and the docs. */
   source: Record<'faq' | 'testimonials' | 'press' | 'articles' | 'videoReviews', 'sanity' | 'brand'>;
 }
@@ -105,6 +108,10 @@ function toVideoReview(v: z.infer<typeof videoSchema>): VideoReview {
 }
 
 const QUERY = `{
+  "settings": *[_id == "siteSettings"][0],
+  "areas": *[_type == "practiceArea"] | order(order asc, _createdAt asc){
+    "slug": slug.current, title, description, icon, seoTitle, seoDescription, intro, handles, steps, faq[]{question, answer}
+  },
   "faq": *[_type == "faqItem"] | order(order asc, _createdAt asc){question, answer},
   "testimonials": *[_type == "testimonial"] | order(date desc){name, date, rating, text},
   "press": *[_type == "pressArticle"] | order(date desc){title, outlet, date, url, excerpt},
@@ -140,6 +147,7 @@ const fromBrand = (): SiteContent => ({
   press: brand.press,
   articles: staticArticles,
   videoReviews: brand.videoReviews,
+  brand,
   source: { faq: 'brand', testimonials: 'brand', press: 'brand', articles: 'brand', videoReviews: 'brand' },
 });
 
@@ -155,7 +163,11 @@ export function parseSiteContent(raw: unknown): SiteContent {
   const articles = parseList(articleSchema, data.articles);
   const videos = parseList(videoSchema, data.videoReviews).map(toVideoReview);
 
+  const merged = mergeSettings(brand, data.settings);
+  const areas = parseAreas(data.areas, brand.practiceAreas);
+
   return {
+    brand: { ...merged, practiceAreas: areas },
     faq: faq.length > 0 ? faq : fallback.faq,
     testimonials: testimonials.length > 0 ? testimonials : fallback.testimonials,
     press: press.length > 0 ? press : fallback.press,
@@ -171,7 +183,12 @@ export function parseSiteContent(raw: unknown): SiteContent {
   };
 }
 
-/** The site's editable lists. Never throws: any problem returns the brand.ts lists. */
+/** The whole brand with the edited settings applied. Server only; never throws. */
+export async function getBrand(): Promise<Brand> {
+  return (await getSiteContent()).brand;
+}
+
+/** The site's editable content. Never throws: any problem returns the brand.ts lists. */
 export const getSiteContent = cache(async (): Promise<SiteContent> => {
   if (!sanityEnv.enabled) return fromBrand();
   return parseSiteContent(await withTimeout<unknown>(fetchFromSanity(), TIMEOUT_MS, null));

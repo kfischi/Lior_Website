@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { brand } from '@/lib/brand';
 import { buildMetadata, faqJsonLd } from '@/lib/seo';
 import { getSiteContent } from '@/lib/sanity/content';
 import { Header } from '@/components/sections/Header';
@@ -17,11 +16,15 @@ import { Faq } from '@/components/sections/Faq';
 import { Contact } from '@/components/sections/Contact';
 import { Footer } from '@/components/sections/Footer';
 
-export const metadata: Metadata = buildMetadata({
-  absoluteTitle: brand.seo.homeTitle,
-  description: brand.seo.homeDescription,
-  path: '/',
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const { brand } = await getSiteContent();
+  return buildMetadata({
+    brand,
+    absoluteTitle: brand.seo.homeTitle,
+    description: brand.seo.homeDescription,
+    path: '/',
+  });
+}
 
 export default async function HomePage() {
   const { faq } = await getSiteContent();

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ChevronLeft, MessageCircle, MessagesSquare } from 'lucide-react';
-import { brand, whatsappHref } from '@/lib/brand';
+import { links } from '@/lib/brand';
 import { articlesForArea, formatHebrewDate, getArticle } from '@/lib/articles';
 import { getSiteContent } from '@/lib/sanity/content';
 import { articleJsonLd, breadcrumbJsonLd, buildMetadata, faqJsonLd } from '@/lib/seo';
@@ -27,10 +27,11 @@ export async function generateStaticParams(): Promise<Params[]> {
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
-  const { articles } = await getSiteContent();
+  const { articles, brand } = await getSiteContent();
   const article = getArticle((await params).slug, articles);
   if (!article) return {};
   return buildMetadata({
+    brand,
     title: article.seoTitle,
     description: article.seoDescription,
     path: `/articles/${article.slug}`,
@@ -43,7 +44,8 @@ function JsonLd({ data }: { data: unknown }) {
 }
 
 export default async function ArticlePage({ params }: { params: Promise<Params> }) {
-  const { articles } = await getSiteContent();
+  const { articles, brand } = await getSiteContent();
+  const whatsappHref = links(brand).whatsapp;
   const article = getArticle((await params).slug, articles);
   if (!article) notFound();
 
@@ -53,7 +55,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
 
   return (
     <>
-      <JsonLd data={articleJsonLd(article)} />
+      <JsonLd data={articleJsonLd(article, brand)} />
       <JsonLd data={faqJsonLd(article.faq)} />
       <JsonLd
         data={breadcrumbJsonLd([

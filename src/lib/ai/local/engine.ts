@@ -1,4 +1,4 @@
-import { brand, type FaqItem } from '@/lib/brand';
+import { brand, type FaqItem, type PracticeArea } from '@/lib/brand';
 import { articles as staticArticles, type Article } from '@/lib/articles';
 import { knowledge } from '@/lib/knowledge';
 import type { Note as StoredNote } from '@/lib/learning/types';
@@ -61,6 +61,8 @@ function makeDoc(
 export interface EngineContent {
   faq: FaqItem[];
   articles: Article[];
+  /** Defaults to the areas in brand.ts when left out. */
+  brand?: { practiceAreas: PracticeArea[] };
 }
 
 const DEFAULT_CONTENT: EngineContent = { faq: brand.faq, articles: staticArticles };
@@ -69,7 +71,7 @@ let staticDocs: { key: string; docs: Doc[] } | null = null;
 
 /** The index is rebuilt only when the editable content actually changed. */
 function staticDocsFor(content: EngineContent): Doc[] {
-  const key = JSON.stringify([content.faq, content.articles]);
+  const key = JSON.stringify([content.faq, content.articles, content.brand?.practiceAreas]);
   if (!staticDocs || staticDocs.key !== key) staticDocs = { key, docs: buildStatic(content) };
   return staticDocs.docs;
 }
@@ -116,7 +118,7 @@ function buildStatic(content: EngineContent = DEFAULT_CONTENT): Doc[] {
     ),
   );
 
-  for (const area of brand.practiceAreas) {
+  for (const area of content.brand?.practiceAreas ?? brand.practiceAreas) {
     const link = `/practice-areas/${area.slug}`;
     docs.push(
       makeDoc(

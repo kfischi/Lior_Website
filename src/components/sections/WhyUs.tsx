@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { brand } from '@/lib/brand';
+import { getBrand } from '@/lib/sanity/content';
 import { cn } from '@/lib/utils';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 import { Icon } from './Icon';
@@ -12,7 +12,8 @@ const PLACEMENT = [
   'lg:col-span-3',
 ];
 
-export function WhyUs() {
+export async function WhyUs() {
+  const brand = await getBrand();
   const [feature, ...rest] = brand.whyUs;
 
   return (
