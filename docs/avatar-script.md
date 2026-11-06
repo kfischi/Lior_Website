@@ -17,7 +17,7 @@ site all read it. `npm run avatar` builds the video from it (see `.claude/skills
 9. ואם אתם רוצים לשמוע מלקוחות, יש באתר המלצות וסרטונים של אנשים שסיפרו על החוויה שלהם.  _(marks: reviews)_
 10. ואם אתם מעדיפים לדבר ישירות עם ליאור, אפשר להתקשר או לשלוח הודעה בוואטסאפ, או להשאיר פרטים כאן בצ׳אט והיא תחזור אליכם.  _(marks: contact)_
 11. חשוב לדעת: אני עוזרת וירטואלית, ואיני מחליפה ייעוץ משפטי. אבל אעשה כל מה שאפשר כדי שתגיעו לליאור בצורה הנוחה והמהירה ביותר.
-12. אז איך אפשר לעזור לכם היום?
+12. אז איך אפשר לעזור לכם?
 
 The line that says she is a virtual assistant and not a substitute for legal advice must stay.
 
