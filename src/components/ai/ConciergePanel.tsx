@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
-import { MapPin, MessageCircle, Mic, Phone, Play, RotateCcw, Send, Shield, Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X } from 'lucide-react';
+import { MapPin, MessageCircle, Mic, Phone, Play, RotateCcw, Send, Shield, Square, ThumbsDown, ThumbsUp, X } from 'lucide-react';
 import type { UIMessage } from 'ai';
 import { useBrand } from '@/components/layout/BrandProvider';
 import { cn } from '@/lib/utils';
@@ -15,7 +15,7 @@ import { INTAKE_STEPS, useConcierge, type IntakeStep } from './ConciergeProvider
 import { INTRO_START_DELAY_MS, IntroStage } from './IntroStage';
 import { DocumentReader } from './DocumentReader';
 import { useSiteNavigator } from './siteNav';
-import { useSpeechInput, useSpeechOutput } from './useVoice';
+import { useSpeechInput } from './useVoice';
 
 const INTRO_SEEN_KEY = 'concierge-intro-seen-v1';
 
@@ -67,22 +67,6 @@ const WAVE_DELAYS = [
 ];
 
 /** Sound bars beside the name while the answer is read aloud (decoration; the status text says it). */
-function VoiceWave() {
-  return (
-    <span aria-hidden="true" className="flex h-4 items-center gap-0.5">
-      {WAVE_DELAYS.map((delay) => (
-        <span
-          key={delay}
-          className={cn(
-            'h-full w-0.5 origin-center rounded-full bg-accent-light motion-safe:animate-wave',
-            delay,
-          )}
-        />
-      ))}
-    </span>
-  );
-}
-
 function Chip({
   children,
   onClick,
@@ -444,16 +428,7 @@ export function ConciergePanel({
     window.requestAnimationFrame(() => (reason === 'skipped' ? replayRef.current : inputRef.current)?.focus());
   }
 
-  // Voice: dictate a message, and optionally hear the answers read aloud.
-  const [readAloud, setReadAloud] = React.useState(false);
-  const spokenId = React.useRef<string | null>(null);
-  const {
-    supported: canSpeak,
-    speaking,
-    speak,
-    cancel: cancelSpeech,
-    unlock: unlockSpeech,
-  } = useSpeechOutput();
+  // Voice: dictate a message. Answers are text only (no read-aloud).
   const voice = useSpeechInput({
     onText: setInput,
     onDone: (text) => {
@@ -464,17 +439,6 @@ export function ConciergePanel({
       setInput('');
     },
   });
-
-  React.useEffect(() => {
-    if (!readAloud || status !== 'ready') return;
-    const last = messages[messages.length - 1];
-    if (!last || last.role !== 'assistant' || spokenId.current === last.id) return;
-    spokenId.current = last.id;
-    const text = last.parts
-      .map((p) => (p.type === 'text' ? splitSiteAction(splitSuggestions(p.text).text).text : ''))
-      .join(' ');
-    speak(text);
-  }, [readAloud, status, messages, speak]);
 
   // The floating assistant acts on what it says: when it offers a part of the site, it takes the visitor
   // there (on a wide screen; on a phone the chat would cover it, so the button is shown instead).
@@ -505,8 +469,6 @@ export function ConciergePanel({
 
   function resetChat() {
     voice.stop();
-    cancelSpeech();
-    spokenId.current = null;
     setInput('');
     setConfirmReset(false);
     reset();
@@ -526,16 +488,12 @@ export function ConciergePanel({
     >
       <header className="bg-navy text-cream">
         <div className="flex items-center gap-3 px-4 py-3.5">
-          <Avatar className="h-11 w-11" speaking={speaking} />
+          <Avatar className="h-11 w-11" />
           <div className="min-w-0 flex-1 leading-tight">
             <p className="flex items-center gap-2 font-heading text-base font-semibold">
               {brand.chat.assistantName}
-              {speaking && <VoiceWave />}
             </p>
             <p className="truncate text-xs text-cream/70">עוזרת וירטואלית · בינה מלאכותית</p>
-            <span role="status" className="sr-only">
-              {speaking ? 'העוזרת מקריאה את התשובה' : ''}
-            </span>
           </div>
           {autoFocus && hasIntro && !introVisible && (
             <button
@@ -561,27 +519,6 @@ export function ConciergePanel({
               className="rounded-full p-2 text-cream/80 transition-colors hover:bg-cream/10 hover:text-cream"
             >
               <RotateCcw className="h-5 w-5" />
-            </button>
-          )}
-          {canSpeak && (
-            <button
-              type="button"
-              onClick={() => {
-                if (readAloud) cancelSpeech();
-                else unlockSpeech();
-                // Mark what is already on screen as heard, so only new answers are read.
-                spokenId.current = messages[messages.length - 1]?.id ?? null;
-                setReadAloud((v) => !v);
-              }}
-              aria-pressed={readAloud}
-              aria-label={readAloud ? 'כיבוי הקראת תשובות' : 'הקראת תשובות בקול'}
-              title={readAloud ? 'כיבוי הקראה' : 'הקראת תשובות בקול'}
-              className={cn(
-                'rounded-full p-2 transition-colors',
-                readAloud ? 'bg-accent-light text-navy' : 'text-cream/80 hover:bg-cream/10 hover:text-cream',
-              )}
-            >
-              {readAloud ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
             </button>
           )}
           {onClose && (
@@ -759,7 +696,6 @@ export function ConciergePanel({
               if (voice.listening) {
                 voice.stop();
               } else {
-                cancelSpeech();
                 voice.start();
               }
             }}
