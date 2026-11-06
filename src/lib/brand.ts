@@ -137,7 +137,7 @@ export const brand = {
     'משרד עורכת דין ליאור-קלואי ארז בחריש ובזום: משפט פלילי, נזיקין (רשלנות, אפליה, הטרדה מינית, לשון הרע) ומעמד אישי (צוואות וייפוי כוח מתמשך). ' +
     'בוגרת הפרקליטות הפלילית, ליווי אישי ודיסקרטי מהשיחה הראשונה.',
   /** Public website address. */
-  website: 'https://www.liorerezadv.com',
+  website: 'https://liorerez-adv.co.il',
   /**
    * Logo files (transparent WebP, in /public/images). `lockup` is the full
    * white mark for dark backgrounds; the icon comes in a light and a dark

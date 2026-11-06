@@ -32,7 +32,7 @@ hypothesis to validate in Google Search Console once it is connected.
 
 - [ ] Verify the site in Google Search Console and Bing Webmaster Tools, submit `/sitemap.xml`
 - [ ] Create and complete the Google Business Profile (address in Harish, phone, categories)
-- [ ] Confirm `SITE_URL=https://www.liorerezadv.com` is set in the hosting environment
+- [ ] Confirm `SITE_URL=https://liorerez-adv.co.il` is set in the hosting environment
 - [ ] Provide verified facts for the About page: experience, education, areas served, hours
 - [ ] **Confirm with the attorney that publishing client reviews on her own site is allowed
       under the Bar's advertising rules**, and that she is comfortable with the reviewers'

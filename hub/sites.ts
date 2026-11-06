@@ -27,7 +27,7 @@ export const sites: Site[] = [
   {
     id: 'liorerez',
     title: 'עו״ד ליאור-קלואי ארז',
-    url: 'https://www.liorerezadv.com',
+    url: 'https://liorerez-adv.co.il',
     projectId: 'pqddwskg',
     dataset: 'production',
     colors: {
