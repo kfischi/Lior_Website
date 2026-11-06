@@ -4,7 +4,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildMetadata({
   title: 'הצהרת נגישות',
-  description: `הצהרת הנגישות של ${brand.firmName}: התאמות שבוצעו, מגבלות ידועות ופרטי רכז הנגישות.`,
+  description: `הצהרת הנגישות של ${brand.firmName}: התאמות הנגישות שבוצעו באתר, מגבלות ידועות ופרטי רכז הנגישות לפניות ולבקשות להתאמה.`,
   path: '/legal/accessibility',
 });
 

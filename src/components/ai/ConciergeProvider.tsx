@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import { useBrand } from '@/components/layout/BrandProvider';
-import { LeadSchema } from '@/lib/lead';
+import { isValidPhone } from '@/lib/phone';
 import { submitLead } from '@/lib/actions/lead';
 
 /**
@@ -296,13 +296,12 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
 
       if (step === 'phone') {
         say('user', shown ?? text);
-        const parsed = LeadSchema.shape.phone.safeParse(text);
-        if (!parsed.success) {
+        if (!isValidPhone(text)) {
           say('assistant', 'המספר לא נראה לי תקין. אפשר לכתוב אותו שוב, למשל 050-0000000?');
           return;
         }
         say('assistant', 'איך נוח לך לדבר עם עורכת הדין, במשרד בחריש או בזום?', { chips: MEETING });
-        setIntake({ step: 'meeting', data: { ...data, phone: parsed.data } });
+        setIntake({ step: 'meeting', data: { ...data, phone: text.trim() } });
         return;
       }
 

@@ -8,7 +8,20 @@ export type ClientBrand = Pick<
   Brand,
   'firmName' | 'firmNameShort' | 'attorneyName' | 'phone' | 'phoneE164' | 'whatsapp' | 'email' | 'logo'
 > & {
-  hero: Pick<Brand['hero'], 'title' | 'eyebrow' | 'subtitle' | 'primaryCta' | 'secondaryCta'>;
+  hero: Pick<
+    Brand['hero'],
+    | 'title'
+    | 'eyebrow'
+    | 'subtitle'
+    | 'primaryCta'
+    | 'secondaryCta'
+    | 'videoUrl'
+    | 'posterId'
+    | 'imageId'
+    | 'mediaFrame'
+    | 'videoTrimEnd'
+    | 'videoCuts'
+  >;
   chat: Brand['chat'];
   about: { additionalAreas: Brand['about']['additionalAreas'] };
   practiceAreas: Brand['practiceAreas'];
@@ -32,6 +45,12 @@ export function toClientBrand(b: Brand, hasReviews: boolean): ClientBrand {
       subtitle: b.hero.subtitle,
       primaryCta: b.hero.primaryCta,
       secondaryCta: b.hero.secondaryCta,
+      videoUrl: b.hero.videoUrl,
+      posterId: b.hero.posterId,
+      imageId: b.hero.imageId,
+      mediaFrame: b.hero.mediaFrame,
+      videoTrimEnd: b.hero.videoTrimEnd,
+      videoCuts: b.hero.videoCuts,
     },
     chat: b.chat,
     about: { additionalAreas: b.about.additionalAreas },

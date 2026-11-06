@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
 import { ChevronDown, MessagesSquare, Phone } from 'lucide-react';
-import { brand } from '@/lib/brand';
 import { useBrand } from '@/components/layout/BrandProvider';
 import { Button } from '@/components/ui/button';
 import { OpenChatButton } from '@/components/ai/OpenChatButton';
@@ -17,7 +16,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 export function Hero() {
   const live = useBrand();
   const reduced = useReducedMotion();
-  const hasVideo = Boolean(brand.hero.videoUrl);
+  const hasVideo = Boolean(live.hero.videoUrl);
   const ref = React.useRef<HTMLElement>(null);
 
   // The background drifts and grows slightly as the page scrolls.
@@ -47,12 +46,12 @@ export function Hero() {
         <div
           className="absolute inset-0"
           style={{
-            transform: `scale(${brand.hero.mediaFrame.zoom})`,
-            transformOrigin: brand.hero.mediaFrame.origin,
+            transform: `scale(${live.hero.mediaFrame.zoom})`,
+            transformOrigin: live.hero.mediaFrame.origin,
           }}
         >
           <Image
-            src={brand.hero.posterId || brand.hero.imageId}
+            src={live.hero.posterId || live.hero.imageId}
             alt=""
             fill
             priority
@@ -61,10 +60,10 @@ export function Hero() {
           />
           {hasVideo && !reduced && (
             <HeroVideo
-              sources={videoSources(brand.hero.videoUrl)}
-              poster={brand.hero.posterId}
-              trimEnd={brand.hero.videoTrimEnd}
-              cuts={brand.hero.videoCuts}
+              sources={videoSources(live.hero.videoUrl)}
+              poster={live.hero.posterId}
+              trimEnd={live.hero.videoTrimEnd}
+              cuts={live.hero.videoCuts}
             />
           )}
         </div>
