@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { ATTR_KEYS } from '@/lib/analytics/attribution';
 import { track } from '@/lib/analytics/track';
 
 function send(body: Record<string, unknown>) {
@@ -27,7 +28,28 @@ export function Tracker() {
       /* private mode: count the page only */
     }
     const u = new URLSearchParams(location.search).get('utm_source') ?? undefined;
-    send(first ? { p: pathname, s: true, r: document.referrer, u } : { p: pathname });
+    if (!first) {
+      send({ p: pathname });
+      return;
+    }
+    // First view of the visit: the server names the source; keep it for this tab only.
+    void fetch('/api/e', {
+      method: 'POST',
+      keepalive: true,
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ p: pathname, s: true, r: document.referrer, u }),
+    })
+      .then((r) => (r.ok && r.status !== 204 ? (r.json() as Promise<{ s?: string }>) : null))
+      .then((j) => {
+        if (!j?.s) return;
+        try {
+          sessionStorage.setItem(ATTR_KEYS.source, j.s);
+          sessionStorage.setItem(ATTR_KEYS.landing, pathname);
+        } catch {
+          /* ignore */
+        }
+      })
+      .catch(() => undefined);
   }, [pathname]);
 
   useEffect(() => {

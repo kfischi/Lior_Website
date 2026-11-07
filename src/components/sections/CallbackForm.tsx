@@ -4,6 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { MessageCircle, Phone } from 'lucide-react';
 import { submitLead, type LeadState } from '@/lib/actions/lead';
+import { AttributionFields } from '@/components/analytics/AttributionFields';
 import { Button } from '@/components/ui/button';
 
 const INITIAL: LeadState = { status: 'idle' };
@@ -43,6 +44,7 @@ export function CallbackForm() {
 
   return (
     <form action={action} noValidate className="grid gap-4 sm:grid-cols-2" aria-describedby="callback-note">
+      <AttributionFields />
       <div>
         <label htmlFor="cb-name" className="mb-1.5 block text-sm font-medium text-cream/90">
           שם מלא

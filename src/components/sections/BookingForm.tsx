@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { CalendarCheck, MessageCircle } from 'lucide-react';
 import { requestAppointment, type BookingState } from '@/lib/actions/booking';
 import { bookableDays } from '@/lib/booking';
+import { AttributionFields } from '@/components/analytics/AttributionFields';
 import { Button } from '@/components/ui/button';
 
 const INITIAL: BookingState = { status: 'idle' };
@@ -71,6 +72,7 @@ export function BookingForm({ windows, meetings, matters }: BookingFormProps) {
 
   return (
     <form action={action} noValidate className="grid gap-4 sm:grid-cols-2" aria-describedby={`${uid}-hint`}>
+      <AttributionFields />
       <div>
         <label htmlFor={`${uid}-name`} className="mb-1.5 block text-sm font-medium text-cream/90">שם מלא</label>
         <input id={`${uid}-name`} name="name" autoComplete="name" required maxLength={60} aria-invalid={Boolean(state.errors?.name)} className={field} />

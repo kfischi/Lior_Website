@@ -1,5 +1,6 @@
 'use client';
 
+import { readAttribution } from '@/lib/analytics/attribution';
 import { track } from '@/lib/analytics/track';
 import * as React from 'react';
 import { useChat } from '@ai-sdk/react';
@@ -215,6 +216,9 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
             .join(' | ')
             .slice(0, 1000),
         );
+        const attr = readAttribution();
+        fd.set('src', attr.source);
+        fd.set('landing', attr.landing);
         const result = await submitLead({ status: 'idle' }, fd);
 
         if (result.status === 'sent') {

@@ -116,6 +116,19 @@ export function legalServiceJsonLd(b: Brand = staticBrand) {
     serviceType: b.practiceAreas.map((a) => a.title),
     knowsAbout: b.seo.knowsAbout,
     hasMap: b.mapUrl,
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      telephone: `+${b.phoneE164}`,
+      email: b.email,
+      availableLanguage: 'he',
+    },
+    potentialAction: {
+      '@type': 'ReserveAction',
+      name: 'בקשת פגישת ייעוץ',
+      target: { '@type': 'EntryPoint', urlTemplate: `${base}/consultation`, actionPlatform: 'https://schema.org/DesktopWebPlatform' },
+      result: { '@type': 'Reservation', name: 'פגישת ייעוץ' },
+    },
     founder: { '@id': `${base}/#attorney` },
     sameAs: Object.values(b.social).filter(Boolean),
   };

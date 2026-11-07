@@ -29,6 +29,7 @@ ${guides}
 
 ## Key pages
 - [Questions and answers](${base}/faq): short answers to common questions
+- [Request a consultation](${base}/consultation): appointment request form (the office confirms the time); phone, WhatsApp and chat are also available
 - [All guides](${base}/articles)
 - [Full text of the site for LLMs](${base}/llms-full.txt)
 

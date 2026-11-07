@@ -12,6 +12,8 @@ export interface VisitDay {
   sources: Record<string, number>;
   pages: Record<string, number>;
   events: Record<string, number>;
+  /** Contact actions per source, key `source:event`. */
+  conv: Record<string, number>;
 }
 
 const MAX_KEYS = 80;
@@ -22,7 +24,7 @@ export function today(): string {
 }
 
 function empty(date: string): VisitDay {
-  return { date, sessions: 0, pageviews: 0, sources: {}, pages: {}, events: {} };
+  return { date, sessions: 0, pageviews: 0, sources: {}, pages: {}, events: {}, conv: {} };
 }
 
 function bump(map: Record<string, number>, k: string) {
@@ -40,7 +42,7 @@ async function load(date: string): Promise<VisitDay> {
   }
 }
 
-export async function recordVisit(input: { page?: string; source?: string; event?: AnalyticsEvent }): Promise<void> {
+export async function recordVisit(input: { page?: string; source?: string; event?: AnalyticsEvent; eventSource?: string }): Promise<void> {
   const d = await load(today());
   if (input.source) {
     d.sessions += 1;
@@ -50,7 +52,10 @@ export async function recordVisit(input: { page?: string; source?: string; event
     d.pageviews += 1;
     bump(d.pages, input.page);
   }
-  if (input.event) bump(d.events, input.event);
+  if (input.event) {
+    bump(d.events, input.event);
+    if (input.eventSource) bump(d.conv, `${input.eventSource}:${input.event}`);
+  }
   await writeRaw(key(d.date), JSON.stringify(d));
 }
 

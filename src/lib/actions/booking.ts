@@ -6,6 +6,7 @@ import { buildLeadMessage, buildWhatsAppHref } from '@/lib/lead';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
 import { getBrand } from '@/lib/sanity/content';
 import { isMetaWhatsAppConfigured, sendLeadViaMeta } from '@/lib/whatsapp';
+import { attributionLine, knownSource } from '@/lib/analytics/attribution';
 import { recordVisit } from '@/lib/analytics/store';
 
 export interface BookingState {
@@ -46,9 +47,9 @@ export async function requestAppointment(_prev: BookingState, formData: FormData
     return { status: 'error', message: 'נא לבחור תאריך, שעות ואופן פגישה מהאפשרויות המוצעות.', errors: { date: 'נא לבחור תאריך' } };
   }
 
-  const lead = { name: b.name, phone: b.phone, matter: b.matter, message: buildBookingDetails(b, day.label) };
+  const lead = { name: b.name, phone: b.phone, matter: b.matter, message: [buildBookingDetails(b, day.label), attributionLine(formData.get('src'), formData.get('landing'))].filter(Boolean).join(' | ') };
   const waHref = buildWhatsAppHref(buildLeadMessage(lead));
-  void recordVisit({ event: 'booking_request' }).catch(() => undefined);
+  void recordVisit({ event: 'booking_request', eventSource: knownSource(formData.get('src')) }).catch(() => undefined);
 
   if (isMetaWhatsAppConfigured()) {
     const r = await sendLeadViaMeta(lead);

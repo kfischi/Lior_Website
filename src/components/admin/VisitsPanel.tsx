@@ -40,6 +40,10 @@ export function VisitsPanel({ days }: { days: VisitDay[] }) {
   const sources = sum(days, (d) => d.sources);
   const pages = sum(days, (d) => d.pages).slice(0, 8);
   const events = sum(days, (d) => d.events);
+  const convAll = sum(days, (d) => d.conv ?? {}).filter(([k]) => !k.endsWith(':chat_open'));
+  const bySourceMap: Record<string, number> = {};
+  for (const [k, n] of convAll) bySourceMap[k.split(':')[0]] = (bySourceMap[k.split(':')[0]] ?? 0) + n;
+  const bySource = Object.entries(bySourceMap).sort((a, b) => b[1] - a[1]);
   const contacts = events.filter(([k]) => ['call_click', 'whatsapp_click', 'email_click', 'lead', 'booking_request'].includes(k)).reduce((a, [, n]) => a + n, 0);
   const conv = sessions > 0 ? Math.round((contacts / sessions) * 100) : 0;
 
@@ -68,6 +72,25 @@ export function VisitsPanel({ days }: { days: VisitDay[] }) {
           </dl>
           <h3 className="mb-2 mt-6 text-lg font-semibold text-navy">מאיפה הגיעו</h3>
           <Bars rows={sources} label={(k) => SOURCE_LABELS[k] ?? k} />
+          <h3 className="mb-2 mt-6 text-lg font-semibold text-navy">איזה מקור מביא פניות</h3>
+          <p className="mb-2 text-sm text-ink/75">פעולות יצירת קשר (חיוג, וואטסאפ, מייל, השארת פרטים, בקשת פגישה) לפי מקור ההגעה, מתוך הביקורים.</p>
+          {bySource.length ? (
+            <ul className="space-y-2">
+              {bySource.map(([src, n]) => {
+                const visits = sources.find(([k]) => k === src)?.[1] ?? 0;
+                return (
+                  <li key={src} className="flex items-baseline justify-between gap-3 rounded-lg bg-cream px-3 py-2 text-sm">
+                    <span className="text-ink/85">{SOURCE_LABELS[src] ?? src}</span>
+                    <span className="tabular-nums text-navy">
+                      {n} פעולות מתוך {visits} ביקורים{visits > 0 ? ` (${Math.round((n / visits) * 100)}%)` : ''}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="text-sm text-ink/70">עוד אין פעולות עם מקור ידוע.</p>
+          )}
           <h3 className="mb-2 mt-6 text-lg font-semibold text-navy">העמודים הנצפים ביותר</h3>
           <Bars rows={pages} label={(k) => k} />
           <h3 className="mb-2 mt-6 text-lg font-semibold text-navy">פעולות</h3>
