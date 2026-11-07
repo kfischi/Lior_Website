@@ -84,12 +84,12 @@ export function Hero() {
         <div className="max-w-4xl">
           <motion.p
             {...fade(0.1)}
-            className="eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance [text-shadow:0_0_2px_rgb(0_0_0/0.45),0_2px_14px_rgb(0_0_0/0.6)] max-sm:before:hidden max-sm:after:hidden md:text-4xl"
+            className="eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance max-sm:before:hidden max-sm:after:hidden md:text-4xl"
           >
             {live.hero.eyebrow}
           </motion.p>
 
-          <h1 className="text-[clamp(2.3rem,5.2vw,4.5rem)] font-semibold leading-[1.04] tracking-tight text-cream drop-shadow-[0_2px_14px_rgb(0_0_0/0.55)]">
+          <h1 className="text-[clamp(2.3rem,5.2vw,4.5rem)] font-semibold leading-[1.04] tracking-tight text-cream">
             {words.map((w, i) => (
               <React.Fragment key={`${w}-${i}`}>
                 <span className="inline-block overflow-hidden pb-[0.14em] align-bottom">
@@ -108,7 +108,7 @@ export function Hero() {
 
           <motion.p
             {...fade(0.8)}
-            className="mt-5 max-w-xl text-lg font-medium leading-relaxed text-white [text-shadow:0_0_2px_rgb(0_0_0/0.5),0_2px_14px_rgb(0_0_0/0.7)]"
+            className="mt-5 max-w-xl text-base leading-relaxed text-cream/95 md:text-lg"
           >
             {live.hero.subtitle}
           </motion.p>
