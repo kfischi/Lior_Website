@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { brand } from '@/lib/brand';
 import { adminEnabled, isAdmin } from '@/lib/admin-auth';
 import { listNotes, listUnknown } from '@/lib/learning/store';
@@ -29,6 +30,9 @@ export default async function AdminPage({
   return (
     <main id="main" className="min-h-screen bg-cream py-8 sm:py-12">
       <div className="shell max-w-3xl">
+        <Link href="/" className="mb-6 inline-block text-sm text-accent underline underline-offset-4">
+          לדף הבית של האתר
+        </Link>
         <p className="eyebrow mb-2">{brand.firmName}</p>
         <h1 className="text-3xl text-navy md:text-4xl">ניהול העוזרת של ליאור</h1>
         <Body q={q} />
