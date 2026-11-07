@@ -115,6 +115,7 @@ export function legalServiceJsonLd(b: Brand = staticBrand) {
     knowsLanguage: 'he',
     serviceType: b.practiceAreas.map((a) => a.title),
     knowsAbout: b.seo.knowsAbout,
+    areaServed: { '@type': 'Country', name: 'ישראל' },
     hasMap: b.mapUrl,
     contactPoint: {
       '@type': 'ContactPoint',
@@ -178,6 +179,7 @@ export function serviceJsonLd(area: PracticeArea) {
     url: `${base}/practice-areas/${area.slug}`,
     serviceType: area.title,
     provider: { '@id': `${base}/#firm` },
+    areaServed: { '@type': 'Country', name: 'ישראל' },
   };
 }
 
