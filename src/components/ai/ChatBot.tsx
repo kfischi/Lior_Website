@@ -46,9 +46,9 @@ function Floating() {
         <div className={cn('fixed end-3 z-[60] flex flex-col items-center gap-1.5 sm:end-5', bottom)}>
           <span
             aria-hidden="true"
-            className="flex h-11 w-11 animate-arrow items-center justify-center rounded-full bg-accent text-white shadow-lg ring-2 ring-white"
+            className="flex animate-arrow items-center justify-center text-white drop-shadow-[0_1px_6px_rgb(0_0_0/0.6)]"
           >
-            <ArrowDown className="h-7 w-7" strokeWidth={3} />
+            <ArrowDown className="h-9 w-9" strokeWidth={3.5} />
           </span>
           <button
             ref={launcherRef}
