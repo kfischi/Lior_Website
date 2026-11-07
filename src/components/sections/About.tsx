@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import { Check, Scale } from 'lucide-react';
+import Link from 'next/link';
+import { Check, ChevronLeft, Scale } from 'lucide-react';
 import { getBrand } from '@/lib/sanity/content';
 import { Reveal } from '@/components/motion/Reveal';
 
@@ -79,6 +80,13 @@ export async function About() {
                 </li>
               ))}
             </ul>
+
+            <p className="mt-8">
+              <Link href="/about" className="inline-flex items-center gap-1 font-medium text-accent underline-offset-4 hover:underline">
+                קראו עוד על {brand.attorneyName}
+                <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </p>
 
             {brand.about.certificates.length > 0 && (
               <div className="mt-10 border-t border-navy/10 pt-8">
