@@ -1,3 +1,4 @@
+import { approvedPainPages } from '@/lib/pain-pages';
 import { getSiteContent } from '@/lib/sanity/content';
 import { siteUrl } from '@/lib/utils';
 
@@ -30,6 +31,9 @@ ${guides}
 ## Key pages
 - [Questions and answers](${base}/faq): short answers to common questions
 - [Request a consultation](${base}/consultation): appointment request form (the office confirms the time); phone, WhatsApp and chat are also available
+${approvedPainPages(brand.painPages)
+  .map((p) => `- [${p.title}](${base}/help/${p.slug}): ${p.lead}`)
+  .join('\n')}
 - [All guides](${base}/articles)
 - [Full text of the site for LLMs](${base}/llms-full.txt)
 
