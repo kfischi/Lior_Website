@@ -73,7 +73,7 @@ export function Hero() {
           The copy is on the start (right) side in RTL, so that side is darkest. */}
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 h-full bg-linear-to-t from-navy/95 via-navy/80 via-65% to-navy/40 sm:h-3/4 sm:via-navy/70 sm:via-50% sm:to-transparent md:h-3/5 md:from-navy/90 md:via-navy/55"
+        className="absolute inset-x-0 bottom-0 h-3/5 bg-linear-to-t from-navy/85 via-navy/45 to-transparent"
       />
       <div
         aria-hidden="true"
@@ -81,7 +81,12 @@ export function Hero() {
       />
 
       <div className="shell relative z-10 pb-72 pt-32 md:pb-28">
-        <div className="max-w-4xl">
+        {/* A soft dark halo only behind the copy; the video everywhere else is untouched. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -inset-x-4 -inset-y-6 bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--color-navy)_72%,transparent),transparent)] md:-inset-x-10 md:-inset-y-10 md:bg-[radial-gradient(farthest-side_at_80%_55%,color-mix(in_oklab,var(--color-navy)_65%,transparent),transparent)]"
+        />
+        <div className="relative max-w-4xl">
           <motion.p
             {...fade(0.1)}
             className="eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance [text-shadow:0_1px_14px_rgb(0_0_0/0.55)] max-sm:before:hidden max-sm:after:hidden md:text-4xl"
