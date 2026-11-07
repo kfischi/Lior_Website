@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 
 function navItems(hasReviews: boolean) {
   return [
+    { href: "/", label: "דף הבית" },
     { href: "/#practice", label: "תחומי עיסוק" },
     { href: "/#about", label: "אודות" },
     { href: "/#why", label: "למה אנחנו" },
@@ -69,6 +70,7 @@ export function Header() {
         <Link
           href="/"
           onClick={goHome}
+          aria-label={`${brand.firmNameShort}, לדף הבית`}
           className={cn(
             "flex items-center gap-3 font-heading text-lg lg:shrink-0 lg:whitespace-nowrap font-semibold transition-colors md:text-xl",
             scrolled ? "text-navy" : "text-cream",
@@ -87,7 +89,8 @@ export function Header() {
 
         <ul className="hidden items-center gap-5 whitespace-nowrap lg:flex xl:gap-7">
           {NAV.map((item) => (
-            <li key={item.href}>
+            // On medium desktops the logo is the way home; the extra item needs the wider screens.
+            <li key={item.href} className={item.href === "/" ? "hidden xl:block" : undefined}>
               <a
                 href={item.href}
                 className={cn(
