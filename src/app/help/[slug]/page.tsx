@@ -98,7 +98,7 @@ export default async function PainPageRoute({ params }: { params: Promise<Params
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-cream/90">{page.lead}</p>
               <p className="mt-4 text-sm text-cream/75">
-                ייעוץ בזום בכל הארץ, או במשרד בחריש. בפנייה הראשונה אין צורך לפרט את האירוע.
+                ייעוץ בזום בכל הארץ, או במשרד בחריש. בשיחה הראשונה אין צורך לפרט את האירוע, ואין התחייבות להמשך.
               </p>
             </Reveal>
             <Reveal delay={0.1}>
