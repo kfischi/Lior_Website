@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getSiteContent } from '@/lib/sanity/content';
+import { approvedPainPages } from '@/lib/pain-pages';
 import { siteUrl } from '@/lib/utils';
 
 /**
@@ -27,6 +28,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(a.updated),
       changeFrequency: 'monthly' as const,
       priority: 0.7,
+    })),
+    ...approvedPainPages(brand.painPages).map((p) => ({
+      url: `${base}/help/${p.slug}`,
+      lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
     })),
     { url: `${base}/faq`, lastModified, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${base}/legal/privacy`, lastModified, changeFrequency: 'yearly', priority: 0.3 },

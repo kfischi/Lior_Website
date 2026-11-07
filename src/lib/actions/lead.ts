@@ -1,7 +1,7 @@
 'use server';
 
 import { headers } from 'next/headers';
-import { LeadSchema, buildLeadMessage, buildWhatsAppHref } from '@/lib/lead';
+import { LeadSchema, buildLeadMessage, buildWhatsAppHref, parseChannel } from '@/lib/lead';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
 import { brand } from '@/lib/brand';
 import { isMetaWhatsAppConfigured, sendLeadViaMeta } from '@/lib/whatsapp';
@@ -57,12 +57,13 @@ export async function submitLead(_prev: LeadState, formData: FormData): Promise<
   const lead = parsed.data;
   const attr = attributionLine(formData.get('src'), formData.get('landing'));
   if (attr) lead.message = `${lead.message}${lead.message ? ' | ' : ''}${attr}`.slice(0, 1000);
-  const waHref = buildWhatsAppHref(buildLeadMessage(lead));
+  const channel = parseChannel(formData.get('channel'));
+  const waHref = buildWhatsAppHref(buildLeadMessage(lead, channel));
   void recordLead(lead.message.includes('דחוף'));
-  void recordVisit({ event: 'lead', eventSource: knownSource(formData.get('src')) }).catch(() => undefined);
+  void recordVisit({ event: channel === 'chat' ? 'lead_chat' : 'lead', eventSource: knownSource(formData.get('src')) }).catch(() => undefined);
 
   if (isMetaWhatsAppConfigured()) {
-    const result = await sendLeadViaMeta(lead);
+    const result = await sendLeadViaMeta(lead, channel);
     if (result.ok) return { status: 'sent', waHref };
   }
 

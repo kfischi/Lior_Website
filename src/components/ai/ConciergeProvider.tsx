@@ -217,6 +217,7 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
             .slice(0, 1000),
         );
         const attr = readAttribution();
+        fd.set('channel', 'chat');
         fd.set('src', attr.source);
         fd.set('landing', attr.landing);
         const result = await submitLead({ status: 'idle' }, fd);

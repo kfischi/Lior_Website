@@ -1,6 +1,6 @@
 import 'server-only';
 import { brand } from '@/lib/brand';
-import { buildLeadMessage, type Lead } from '@/lib/lead';
+import { buildLeadMessage, CHANNELS, type Channel, type Lead } from '@/lib/lead';
 
 /**
  * Meta WhatsApp Business Cloud API (server-only).
@@ -29,7 +29,7 @@ function templateSafe(value: string): string {
 
 export type SendResult = { ok: true } | { ok: false; reason: string };
 
-export async function sendLeadViaMeta(lead: Lead): Promise<SendResult> {
+export async function sendLeadViaMeta(lead: Lead, channel: Channel = 'form'): Promise<SendResult> {
   const token = process.env.WHATSAPP_ACCESS_TOKEN;
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
   if (!token || !phoneNumberId) return { ok: false, reason: 'not_configured' };
@@ -50,7 +50,7 @@ export async function sendLeadViaMeta(lead: Lead): Promise<SendResult> {
           components: [
             {
               type: 'body',
-              parameters: [lead.name, lead.phone, lead.matter, lead.message].map((v) => ({
+              parameters: [lead.name, lead.phone, lead.matter, `${CHANNELS[channel]}${lead.message ? ` | ${lead.message}` : ''}`].map((v) => ({
                 type: 'text',
                 text: templateSafe(v),
               })),
@@ -62,7 +62,7 @@ export async function sendLeadViaMeta(lead: Lead): Promise<SendResult> {
         messaging_product: 'whatsapp',
         to,
         type: 'text',
-        text: { body: buildLeadMessage(lead), preview_url: false },
+        text: { body: buildLeadMessage(lead, channel), preview_url: false },
       };
 
   try {

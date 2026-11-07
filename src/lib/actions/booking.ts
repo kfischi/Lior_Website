@@ -48,11 +48,11 @@ export async function requestAppointment(_prev: BookingState, formData: FormData
   }
 
   const lead = { name: b.name, phone: b.phone, matter: b.matter, message: [buildBookingDetails(b, day.label), attributionLine(formData.get('src'), formData.get('landing'))].filter(Boolean).join(' | ') };
-  const waHref = buildWhatsAppHref(buildLeadMessage(lead));
+  const waHref = buildWhatsAppHref(buildLeadMessage(lead, 'booking'));
   void recordVisit({ event: 'booking_request', eventSource: knownSource(formData.get('src')) }).catch(() => undefined);
 
   if (isMetaWhatsAppConfigured()) {
-    const r = await sendLeadViaMeta(lead);
+    const r = await sendLeadViaMeta(lead, 'booking');
     if (r.ok) return { status: 'sent', waHref };
   }
   return { status: 'handoff', waHref };

@@ -14,3 +14,6 @@
 - Callback form, booking form and the chat intake send it as hidden `src`/`landing` fields. The server validates it against known keys / a path pattern and appends "הגיע מ: ..., עמוד נחיתה: ..." to the WhatsApp alert.
 - Contact actions are counted per source (`conv`), shown in `/admin` as "איזה מקור מביא פניות".
 - JSON-LD: LegalService now carries `contactPoint` and a `ReserveAction` pointing to `/consultation`; `llms.txt` lists the consultation page.
+
+## Channel line (added)
+Every inquiry message to the office starts with its channel: "פנייה חדשה: השארת טלפון / צ׳אט / בקשת פגישה". The chat intake and the callback form share `submitLead` and send a `channel` field (validated server side, default form); the booking action always uses `booking`. `/admin` counts chat leads (`lead_chat`) separately from form leads (`lead`). In template mode the channel is prefixed to template variable {{4}} (details).
