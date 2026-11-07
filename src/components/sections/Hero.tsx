@@ -73,7 +73,7 @@ export function Hero() {
           The copy is on the start (right) side in RTL, so that side is darkest. */}
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 h-3/5 bg-linear-to-t from-navy/85 via-navy/45 to-transparent"
+        className="absolute inset-x-0 bottom-0 h-full bg-linear-to-t from-navy/95 via-navy/80 via-65% to-navy/40 sm:h-3/4 sm:via-navy/70 sm:via-50% sm:to-transparent md:h-3/5 md:from-navy/90 md:via-navy/55"
       />
       <div
         aria-hidden="true"
@@ -84,7 +84,7 @@ export function Hero() {
         <div className="max-w-4xl">
           <motion.p
             {...fade(0.1)}
-            className="eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance max-sm:before:hidden max-sm:after:hidden md:text-4xl"
+            className="eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance [text-shadow:0_1px_14px_rgb(0_0_0/0.55)] max-sm:before:hidden max-sm:after:hidden md:text-4xl"
           >
             {live.hero.eyebrow}
           </motion.p>
@@ -108,7 +108,7 @@ export function Hero() {
 
           <motion.p
             {...fade(0.8)}
-            className="mt-5 max-w-xl text-base leading-relaxed text-cream/95 md:text-lg"
+            className="mt-5 max-w-xl text-lg font-medium leading-relaxed text-white [text-shadow:0_1px_12px_rgb(0_0_0/0.7)]"
           >
             {live.hero.subtitle}
           </motion.p>
