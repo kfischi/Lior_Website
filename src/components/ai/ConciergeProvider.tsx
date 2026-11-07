@@ -224,7 +224,9 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
         if (result.status === 'sent') {
           say(
             'assistant',
-            'הפרטים הועברו למשרד, ונחזור אליך בהקדם. אם נוח לך, אפשר גם להמשיך את השיחה בוואטסאפ.',
+            `הפרטים הועברו למשרד. ${brand.afterInquiry.title}: ${brand.afterInquiry.steps
+              .map((step, i) => `${i + 1}. ${step}`)
+              .join(' ')} אם נוח לך, אפשר גם להמשיך את השיחה בוואטסאפ.`,
             { whatsapp: result.waHref },
           );
         } else if (result.status === 'handoff') {
@@ -247,7 +249,7 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
         setIntake(null);
       }
     },
-    [say, brand.phone],
+    [say, brand.phone, brand.afterInquiry],
   );
 
   /** Advances the intake by one step. `shown` is what the visitor sees as their reply. */

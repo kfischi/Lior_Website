@@ -6,6 +6,7 @@ import { CalendarCheck, MessageCircle } from 'lucide-react';
 import { requestAppointment, type BookingState } from '@/lib/actions/booking';
 import { bookableDays } from '@/lib/booking';
 import { AttributionFields } from '@/components/analytics/AttributionFields';
+import { NextSteps } from './NextSteps';
 import { Button } from '@/components/ui/button';
 
 const INITIAL: BookingState = { status: 'idle' };
@@ -51,9 +52,10 @@ export function BookingForm({ windows, meetings, matters }: BookingFormProps) {
 
   if (state.status === 'sent') {
     return (
-      <p role="status" className="rounded-2xl border border-accent-light/50 bg-cream/10 p-6 text-center text-lg text-cream">
-        הבקשה התקבלה במשרד. נחזור אליכם לאישור המועד. עד אז המועד אינו סגור סופית.
-      </p>
+      <div role="status" className="rounded-2xl border border-accent-light/50 bg-cream/10 p-6 text-cream">
+        <p className="text-center text-lg">הבקשה התקבלה במשרד. המועד אינו סגור עד שנאשר אותו מולכם.</p>
+        <NextSteps />
+      </div>
     );
   }
   if (state.status === 'handoff') {

@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
 import { ArrowDown } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { useConsentPending } from '@/components/legal/CookieConsent';
 import { cn } from '@/lib/utils';
 import { Avatar, ConciergePanel } from './ConciergePanel';
 import { useConcierge } from './ConciergeProvider';
@@ -19,7 +18,6 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 function Floating() {
   const reduced = useReducedMotion();
   const { panelOpen, openPanel, closePanel } = useConcierge();
-  const cookiePending = useConsentPending();
   const launcherRef = React.useRef<HTMLButtonElement>(null);
   const wasOpen = React.useRef(false);
 
@@ -39,8 +37,8 @@ function Floating() {
     }
   }, [panelOpen, closePanel]);
 
-  // Keep the launcher clear of the cookie banner while it is showing.
-  const bottom = cookiePending ? 'bottom-52 sm:bottom-24' : 'bottom-5';
+  // On phones the launcher sits above the sticky action bar.
+  const bottom = 'bottom-24 sm:bottom-5';
 
   return (
     <>

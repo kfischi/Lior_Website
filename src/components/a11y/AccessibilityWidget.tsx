@@ -3,7 +3,6 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { RotateCcw, X } from 'lucide-react';
-import { useConsentPending } from '@/components/legal/CookieConsent';
 import { cn } from '@/lib/utils';
 
 const STORAGE_KEY = 'a11y-prefs-v1';
@@ -129,7 +128,6 @@ const TOGGLES: { key: ToggleKey; label: string }[] = [
 export function AccessibilityWidget() {
   const raw = React.useSyncExternalStore(subscribe, readRaw, () => '');
   const prefs = React.useMemo(() => parse(raw), [raw]);
-  const cookiePending = useConsentPending();
   const [open, setOpen] = React.useState(false);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
 
@@ -150,7 +148,8 @@ export function AccessibilityWidget() {
   }, [open]);
 
   const changed = JSON.stringify(prefs) !== JSON.stringify(DEFAULTS);
-  const bottom = cookiePending ? 'bottom-52 sm:bottom-24' : 'bottom-5';
+  // On phones the button sits above the sticky action bar.
+  const bottom = 'bottom-24 sm:bottom-5';
 
   return (
     <>
@@ -176,7 +175,7 @@ export function AccessibilityWidget() {
           aria-label="תפריט נגישות"
           className={cn(
             'fixed start-3 z-[70] w-[min(20rem,calc(100vw-1.5rem))] rounded-2xl border border-navy/15 bg-cream p-5 text-ink shadow-2xl sm:start-5',
-            cookiePending ? 'bottom-72 sm:bottom-44' : 'bottom-24',
+            'bottom-44 sm:bottom-24',
           )}
         >
           <div className="mb-4 flex items-center justify-between">

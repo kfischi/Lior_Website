@@ -23,6 +23,7 @@ export type ClientBrand = Pick<
     | 'videoCuts'
   >;
   chat: Brand['chat'];
+  afterInquiry: Brand['afterInquiry'];
   about: { additionalAreas: Brand['about']['additionalAreas'] };
   practiceAreas: Brand['practiceAreas'];
   hasReviews: boolean;
@@ -53,6 +54,7 @@ export function toClientBrand(b: Brand, hasReviews: boolean): ClientBrand {
       videoCuts: b.hero.videoCuts,
     },
     chat: b.chat,
+    afterInquiry: b.afterInquiry,
     about: { additionalAreas: b.about.additionalAreas },
     practiceAreas: b.practiceAreas,
     hasReviews,

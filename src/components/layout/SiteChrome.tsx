@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import { CookieConsent } from '@/components/legal/CookieConsent';
+import { MobileActionBar } from './MobileActionBar';
 import { ChatBot } from '@/components/ai/ChatBot';
 import { ConciergeProvider } from '@/components/ai/ConciergeProvider';
 import { AccessibilityWidget } from '@/components/a11y/AccessibilityWidget';
@@ -31,7 +31,7 @@ export function SiteChrome({ children, brand }: { children: ReactNode; brand: Cl
         <ChatBot />
         <AccessibilityWidget />
       </ConciergeProvider>
-      <CookieConsent />
+      <MobileActionBar />
     </BrandProvider>
   );
 }
