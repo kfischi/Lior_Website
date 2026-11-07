@@ -462,7 +462,7 @@ export const brand = {
   painPages: [
     {
       slug: 'police-investigation',
-      approved: false,
+      approved: true,
       title: 'הוזמנתם לחקירה במשטרה?',
       lead:
         'הזימון לא אומר שנפתח נגדכם תיק, וגם לא שאין סיבה להתייחס אליו ברצינות. ' +
@@ -507,7 +507,7 @@ export const brand = {
     },
     {
       slug: 'dismissal-hearing',
-      approved: false,
+      approved: true,
       title: 'הוזמנתם לשימוע לפני פיטורים?',
       lead:
         'שימוע הוא ההזדמנות שלכם להשמיע את הצד שלכם לפני שהמעסיק מקבל החלטה. ' +
@@ -553,7 +553,7 @@ export const brand = {
     },
     {
       slug: 'workplace-bullying',
-      approved: false,
+      approved: true,
       title: 'מרגישים שמתעמרים בכם בעבודה?',
       lead:
         'התעמרות בעבודה לא תמיד מתחילה ברגע ברור, ולא תמיד קל להסביר אותה למי שלא היה שם. ' +
@@ -599,7 +599,7 @@ export const brand = {
     },
     {
       slug: 'will-and-power-of-attorney',
-      approved: false,
+      approved: true,
       title: 'רוצים להסדיר צוואה או ייפוי כוח מתמשך?',
       lead:
         'לא צריך לחכות לאירוע כדי להסדיר מראש מה יקרה עם הרכוש ומי יקבל החלטות בשמכם אם תצטרכו. ' +
@@ -1048,7 +1048,7 @@ export const brand = {
     /** Appended to inner-page titles. */
     titleSuffix: 'ליאור-קלואי ארז',
     /** Update when public content changes; feeds sitemap lastmod. */
-    lastModified: '2026-10-30',
+    lastModified: '2026-11-07',
     /** What the firm is an authority on; feeds JSON-LD `knowsAbout` (confirmed topics only). */
     knowsAbout: [
       'אפליה בעבודה',

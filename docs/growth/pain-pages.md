@@ -23,3 +23,6 @@ Content lives in `brand.painPages` (`src/lib/brand.ts`), each with `approved: fa
 - Bullying page: the plain-language description of the conduct, and the documentation advice.
 - Will / lasting power of attorney page: the statement that a lasting power of attorney is made in a formal procedure that includes a lawyer, and that form errors can affect validity.
 - The line "ייעוץ בזום בכל הארץ" on every page.
+
+## Status (2026-11-07)
+All four pages approved by the owner and set to `approved: true`. They are built in production, indexable, in `sitemap.xml` and `llms.txt`, and linked from their practice-area page under "מצבים נפוצים". `brand.seo.lastModified` bumped.

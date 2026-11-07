@@ -5,6 +5,7 @@ import { ChevronLeft, MessageCircle, MessagesSquare } from 'lucide-react';
 import { links } from '@/lib/brand';
 import { articlesForArea } from '@/lib/articles';
 import { getBrand, getSiteContent } from '@/lib/sanity/content';
+import { approvedPainPages } from '@/lib/pain-pages';
 import { ArticleCard } from '@/components/sections/ArticleCard';
 import { breadcrumbJsonLd, buildMetadata, faqJsonLd, serviceJsonLd } from '@/lib/seo';
 import { Header } from '@/components/sections/Header';
@@ -63,6 +64,7 @@ export default async function PracticeAreaPage({ params }: { params: Promise<Par
   const { page } = area;
   const others = brand.practiceAreas.filter((a) => a.slug !== area.slug);
   const path = `/practice-areas/${area.slug}`;
+  const situations = approvedPainPages(brand.painPages).filter((p) => p.areaSlug === area.slug);
   const guides = articlesForArea(area.slug, (await getSiteContent()).articles);
 
   return (
@@ -202,6 +204,29 @@ export default async function PracticeAreaPage({ params }: { params: Promise<Par
             </div>
           </div>
         </section>
+
+        {situations.length > 0 && (
+          <nav aria-labelledby="situations-title" className="section bg-white">
+            <div className="shell max-w-3xl">
+              <h2 id="situations-title" className="text-2xl text-navy md:text-3xl">
+                מצבים נפוצים
+              </h2>
+              <ul className="mt-6 grid gap-4">
+                {situations.map((p) => (
+                  <li key={p.slug}>
+                    <Link
+                      href={`/help/${p.slug}`}
+                      className="flex items-center justify-between gap-4 rounded-xl border border-navy/10 p-5 transition-colors hover:border-accent"
+                    >
+                      <span className="font-heading text-lg font-semibold text-navy">{p.title}</span>
+                      <ChevronLeft className="h-5 w-5 shrink-0 text-accent" aria-hidden="true" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </nav>
+        )}
 
         {guides.length > 0 && (
           <section aria-labelledby="guides-title" className="section bg-white">
