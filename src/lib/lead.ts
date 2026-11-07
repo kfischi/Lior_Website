@@ -19,10 +19,24 @@ export const LeadSchema = z.object({
 
 export type Lead = z.infer<typeof LeadSchema>;
 
+/** How the inquiry reached the site. Shown at the top of the office's message. */
+export const CHANNELS = {
+  form: 'השארת טלפון',
+  chat: 'צ׳אט',
+  booking: 'בקשת פגישה',
+} as const;
+export type Channel = keyof typeof CHANNELS;
+
+/** A channel from untrusted input, defaulting to the plain form. */
+export function parseChannel(value: unknown): Channel {
+  return typeof value === 'string' && value in CHANNELS ? (value as Channel) : 'form';
+}
+
 /** Human-readable lead summary, in Hebrew, for the office's WhatsApp. */
-export function buildLeadMessage(lead: Lead): string {
+export function buildLeadMessage(lead: Lead, channel: Channel = 'form'): string {
   const lines = [
-    `פנייה חדשה מהאתר של ${brand.firmName}`,
+    `פנייה חדשה: ${CHANNELS[channel]}`,
+    `מהאתר של ${brand.firmName}`,
     `שם: ${lead.name}`,
     `טלפון: ${lead.phone}`,
     lead.matter ? `תחום: ${lead.matter}` : '',

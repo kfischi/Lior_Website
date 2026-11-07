@@ -46,6 +46,7 @@ export function CallbackForm() {
 
   return (
     <form action={action} noValidate className="grid gap-4 sm:grid-cols-2" aria-describedby="callback-note">
+      <input type="hidden" name="channel" value="form" />
       <AttributionFields />
       <div>
         <label htmlFor="cb-name" className="mb-1.5 block text-sm font-medium text-cream/90">

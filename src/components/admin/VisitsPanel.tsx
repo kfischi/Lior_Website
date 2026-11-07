@@ -6,7 +6,8 @@ const EVENT_LABELS: Record<string, string> = {
   call_click: 'לחצו על חיוג',
   whatsapp_click: 'לחצו על וואטסאפ',
   email_click: 'לחצו על מייל',
-  lead: 'השאירו פרטים',
+  lead: 'השאירו טלפון בטופס',
+  lead_chat: 'השאירו פרטים בצ׳אט',
   booking_request: 'ביקשו פגישה',
 };
 
@@ -44,7 +45,7 @@ export function VisitsPanel({ days }: { days: VisitDay[] }) {
   const bySourceMap: Record<string, number> = {};
   for (const [k, n] of convAll) bySourceMap[k.split(':')[0]] = (bySourceMap[k.split(':')[0]] ?? 0) + n;
   const bySource = Object.entries(bySourceMap).sort((a, b) => b[1] - a[1]);
-  const contacts = events.filter(([k]) => ['call_click', 'whatsapp_click', 'email_click', 'lead', 'booking_request'].includes(k)).reduce((a, [, n]) => a + n, 0);
+  const contacts = events.filter(([k]) => ['call_click', 'whatsapp_click', 'email_click', 'lead', 'lead_chat', 'booking_request'].includes(k)).reduce((a, [, n]) => a + n, 0);
   const conv = sessions > 0 ? Math.round((contacts / sessions) * 100) : 0;
 
   return (

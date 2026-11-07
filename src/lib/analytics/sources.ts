@@ -6,6 +6,7 @@ export const EVENTS = [
   'whatsapp_click',
   'email_click',
   'lead',
+  'lead_chat',
   'booking_request',
 ] as const;
 export type AnalyticsEvent = (typeof EVENTS)[number];
