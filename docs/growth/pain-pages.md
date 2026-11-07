@@ -23,3 +23,10 @@ Content lives in `brand.painPages` (`src/lib/brand.ts`), each with `approved: fa
 - Bullying page: the plain-language description of the conduct, and the documentation advice.
 - Will / lasting power of attorney page: the statement that a lasting power of attorney is made in a formal procedure that includes a lawyer, and that form errors can affect validity.
 - The line "ייעוץ בזום בכל הארץ" on every page.
+
+## Status (2026-11-07)
+All four pages approved by the owner and set to `approved: true`. They are built in production, indexable, in `sitemap.xml` and `llms.txt`, and linked from their practice-area page under "מצבים נפוצים". `brand.seo.lastModified` bumped.
+
+## Page /about (added 2026-11-07)
+A profile page for the attorney built only from facts already on the site: Bar member, graduate of the Tel Aviv criminal prosecution, former prosecutor at the Ministry of Economy, practising since 2005 (years computed), the June 2024 course certificate, the published article, the gallery and the practice areas. JSON-LD: Person + ProfilePage. It is in the sitemap and llms.txt and linked from the home About section.
+To confirm with the attorney: the one-sentence summary under the name, and anything she wants added (education, years in each role, talks, memberships). Nothing was invented; every line comes from `brand.about`.
