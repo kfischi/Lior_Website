@@ -81,20 +81,15 @@ export function Hero() {
       />
 
       <div className="shell relative z-10 pb-72 pt-32 md:pb-28">
-        {/* A soft dark halo only behind the copy; the video everywhere else is untouched. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -inset-x-4 -inset-y-6 bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--color-navy)_72%,transparent),transparent)] md:-inset-x-10 md:-inset-y-10 md:bg-[radial-gradient(farthest-side_at_80%_55%,color-mix(in_oklab,var(--color-navy)_65%,transparent),transparent)]"
-        />
-        <div className="relative max-w-4xl">
+        <div className="max-w-4xl">
           <motion.p
             {...fade(0.1)}
-            className="eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance [text-shadow:0_1px_14px_rgb(0_0_0/0.55)] max-sm:before:hidden max-sm:after:hidden md:text-4xl"
+            className="eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance [text-shadow:0_0_2px_rgb(0_0_0/0.45),0_2px_14px_rgb(0_0_0/0.6)] max-sm:before:hidden max-sm:after:hidden md:text-4xl"
           >
             {live.hero.eyebrow}
           </motion.p>
 
-          <h1 className="text-[clamp(2.3rem,5.2vw,4.5rem)] font-semibold leading-[1.04] tracking-tight text-cream">
+          <h1 className="text-[clamp(2.3rem,5.2vw,4.5rem)] font-semibold leading-[1.04] tracking-tight text-cream drop-shadow-[0_2px_14px_rgb(0_0_0/0.55)]">
             {words.map((w, i) => (
               <React.Fragment key={`${w}-${i}`}>
                 <span className="inline-block overflow-hidden pb-[0.14em] align-bottom">
@@ -113,7 +108,7 @@ export function Hero() {
 
           <motion.p
             {...fade(0.8)}
-            className="mt-5 max-w-xl text-lg font-medium leading-relaxed text-white [text-shadow:0_1px_12px_rgb(0_0_0/0.7)]"
+            className="mt-5 max-w-xl text-lg font-medium leading-relaxed text-white [text-shadow:0_0_2px_rgb(0_0_0/0.5),0_2px_14px_rgb(0_0_0/0.7)]"
           >
             {live.hero.subtitle}
           </motion.p>
