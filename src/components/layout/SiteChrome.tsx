@@ -2,11 +2,12 @@
 
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import { CookieConsent } from '@/components/legal/CookieConsent';
+import { MobileActionBar } from './MobileActionBar';
 import { ChatBot } from '@/components/ai/ChatBot';
 import { ConciergeProvider } from '@/components/ai/ConciergeProvider';
 import { AccessibilityWidget } from '@/components/a11y/AccessibilityWidget';
 import { ScrollProgress } from '@/components/motion/ScrollProgress';
+import { Tracker } from '@/components/analytics/Tracker';
 import { BrandProvider } from './BrandProvider';
 import type { ClientBrand } from '@/lib/client-brand';
 
@@ -23,13 +24,14 @@ export function SiteChrome({ children, brand }: { children: ReactNode; brand: Cl
       <a href="#main" className="skip-link">
         דלג לתוכן הראשי
       </a>
+      <Tracker />
       <ScrollProgress />
       <ConciergeProvider>
         {children}
         <ChatBot />
         <AccessibilityWidget />
       </ConciergeProvider>
-      <CookieConsent />
+      <MobileActionBar />
     </BrandProvider>
   );
 }

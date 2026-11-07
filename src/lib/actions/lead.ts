@@ -5,6 +5,8 @@ import { LeadSchema, buildLeadMessage, buildWhatsAppHref } from '@/lib/lead';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
 import { brand } from '@/lib/brand';
 import { isMetaWhatsAppConfigured, sendLeadViaMeta } from '@/lib/whatsapp';
+import { attributionLine, knownSource } from '@/lib/analytics/attribution';
+import { recordVisit } from '@/lib/analytics/store';
 import { recordLead } from '@/lib/learning/stats';
 
 /**
@@ -53,8 +55,11 @@ export async function submitLead(_prev: LeadState, formData: FormData): Promise<
   }
 
   const lead = parsed.data;
+  const attr = attributionLine(formData.get('src'), formData.get('landing'));
+  if (attr) lead.message = `${lead.message}${lead.message ? ' | ' : ''}${attr}`.slice(0, 1000);
   const waHref = buildWhatsAppHref(buildLeadMessage(lead));
   void recordLead(lead.message.includes('דחוף'));
+  void recordVisit({ event: 'lead', eventSource: knownSource(formData.get('src')) }).catch(() => undefined);
 
   if (isMetaWhatsAppConfigured()) {
     const result = await sendLeadViaMeta(lead);

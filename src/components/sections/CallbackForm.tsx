@@ -4,6 +4,8 @@ import * as React from 'react';
 import Link from 'next/link';
 import { MessageCircle, Phone } from 'lucide-react';
 import { submitLead, type LeadState } from '@/lib/actions/lead';
+import { AttributionFields } from '@/components/analytics/AttributionFields';
+import { NextSteps } from './NextSteps';
 import { Button } from '@/components/ui/button';
 
 const INITIAL: LeadState = { status: 'idle' };
@@ -21,9 +23,10 @@ export function CallbackForm() {
 
   if (state.status === 'sent') {
     return (
-      <p role="status" className="rounded-2xl border border-accent-light/50 bg-cream/10 p-6 text-center text-lg text-cream">
-        תודה, הפרטים הגיעו למשרד. נחזור אליכם בהקדם.
-      </p>
+      <div role="status" className="rounded-2xl border border-accent-light/50 bg-cream/10 p-6 text-cream">
+        <p className="text-center text-lg">תודה, הפרטים הגיעו למשרד.</p>
+        <NextSteps />
+      </div>
     );
   }
 
@@ -43,6 +46,7 @@ export function CallbackForm() {
 
   return (
     <form action={action} noValidate className="grid gap-4 sm:grid-cols-2" aria-describedby="callback-note">
+      <AttributionFields />
       <div>
         <label htmlFor="cb-name" className="mb-1.5 block text-sm font-medium text-cream/90">
           שם מלא

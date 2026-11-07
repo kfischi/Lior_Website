@@ -19,7 +19,7 @@ export async function GET() {
 
   const body = `# ${brand.firmName}
 
-> ${brand.description} Hebrew-language law firm website of ${brand.attorneyName}, Harish, Israel. General information only, not legal advice.
+> ${brand.description} Hebrew-language law firm website of ${brand.attorneyName}, Israel. Consultations are available by Zoom anywhere in Israel, and at the office in Harish. General information only, not legal advice.
 
 ## Practice areas
 ${areas}
@@ -29,12 +29,14 @@ ${guides}
 
 ## Key pages
 - [Questions and answers](${base}/faq): short answers to common questions
+- [Request a consultation](${base}/consultation): appointment request form (the office confirms the time); phone, WhatsApp and chat are also available
 - [All guides](${base}/articles)
 - [Full text of the site for LLMs](${base}/llms-full.txt)
 
 ## Facts
 - Firm: ${brand.firmName}; attorney: ${brand.attorneyName}
-- Location: ${brand.address.street}, ${brand.address.city}, ${brand.address.postalCode}, Israel
+- Service area: consultations by Zoom anywhere in Israel
+- Office: ${brand.address.street}, ${brand.address.city}, ${brand.address.postalCode}, Israel
 - Phone and WhatsApp: +${brand.phoneE164}
 - Email: ${brand.email}
 - Language: Hebrew

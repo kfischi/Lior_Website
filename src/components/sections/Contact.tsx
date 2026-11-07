@@ -5,6 +5,7 @@ import type { Brand } from '@/lib/sanity/settings';
 import { getBrand } from '@/lib/sanity/content';
 import { WhatsAppIcon } from '@/components/ui/whatsapp-icon';
 import { Reveal } from '@/components/motion/Reveal';
+import { BookingBlock } from '@/components/sections/BookingBlock';
 import { CallbackForm } from './CallbackForm';
 
 interface ContactItem {
@@ -68,6 +69,13 @@ export async function Contact() {
               <CallbackForm />
             </div>
           </div>
+
+            <div className="mt-6 rounded-3xl border border-cream/15 bg-cream/5 p-6 md:p-8">
+              <h3 className="text-2xl text-cream">רוצים לקבוע פגישת ייעוץ?</h3>
+              <div className="mt-5">
+                <BookingBlock />
+              </div>
+            </div>
         </Reveal>
 
         <Reveal delay={0.1}>

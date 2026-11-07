@@ -1,5 +1,7 @@
 'use client';
 
+import { readAttribution } from '@/lib/analytics/attribution';
+import { track } from '@/lib/analytics/track';
 import * as React from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
@@ -214,12 +216,17 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
             .join(' | ')
             .slice(0, 1000),
         );
+        const attr = readAttribution();
+        fd.set('src', attr.source);
+        fd.set('landing', attr.landing);
         const result = await submitLead({ status: 'idle' }, fd);
 
         if (result.status === 'sent') {
           say(
             'assistant',
-            'הפרטים הועברו למשרד, ונחזור אליך בהקדם. אם נוח לך, אפשר גם להמשיך את השיחה בוואטסאפ.',
+            `הפרטים הועברו למשרד. ${brand.afterInquiry.title}: ${brand.afterInquiry.steps
+              .map((step, i) => `${i + 1}. ${step}`)
+              .join(' ')} אם נוח לך, אפשר גם להמשיך את השיחה בוואטסאפ.`,
             { whatsapp: result.waHref },
           );
         } else if (result.status === 'handoff') {
@@ -242,7 +249,7 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
         setIntake(null);
       }
     },
-    [say, brand.phone],
+    [say, brand.phone, brand.afterInquiry],
   );
 
   /** Advances the intake by one step. `shown` is what the visitor sees as their reply. */
@@ -452,7 +459,10 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
       busy,
       intakeStep: intake?.step ?? null,
       panelOpen,
-      openPanel: () => setPanelOpen(true),
+      openPanel: () => {
+        track('chat_open');
+        setPanelOpen(true);
+      },
       closePanel: () => setPanelOpen(false),
       send,
       choose,
