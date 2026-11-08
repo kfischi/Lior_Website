@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const { brand } = await getSiteContent();
   return buildMetadata({
     brand,
-    title: `${brand.attorneyName} | בוגרת הפרקליטות הפלילית`,
+    absoluteTitle: `${brand.attorneyName} | בוגרת הפרקליטות הפלילית`,
     description:
       'עו״ד ליאור-קלואי ארז: בוגרת הפרקליטות הפלילית בתל אביב ותובעת לשעבר במשרד הכלכלה. ליווי בהליכים פליליים, נזיקין וצוואות, ייעוץ בזום בכל הארץ.',
     path: '/about',

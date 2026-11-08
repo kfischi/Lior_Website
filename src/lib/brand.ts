@@ -658,7 +658,7 @@ export const brand = {
         'ייצוג וליווי בהליכים פליליים, משלב החקירה ועד סיום ההליך, וליווי נפגעות ונפגעי עבירה בהליך הפלילי לפי חוק זכויות נפגעי עבירה.',
       icon: 'Gavel',
       page: {
-        seoTitle: 'עורכת דין פלילי: חקירה, מעצר וייצוג, ייעוץ בכל הארץ',
+        seoTitle: 'עורכת דין פלילית בחריש | וזום בכל הארץ',
         seoDescription:
           'הוזמנתם לחקירה, נפתח הליך פלילי, או שנפגעתם מעבירה? מה חשוב לדעת על הזכויות ועל שלבי ההליך, ולמה כדאי להתייעץ מוקדם. עו״ד ליאור-קלואי ארז, ייעוץ בזום בכל הארץ.',
         intro: [
@@ -718,7 +718,7 @@ export const brand = {
         'רשלנות, אפליה והתעמרות בעבודה, הטרדה מינית, לשון הרע ותביעות בגין חיסוני פייזר.',
       icon: 'Scale',
       page: {
-        seoTitle: 'עורכת דין נזיקין: רשלנות ולשון הרע, ייעוץ בכל הארץ',
+        seoTitle: 'עורכת דין נזיקין בחריש | וזום בכל הארץ',
         seoDescription:
           'נפגעתם ברשלנות, באפליה או בהתעמרות בעבודה, בהטרדה מינית או בפרסום מזיק? מה האפשרויות ולמה כדאי להתייעץ. עו״ד ליאור-קלואי ארז, ייעוץ בזום בכל הארץ.',
         intro: [
@@ -800,7 +800,7 @@ export const brand = {
       description: 'עריכת צוואות, ייפוי כוח מתמשך והצהרה על נעדר.',
       icon: 'Users',
       page: {
-        seoTitle: 'צוואות וייפוי כוח מתמשך, ייעוץ בכל הארץ',
+        seoTitle: 'צוואות וייפוי כוח מתמשך | חריש וזום',
         seoDescription:
           'איך עורכים צוואה, מה זה ייפוי כוח מתמשך ומה עושים כשאדם נעדר. מידע ברור והסבר על התהליך. עו״ד ליאור-קלואי ארז, ייעוץ בזום בכל הארץ.',
         intro: [
@@ -1053,13 +1053,15 @@ export const brand = {
   // --- SEO ---
   seo: {
     /** Absolute <title> of the home page. Aim for about 50-60 characters. */
-    homeTitle: 'עורכת דין: פלילי, נזיקין וצוואות, ייעוץ בכל הארץ | ליאור-קלואי ארז',
+    homeTitle: 'עורכת דין בחריש: פלילי, נזיקין וצוואות | ליאור-קלואי ארז',
     homeDescription:
       'משרד עו״ד ליאור-קלואי ארז: ייעוץ בזום בכל הארץ, ליווי אישי ודיסקרטי במשפט פלילי, נזיקין (רשלנות, לשון הרע) וצוואות וייפוי כוח מתמשך. אפשר לקבוע ייעוץ.',
     /** Appended to inner-page titles. */
     titleSuffix: 'ליאור-קלואי ארז',
     /** Update when public content changes; feeds sitemap lastmod. */
     lastModified: '2026-11-07',
+    /** Where the office is (and nearby areas) for local search and structured data; consultations by Zoom reach all of Israel. */
+    serviceAreas: ['חריש', 'חדרה', 'אזור השרון'],
     /** What the firm is an authority on; feeds JSON-LD `knowsAbout` (confirmed topics only). */
     knowsAbout: [
       'אפליה בעבודה',

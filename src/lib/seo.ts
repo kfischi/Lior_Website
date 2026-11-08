@@ -115,7 +115,18 @@ export function legalServiceJsonLd(b: Brand = staticBrand) {
     knowsLanguage: 'he',
     serviceType: b.practiceAreas.map((a) => a.title),
     knowsAbout: b.seo.knowsAbout,
-    areaServed: { '@type': 'Country', name: 'ישראל' },
+    areaServed: [
+      { '@type': 'Country', name: 'ישראל' },
+      ...b.seo.serviceAreas.map((name) => ({ '@type': 'Place', name })),
+    ],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'תחומי עיסוק',
+      itemListElement: b.practiceAreas.map((a) => ({
+        '@type': 'Offer',
+        itemOffered: { '@type': 'Service', name: a.title, url: `${base}/practice-areas/${a.slug}` },
+      })),
+    },
     hasMap: b.mapUrl,
     contactPoint: {
       '@type': 'ContactPoint',
@@ -163,8 +174,28 @@ export function attorneyJsonLd(b: Brand = staticBrand) {
     knowsAbout: b.seo.knowsAbout,
     image: `${base}${b.about.portraitId}`,
     jobTitle: 'עורכת דין',
+    description: `${b.about.credentials.slice(1, 3).join(', ')}. ${years(b)} שנות ניסיון.`,
+    memberOf: { '@type': 'Organization', name: 'לשכת עורכי הדין בישראל' },
     worksFor: { '@id': `${base}/#firm` },
     url: base,
+  };
+}
+
+function years(b: Brand): number {
+  return new Date().getFullYear() - b.about.practisingSince;
+}
+
+/** The contact page: the firm's name, address and phone in one place, tied to the main firm entity. */
+export function contactPageJsonLd(b: Brand = staticBrand) {
+  const base = siteUrl();
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    '@id': `${base}/contact#page`,
+    url: `${base}/contact`,
+    name: `יצירת קשר, ${b.firmName}`,
+    inLanguage: 'he-IL',
+    mainEntity: { '@id': `${base}/#firm` },
   };
 }
 
@@ -179,7 +210,10 @@ export function serviceJsonLd(area: PracticeArea) {
     url: `${base}/practice-areas/${area.slug}`,
     serviceType: area.title,
     provider: { '@id': `${base}/#firm` },
-    areaServed: { '@type': 'Country', name: 'ישראל' },
+    areaServed: [
+      { '@type': 'Country', name: 'ישראל' },
+      ...staticBrand.seo.serviceAreas.map((name) => ({ '@type': 'Place', name })),
+    ],
   };
 }
 

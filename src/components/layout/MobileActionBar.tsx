@@ -19,8 +19,12 @@ export function MobileActionBar() {
     <>
       <nav
         aria-label="יצירת קשר מהירה"
-        className="fixed inset-x-0 bottom-0 z-[50] flex divide-x divide-x-reverse divide-cream/15 border-t border-cream/15 bg-navy pb-[env(safe-area-inset-bottom)] sm:hidden"
+        className="fixed inset-x-0 bottom-0 z-[50] border-t border-cream/15 bg-navy pb-[env(safe-area-inset-bottom)] sm:hidden"
       >
+        <p className="border-b border-cream/10 py-1 text-center text-xs font-medium text-accent-light">
+          צריכים ייעוץ משפטי דחוף? מדברים עכשיו
+        </p>
+        <div className="flex divide-x divide-x-reverse divide-cream/15">
         <a href={l.tel} className={item}>
           <Phone className="h-5 w-5" aria-hidden="true" />
           התקשרו
@@ -34,9 +38,10 @@ export function MobileActionBar() {
           <CalendarCheck className="h-5 w-5" aria-hidden="true" />
           קבעו פגישה
         </Link>
+        </div>
       </nav>
       {/* Keeps the end of the page from sitting under the bar. */}
-      <div aria-hidden="true" className="h-14 sm:hidden" />
+      <div aria-hidden="true" className="h-[4.75rem] sm:hidden" />
     </>
   );
 }

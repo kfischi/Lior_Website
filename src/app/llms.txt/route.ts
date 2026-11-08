@@ -34,6 +34,7 @@ ${guides}
 ${approvedPainPages(brand.painPages)
   .map((p) => `- [${p.title}](${base}/help/${p.slug}): ${p.lead}`)
   .join('\n')}
+- [Contact and location](${base}/contact): phone, WhatsApp, address in ${brand.address.city}, service areas, and a request form
 - [About ${brand.attorneyName}](${base}/about): background, experience and areas of practice
 - [All guides](${base}/articles)
 - [Full text of the site for LLMs](${base}/llms-full.txt)

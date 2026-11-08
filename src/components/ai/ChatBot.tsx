@@ -38,7 +38,7 @@ function Floating() {
   }, [panelOpen, closePanel]);
 
   // On phones the launcher sits above the sticky action bar.
-  const bottom = 'bottom-24 sm:bottom-5';
+  const bottom = 'bottom-28 sm:bottom-5';
 
   return (
     <>
