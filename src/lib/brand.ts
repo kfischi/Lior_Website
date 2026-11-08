@@ -125,6 +125,8 @@ export interface TestimonialLetter {
   height: number;
   /** Text alternative for the scan: what the letter says, in words. */
   alt: string;
+  /** Short caption above the scan; defaults to a thank-you letter. */
+  label?: string;
 }
 
 /** One spoken line of a client video, with its times in seconds. */
@@ -926,6 +928,15 @@ export const brand = {
       width: 1400,
       height: 778,
       alt: 'מכתב תודה בכתב יד מלקוחה בשם ליאה, מתאריך 3.4.2016. היא כותבת שלפני הטיפול חייה היו סערה, ושמהיום הראשון הרגישה נחת, שלווה ותקווה; שהעורכת הייתה שם בשבילה בכל שעה, האזינה בקשב מלא ונתנה לה שקט נפשי.',
+    },
+    {
+      name: 'חנה ו.',
+      label: 'מכתב המלצה',
+      date: '2025-05-25',
+      image: '/images/letter-2025.webp',
+      width: 1720,
+      height: 1600,
+      alt: 'מכתב המלצה מתאריך 25.5.2025 מחנה וקנין, סמנכ״לית טכנולוגיות ומערכות מידע. היא ממליצה על עו״ד ליאור-קלואי ארז, שסייעה לה בבדיקה ובייעוץ משפטי להסכם סיום העסקה מול המעסיק הקודם. היא כותבת שליאור הפגינה מקצועיות גבוהה, ידע רחב, חדות אבחנה וזריזות, איתרה סעיפים שעלולים להיות סיכון עבורה, הציעה תיקונים מדויקים והוסיפה הערות ותובנות שהובילו לשינויים בסעיפים מרכזיים בחוזה. היא מודה לליאור וממליצה עליה לכל מי שמחפש ייעוץ משפטי איכותי, מעמיק ומסור.',
     },
   ] as TestimonialLetter[],
 
