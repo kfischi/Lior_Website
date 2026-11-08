@@ -153,13 +153,13 @@ const PRACTISING_SINCE = 2005;
 
 export const brand = {
   // --- Identity ---
-  firmName: 'משרד עורכת דין ליאור-קלואי ארז',
+  firmName: 'משרד עו״ד ליאור-קלואי ארז',
   firmNameShort: 'ליאור-קלואי ארז, עו״ד',
   tagline: 'ליווי משפטי ברגישות, בנחישות ובדיסקרטיות',
   attorneyName: 'עו״ד ליאור-קלואי ארז',
   /** Short legal-services description — used in meta + JSON-LD. */
   description:
-    'משרד עורכת דין ליאור-קלואי ארז: ייעוץ בכל הארץ בזום ובמשרד בחריש. משפט פלילי, נזיקין (רשלנות, אפליה, הטרדה מינית, לשון הרע) ומעמד אישי (צוואות וייפוי כוח מתמשך). ' +
+    'משרד עו״ד ליאור-קלואי ארז: ייעוץ בכל הארץ בזום ובמשרד בחריש. משפט פלילי, נזיקין (רשלנות, אפליה, הטרדה מינית, לשון הרע) ומעמד אישי (צוואות וייפוי כוח מתמשך). ' +
     'בוגרת הפרקליטות הפלילית, ליווי אישי ודיסקרטי מהשיחה הראשונה.',
   /** Public website address. */
   website: 'https://liorerez-adv.co.il',
@@ -181,12 +181,12 @@ export const brand = {
   /** International format, digits only — for tel: and WhatsApp links. */
   phoneE164: '972524694158',
   whatsapp: '972524694158',
-  fax: '077-4702353',
+  fax: '',
   email: 'Lioraere@gmail.com',
   address: {
-    street: 'רח׳ רימון 5',
+    street: 'רח׳ התנופה 6',
     city: 'חריש',
-    postalCode: '3786100',
+    postalCode: '3761412',
     country: 'IL',
   },
   hours: 'בתיאום מראש, בזום בכל הארץ או במשרד בחריש',
@@ -219,7 +219,7 @@ export const brand = {
     tip: 'בינתיים אפשר לרכז מסמכים והודעות שקשורים לעניין. אין צורך לפרט את האירוע בכתב.',
   },
   /** Maps embed/link target. */
-  mapUrl: 'https://maps.google.com/?q=%D7%A8%D7%99%D7%9E%D7%95%D7%9F+5+%D7%97%D7%A8%D7%99%D7%A9',
+  mapUrl: 'https://maps.google.com/?q=%D7%94%D7%AA%D7%A0%D7%95%D7%A4%D7%94+6+%D7%97%D7%A8%D7%99%D7%A9',
 
   // --- Social ---
   social: {
@@ -1031,7 +1031,7 @@ export const brand = {
     },
     {
       question: 'איפה נמצא המשרד?',
-      answer: 'המשרד נמצא ברחוב רימון 5 בחריש, ואפשר להתייעץ גם בזום מכל מקום בארץ. מומלץ לתאם פגישה מראש בטלפון, בוואטסאפ או דרך הצ׳אט.',
+      answer: 'המשרד נמצא ברחוב התנופה 6 בחריש, ואפשר להתייעץ גם בזום מכל מקום בארץ. מומלץ לתאם פגישה מראש בטלפון, בוואטסאפ או דרך הצ׳אט.',
     },
     {
       question: 'אני גר רחוק מחריש. אפשר להתייעץ?',
