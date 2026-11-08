@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Play } from 'lucide-react';
+import { announcePlayback, useExclusivePlayback } from './useExclusivePlayback';
 
 interface YouTubeCardProps {
   videoId: string;
@@ -20,11 +21,18 @@ const ID_PATTERN = /^[\w-]{11}$/;
 export function YouTubeCard({ videoId, label, poster, landscape }: YouTubeCardProps) {
   const [active, setActive] = React.useState(false);
   const frameRef = React.useRef<HTMLIFrameElement>(null);
+  const boxRef = React.useRef<HTMLDivElement>(null);
+  const id = React.useId();
+  const stop = React.useCallback(() => setActive(false), []);
+  useExclusivePlayback(id, boxRef, active, stop);
 
   // The button that was focused is replaced by the player: hand the focus over to it.
   React.useEffect(() => {
-    if (active) frameRef.current?.focus();
-  }, [active]);
+    if (active) {
+      announcePlayback(id);
+      frameRef.current?.focus();
+    }
+  }, [active, id]);
 
   if (!ID_PATTERN.test(videoId)) return null;
 
@@ -32,6 +40,7 @@ export function YouTubeCard({ videoId, label, poster, landscape }: YouTubeCardPr
 
   return (
     <div
+      ref={boxRef}
       className={`group relative ${shape} overflow-hidden rounded-3xl bg-black shadow-2xl ring-1 ring-cream/10`}
     >
       {active ? (
