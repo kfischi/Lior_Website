@@ -46,6 +46,7 @@ export function makeTheme(c: SiteColors) {
 /** The left menu: the settings document first (there is exactly one), then the lists. */
 export const siteStructure: StructureResolver = (S) =>
   S.list()
+    .id('root')
     .title('ניהול האתר')
     .items([
       S.listItem()
