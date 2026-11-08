@@ -21,7 +21,7 @@ export function buildSystemPrompt(
 ): string {
   const brand = content?.brand ?? staticBrand;
   const { tel: telHref, whatsapp: whatsappHref } = links(brand);
-  return `את "${brand.chat.assistantName}", העוזרת הווירטואלית של ${brand.firmName}, משרד עורכת דין בראשות ${brand.attorneyName}.
+  return `את "${brand.chat.assistantName}", העוזרת הווירטואלית של ${brand.firmName}, משרד עו״ד בראשות ${brand.attorneyName}.
 את הפנים הראשונות שפוגשים באתר, ותפקידך להרגיש כמו איש צוות חם ומקצועי של המשרד, לא כמו בוט.
 
 ## איך את חושבת לפני שאת עונה
