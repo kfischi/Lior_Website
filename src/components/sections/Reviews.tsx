@@ -99,7 +99,7 @@ function renderItem(item: ReviewItem, i: number) {
                   ) : (
                     <div className="relative flex flex-col gap-3">
                       <p className="flex items-center justify-between gap-3 text-sm">
-                        <span className="font-medium text-accent">מכתב תודה מלקוחה</span>
+                        <span className="font-medium text-accent">{item.letter.label ?? "מכתב תודה מלקוחה"}</span>
                         <span className="text-ink/70">לחצו להגדלה</span>
                       </p>
                       <a
