@@ -133,6 +133,17 @@ export default async function AboutPage() {
               </ul>
             </section>
 
+            <section aria-labelledby="lect-title">
+              <h2 id="lect-title" className="text-2xl text-navy md:text-3xl">הרצאות</h2>
+              <p className="mt-4 text-lg leading-relaxed text-ink/85">
+                ליאור מרצה לארגונים, לכנסים ולקהילות על פלילים, זכויות אדם, רשלנות רפואית וייפוי כוח מתמשך.
+              </p>
+              <Link href="/lectures" className="mt-4 inline-flex items-center gap-1 font-medium text-accent underline-offset-4 hover:underline">
+                לתפריט ההרצאות
+                <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </section>
+
             {(brand.about.certificates.length > 0 || press.length > 0) && (
               <section aria-labelledby="proof-title">
                 <h2 id="proof-title" className="text-2xl text-navy md:text-3xl">השתלמויות ופרסומים</h2>
