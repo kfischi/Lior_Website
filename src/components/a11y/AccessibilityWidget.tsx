@@ -149,7 +149,7 @@ export function AccessibilityWidget() {
 
   const changed = JSON.stringify(prefs) !== JSON.stringify(DEFAULTS);
   // On phones the button sits above the sticky action bar.
-  const bottom = 'bottom-24 sm:bottom-5';
+  const bottom = 'bottom-28 sm:bottom-5';
 
   return (
     <>
@@ -175,7 +175,7 @@ export function AccessibilityWidget() {
           aria-label="תפריט נגישות"
           className={cn(
             'fixed start-3 z-[70] w-[min(20rem,calc(100vw-1.5rem))] rounded-2xl border border-navy/15 bg-cream p-5 text-ink shadow-2xl sm:start-5',
-            'bottom-44 sm:bottom-24',
+            'bottom-48 sm:bottom-24',
           )}
         >
           <div className="mb-4 flex items-center justify-between">

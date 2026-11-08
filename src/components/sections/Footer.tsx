@@ -28,6 +28,8 @@ function Instagram({ className }: { className?: string }) {
 }
 
 const LEGAL_LINKS = [
+  { href: '/contact', label: 'יצירת קשר' },
+  { href: '/about', label: 'אודות ליאור' },
   { href: '/articles', label: 'מדריכים' },
   { href: '/faq', label: 'שאלות ותשובות' },
   { href: '/legal/privacy', label: 'מדיניות פרטיות' },
