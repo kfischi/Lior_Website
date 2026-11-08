@@ -103,7 +103,7 @@ export function legalServiceJsonLd(b: Brand = staticBrand) {
     url: base,
     image: `${base}${DEFAULT_OG_IMAGE}`,
     telephone: `+${b.phoneE164}`,
-    faxNumber: b.fax,
+    ...(b.fax ? { faxNumber: b.fax } : {}),
     email: b.email,
     address: {
       '@type': 'PostalAddress',
