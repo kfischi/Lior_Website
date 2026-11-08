@@ -21,6 +21,7 @@ function navItems(hasReviews: boolean) {
     { href: "/#why", label: "למה אנחנו" },
     ...(hasReviews ? [{ href: "/#reviews", label: "המלצות" }] : []),
     { href: "/articles", label: "מדריכים" },
+    { href: "/lectures", label: "הרצאות" },
     { href: "/#faq", label: "שאלות" },
     { href: "/#contact", label: "יצירת קשר" },
   ];
