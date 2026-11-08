@@ -186,7 +186,7 @@ export const brand = {
   address: {
     street: 'רח׳ התנופה 6',
     city: 'חריש',
-    postalCode: '3786100',
+    postalCode: '3761412',
     country: 'IL',
   },
   hours: 'בתיאום מראש, בזום בכל הארץ או במשרד בחריש',
