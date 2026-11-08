@@ -112,11 +112,21 @@ function ActionLink({
   );
 }
 
-const SITE_PATH = /(\/(?:articles|practice-areas)\/[a-z0-9-]+|\/faq)/g;
+/** Questions worth tapping while reading the lectures page. */
+const LECTURE_STARTERS = [
+  'אפשר להזמין הרצאה לארגון שלנו?',
+  'איזו הרצאה מתאימה לצוות עובדים?',
+  'כמה זמן נמשכת הרצאה?',
+  'איך מתאמים הרצאה?',
+  'מי עורכת הדין?',
+];
+
+const SITE_PATH = /(\/(?:articles|practice-areas)\/[a-z0-9-]+|\/faq|\/lectures)/g;
 
 function pathLabel(path: string): string {
   if (path.startsWith('/articles/')) return 'המדריך באתר';
   if (path.startsWith('/practice-areas/')) return 'עמוד התחום';
+  if (path === '/lectures') return 'עמוד ההרצאות';
   return 'שאלות ותשובות';
 }
 
@@ -395,7 +405,12 @@ export function ConciergePanel({
   const pathname = usePathname();
   const area = brand.practiceAreas.find((a) => pathname === `/practice-areas/${a.slug}`);
   // On a practice-area page, offer that page's own questions first.
-  const starters = area ? area.page.faq.slice(0, 6).map((f) => f.question) : brand.chat.suggestedPrompts;
+  const onLectures = pathname === '/lectures';
+  const starters = area
+    ? area.page.faq.slice(0, 6).map((f) => f.question)
+    : onLectures
+      ? LECTURE_STARTERS
+      : brand.chat.suggestedPrompts;
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const hasIntro = Boolean(brand.chat.welcome.photo);

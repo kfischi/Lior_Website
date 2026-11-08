@@ -7,6 +7,7 @@ import {
   HeartPulse,
   Landmark,
   MessageCircle,
+  MessagesSquare,
   Mic,
   ShieldAlert,
   Stethoscope,
@@ -21,6 +22,7 @@ import { Footer } from '@/components/sections/Footer';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 import { CallbackForm } from '@/components/sections/CallbackForm';
 import { Button } from '@/components/ui/button';
+import { OpenChatButton } from '@/components/ai/OpenChatButton';
 
 /** One icon per talk, in the order of the menu. Presentation only. */
 const ICONS: LucideIcon[] = [Gavel, ShieldAlert, Fingerprint, Landmark, HeartPulse, Stethoscope, FileSignature];
@@ -93,6 +95,10 @@ export default async function LecturesPage() {
                 <Button asChild size="lg" variant="onDark">
                   <a href="#menu">לתפריט ההרצאות</a>
                 </Button>
+                <OpenChatButton intake={false} size="lg" variant="onDark">
+                  <MessagesSquare className="h-5 w-5" aria-hidden="true" />
+                  לשאול את העוזרת
+                </OpenChatButton>
               </div>
               <dl className="mt-12 grid max-w-xl grid-cols-2 gap-x-6 gap-y-5 border-t border-cream/15 pt-8">
                 {stats.map((s) => (
@@ -235,6 +241,10 @@ export default async function LecturesPage() {
                     <span dir="ltr">{brand.phone}</span>
                   </a>
                 </Button>
+                <OpenChatButton intake={false} size="lg" variant="onDark">
+                  <MessagesSquare className="h-5 w-5" aria-hidden="true" />
+                  שאלות? העוזרת עונה
+                </OpenChatButton>
               </div>
             </Reveal>
             <Reveal delay={0.1}>

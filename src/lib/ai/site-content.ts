@@ -39,6 +39,15 @@ function articleText(articles: Article[]): string {
     .join('\n\n');
 }
 
+function lecturesText(brand: Brand): string {
+  const l = brand.lectures;
+  return [
+    `### ${l.title} (/lectures)`,
+    ...l.about,
+    ...l.items.map((i) => `- ${i.title}: ${i.about} מתאים ל: ${i.audience}`),
+  ].join('\n');
+}
+
 function additionalAreasText(brand: Brand): string {
   return brand.about.additionalAreas.map((a) => `### ${a.title}\n${a.text}`).join('\n\n');
 }
@@ -50,9 +59,9 @@ function additionalSection(heading: string, brand: Brand): string {
 }
 
 export function siteContentAsPrompt(articles: Article[] = staticArticles, brand: Brand = staticBrand): string {
-  return `## תחומי העיסוק\n${practiceAreaText(brand)}\n\n${additionalSection('## תחומים נוספים\n', brand)}## מדריכים באתר\nכשהנושא רלוונטי, הפנה את המשתמש למדריך המתאים בכתיבת הנתיב (למשל /articles/hearing-before-dismissal).\n${articleText(articles)}`;
+  return `## תחומי העיסוק\n${practiceAreaText(brand)}\n\n${additionalSection('## תחומים נוספים\n', brand)}## הרצאות\nכשמבקשים הרצאה, הפנה לעמוד /lectures.\n${lecturesText(brand)}\n\n## מדריכים באתר\nכשהנושא רלוונטי, הפנה את המשתמש למדריך המתאים בכתיבת הנתיב (למשל /articles/hearing-before-dismissal).\n${articleText(articles)}`;
 }
 
 export function siteContentAsMarkdown(articles: Article[] = staticArticles, brand: Brand = staticBrand): string {
-  return `${practiceAreaText(brand)}\n\n${additionalSection('## תחומים נוספים\n\n', brand)}${articleText(articles)}`;
+  return `${practiceAreaText(brand)}\n\n${additionalSection('## תחומים נוספים\n\n', brand)}## הרצאות\n\n${lecturesText(brand)}\n\n${articleText(articles)}`;
 }
