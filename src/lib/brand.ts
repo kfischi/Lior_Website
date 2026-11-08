@@ -412,6 +412,14 @@ export const brand = {
         audience: 'בעלות עסקים, יזמות, מנהלות ופורומים של נטוורקינג.',
       },
     ] as Lecture[],
+    /** Photo of the attorney speaking (image in /public/images). */
+    photo: {
+      src: '/images/lior-lecture.webp',
+      width: 900,
+      height: 1193,
+      alt: 'עו״ד ליאור-קלואי ארז מדברת עם מיקרופון ליד דוכן, באולם עם דגל ישראל',
+      caption: 'על הבמה',
+    },
     ctaTitle: 'רוצים להביא הרצאה לארגון או לקהילה?',
     ctaText: 'אשמח להתאים את התוכן לקהל ולזמן שיש לכם. כתבו בוואטסאפ, התקשרו או השאירו טלפון, ונתאם שיחה קצרה.',
     whatsappText: 'שלום, אשמח לשמוע על הרצאה לארגון או לקהילה שלנו.',
@@ -461,13 +469,6 @@ export const brand = {
     }[],
     /** Photos shown in a row under the text (images in /public/images). Empty caption = no caption. */
     gallery: [
-      {
-        src: '/images/lior-lecture.webp',
-        width: 900,
-        height: 1193,
-        alt: 'עו״ד ליאור-קלואי ארז מדברת עם מיקרופון ליד דוכן, באולם עם דגל ישראל',
-        caption: 'על הבמה',
-      },
       {
         src: '/images/lior-portrait-2.webp',
         width: 800,
