@@ -150,7 +150,7 @@ export type VideoReview = { label: string; landscape?: boolean } & (
   | {
       src: string;
       poster: string;
-      /** What is said, line by line (see video-transcripts.json). Shown as captions and as a transcript. */
+      /** What is said, line by line (see video-transcripts.json). Shown as subtitles over the video. */
       transcript?: VideoTranscriptLine[];
       /** A short description under the video. Only text the attorney approved. */
       note?: string;
