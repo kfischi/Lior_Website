@@ -4,6 +4,7 @@ import { Clock, Mail, MapPin, Phone, Video } from 'lucide-react';
 import { getBrand } from '@/lib/sanity/content';
 import { links } from '@/lib/brand';
 import { breadcrumbJsonLd, buildMetadata, contactPageJsonLd } from '@/lib/seo';
+import { PhotoHero } from '@/components/ui/PhotoHero';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
 import { Reveal } from '@/components/motion/Reveal';
@@ -43,9 +44,8 @@ export default async function ContactPage() {
       <JsonLd data={breadcrumbJsonLd([{ name: 'ראשי', path: '/' }, { name: 'יצירת קשר', path: '/contact' }])} />
       <Header />
       <main id="main">
-        <section aria-labelledby="contact-title" className="bg-navy pb-14 pt-36 text-cream md:pb-20">
-          <div className="shell grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-start">
-            <Reveal>
+        <PhotoHero src={brand.about.portraitId} alt={`תמונה של ${brand.attorneyName}`} labelledBy="contact-title" className="lg:min-h-[56svh]">
+          <Reveal className="max-w-2xl">
               <p className="eyebrow mb-4 text-accent-light">{brand.firmName}</p>
               <h1 id="contact-title" className="text-4xl font-semibold leading-tight text-cream md:text-5xl">
                 יצירת קשר, {brand.address.city} וזום
@@ -53,6 +53,12 @@ export default async function ContactPage() {
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-cream/90">
                 אפשר להתקשר, לכתוב בוואטסאפ או להשאיר טלפון ונחזור אליכם. בפנייה הראשונה אין צורך לפרט את האירוע.
               </p>
+          </Reveal>
+        </PhotoHero>
+
+        <section aria-label="פרטי התקשרות וטופס" className="bg-navy pb-14 pt-12 text-cream md:pb-20 md:pt-16">
+          <div className="shell grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-start">
+            <Reveal>
               <address className="mt-8 not-italic">
                 <ul className="space-y-4">
                   {rows.map(({ icon: Icon, label, value, href, dir, external }) => (
@@ -92,13 +98,13 @@ export default async function ContactPage() {
 
         <section aria-labelledby="book-title" className="bg-cream py-16 md:py-20">
           <div className="shell max-w-3xl">
-            <h2 id="book-title" className="text-3xl text-navy">רוצים לקבוע פגישת ייעוץ?</h2>
+            <h2 id="book-title" className="text-3xl text-navy">מעוניינים לקבוע פגישת ייעוץ?</h2>
             <p className="mt-3 text-ink/80">בקשת פגישה היא לא קביעה סופית: המשרד יחזור אליכם לאישור המועד.</p>
             <div className="mt-8 rounded-3xl bg-navy p-6 md:p-8">
               <BookingBlock />
             </div>
             <p className="mt-8 text-sm text-ink/75">
-              קודם רוצים לקרוא?{' '}
+              מעוניינים קודם לקרוא?{' '}
               <Link href="/faq" className="text-accent underline underline-offset-4">שאלות ותשובות</Link> או{' '}
               <Link href="/articles" className="text-accent underline underline-offset-4">המדריכים</Link>.
             </p>
