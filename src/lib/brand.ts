@@ -103,6 +103,8 @@ export interface PressArticle {
   url: string;
   /** Optional one or two sentences quoted from the piece. */
   excerpt?: string;
+  /** Cover picture in /public (1200x630). Without one the card has no picture. */
+  image?: string;
 }
 
 /** One line of the intro video's script; `start` is in seconds from the start of the video. */
@@ -1048,11 +1050,13 @@ export const brand = {
       title: 'כתבה על עו״ד ליאור-קלואי ארז',
       outlet: 'N12 מגזין',
       url: 'https://www.mako.co.il/news-n12_magazine/2022_q2/Article-6bee8be2e09a181027.htm',
+      image: '/images/press-article.webp',
     },
     {
       title: 'ראיון עם עו״ד ליאור-קלואי ארז',
       outlet: 'YouTube',
       url: 'https://www.youtube.com/live/unjojjqO5BY',
+      image: '/images/press-interview.webp',
     },
   ] as PressArticle[],
 

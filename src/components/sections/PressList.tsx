@@ -1,4 +1,6 @@
+import Image from 'next/image';
 import { ArrowUpLeft } from 'lucide-react';
+import { brand } from '@/lib/brand';
 import { formatHebrewDate } from '@/lib/articles';
 import { getSiteContent } from '@/lib/sanity/content';
 
@@ -8,6 +10,8 @@ export async function PressList({ headingId }: { headingId: string }) {
   // Newest first; pieces without a known date come last.
   const items = [...press].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
   if (items.length === 0) return null;
+  // Pictures live in brand.ts, matched by link, so pieces edited in the CMS keep theirs.
+  const covers = new Map(brand.press.map((p) => [p.url, p.image]));
 
   return (
     <div className="mt-16 border-t border-navy/10 pt-12">
@@ -24,6 +28,16 @@ export async function PressList({ headingId }: { headingId: string }) {
               rel="noopener noreferrer"
               className="group flex h-full flex-col rounded-2xl border border-navy/10 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-lg"
             >
+              {covers.get(p.url) && (
+                <Image
+                  src={covers.get(p.url) as string}
+                  alt=""
+                  width={1200}
+                  height={630}
+                  sizes="(min-width: 1024px) 24rem, (min-width: 768px) 50vw, 100vw"
+                  className="-mx-6 -mt-6 mb-5 w-[calc(100%+3rem)] max-w-none rounded-t-2xl"
+                />
+              )}
               <span className="eyebrow mb-3">{p.outlet}</span>
               <span className="font-heading text-xl font-semibold leading-snug text-navy">{p.title}</span>
               {p.excerpt && (
