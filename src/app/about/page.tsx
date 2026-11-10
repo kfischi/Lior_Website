@@ -50,8 +50,27 @@ export default async function AboutPage() {
 
       <Header />
       <main id="main">
-        <section aria-labelledby="about-title" className="bg-navy pb-16 pt-36 text-cream md:pb-24">
-          <div className="shell grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+        {/* Opening: her portrait fills the section, the text sits on it */}
+        <section
+          aria-labelledby="about-title"
+          className="relative isolate flex min-h-[100svh] items-end overflow-hidden bg-navy pb-14 pt-[46svh] text-cream md:pb-20 lg:min-h-[88svh] lg:items-center lg:pb-24 lg:pt-36"
+        >
+          {brand.about.portraitId && (
+            <div className="absolute inset-x-0 top-0 -z-10 h-[72svh] lg:inset-y-0 lg:start-auto lg:h-auto lg:w-[64%]">
+              <Image
+                src={brand.about.portraitId}
+                alt={`תמונה של ${brand.attorneyName}`}
+                fill
+                priority
+                sizes="(min-width: 1024px) 64vw, 100vw"
+                className="-scale-x-100 object-cover object-[50%_12%] lg:object-[50%_4%]"
+              />
+              {/* Dark where the text is, clear where she is: the text always keeps its contrast. */}
+              <div className="absolute inset-0 bg-linear-to-t from-navy via-navy/55 to-navy/0 lg:bg-linear-to-l lg:from-navy lg:via-navy/70 lg:to-navy/0" />
+            </div>
+          )}
+          <div className="shell relative">
+            <div className="max-w-2xl">
             <Reveal>
               <p className="eyebrow mb-4 text-accent-light">עורכת דין</p>
               <h1 id="about-title" className="text-4xl font-semibold leading-tight text-cream md:text-6xl">
@@ -72,20 +91,7 @@ export default async function AboutPage() {
                 </div>
               </dl>
             </Reveal>
-            {brand.about.portraitId && (
-              <Reveal delay={0.1}>
-                <div className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-2xl shadow-2xl">
-                  <Image
-                    src={brand.about.portraitId}
-                    alt={`תמונה של ${brand.attorneyName}`}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 80vw, 24rem"
-                    className="object-cover object-top"
-                  />
-                </div>
-              </Reveal>
-            )}
+            </div>
           </div>
         </section>
 
