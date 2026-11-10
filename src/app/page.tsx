@@ -9,6 +9,7 @@ import { TrustBar } from '@/components/sections/TrustBar';
 import { Process } from '@/components/sections/Process';
 import { WhyUs } from '@/components/sections/WhyUs';
 import { About } from '@/components/sections/About';
+import { LecturesTeaser } from '@/components/sections/LecturesTeaser';
 import { PracticeAreas } from '@/components/sections/PracticeAreas';
 import { Reviews } from '@/components/sections/Reviews';
 import { VideoReviews } from '@/components/sections/VideoReviews';
@@ -46,13 +47,15 @@ export default async function HomePage() {
         <PracticeAreas />
         <SectionBand name="criminal" into="cream" focus="max-md:object-[60%_50%]" />
         <About />
+        <SectionBand name="lectures" into="navy" focus="max-md:object-[70%_50%]" />
+        <LecturesTeaser />
         <SectionBand name="family" into="navy" focus="max-md:object-[50%_40%]" />
         <Process />
         <SectionBand name="articles" into="cream" focus="max-md:object-[30%_50%]" />
         <Reviews />
-        <SectionBand name="lectures" into="navy" focus="max-md:object-[70%_50%]" />
+        <SectionBand name="contact" into="navy" focus="max-md:object-[50%_30%]" />
         <VideoReviews />
-        <SectionBand name="contact" into="white" focus="max-md:object-[50%_30%]" />
+        <SectionBand name="about" into="white" focus="max-md:object-[50%_85%]" />
         <Articles />
         <SectionBand name="faq" into="cream" focus="max-md:object-[50%_0%]" />
         <Faq items={faq} />
