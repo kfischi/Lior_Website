@@ -1053,7 +1053,7 @@ export const brand = {
       image: '/images/press-article.webp',
     },
     {
-      title: 'ראיון עם עו״ד ליאור-קלואי ארז',
+      title: 'נרקיסיזם במקום העבודה: ד״ר עדה מיכל ויינשטיין ועו״ד ליאור ארז',
       outlet: 'YouTube',
       url: 'https://www.youtube.com/live/unjojjqO5BY',
       image: '/images/press-interview.webp',
