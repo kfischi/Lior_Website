@@ -326,3 +326,36 @@ html[data-a11y-cursor='big'],
 html[data-a11y-cursor='big'] * {
   cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24'><path d='M4 2l16 9-7 2 4 8-3 1-4-8-5 5z' fill='black' stroke='white' stroke-width='1.5'/></svg>") 4 2, auto !important;
 }
+
+
+/* The hero copy's entrance: CSS only, so it starts at first paint instead of after hydration. */
+@keyframes hero-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes hero-word {
+  from {
+    transform: translateY(110%);
+  }
+  to {
+    transform: none;
+  }
+}
+.hero-up {
+  animation: hero-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.hero-word {
+  animation: hero-word 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-up,
+  .hero-word {
+    animation: none;
+  }
+}

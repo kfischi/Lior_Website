@@ -6,8 +6,12 @@ import { useReducedMotion } from '@/components/motion/useReducedMotionSafe';
 import { ArrowDown } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { cn } from '@/lib/utils';
-import { Avatar, ConciergePanel } from './ConciergePanel';
+import dynamic from 'next/dynamic';
+import { Avatar } from './Avatar';
 import { useConcierge } from './ConciergeProvider';
+
+/** The conversation itself (voice, intro, document reader) is only downloaded when someone opens it. */
+const ConciergePanel = dynamic(() => import('./ConciergePanel').then((m) => m.ConciergePanel), { ssr: false });
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -36,6 +40,17 @@ function Floating() {
       window.requestAnimationFrame(() => launcherRef.current?.focus());
     }
   }, [panelOpen, closePanel]);
+
+  // Warm the conversation's code once the page has settled, so opening it is instant without
+  // taking part in the page's first load.
+  React.useEffect(() => {
+    const warm = () => void import('./ConciergePanel');
+    const timer = window.setTimeout(() => {
+      if ('requestIdleCallback' in window) window.requestIdleCallback(warm);
+      else warm();
+    }, 6000);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   // On phones the launcher sits above the sticky action bar.
   const bottom = 'bottom-28 sm:bottom-5';

@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { splitSuggestions } from '@/lib/ai/suggestions';
 import { splitSiteAction, type SiteTarget } from '@/lib/site-actions';
 import { INTAKE_STEPS, useConcierge, type IntakeStep } from './ConciergeProvider';
+import { Avatar } from './Avatar';
 import { INTRO_START_DELAY_MS, IntroStage } from './IntroStage';
 import { DocumentReader } from './DocumentReader';
 import { useSiteNavigator } from './siteNav';
@@ -39,24 +40,6 @@ const PLACEHOLDER: Record<IntakeStep, string> = {
   note: 'משפט אחד על העניין (לא חובה)',
   confirm: 'לחצו על אחת האפשרויות',
 };
-
-/** The assistant's round photo. It is a brand image, so it carries no alt text. */
-export function Avatar({ className, speaking }: { className?: string; speaking?: boolean }) {
-  const brand = useBrand();
-  return (
-    <Image
-      src={brand.chat.avatar}
-      alt=""
-      width={96}
-      height={96}
-      className={cn(
-        'shrink-0 rounded-full object-cover ring-2 ring-accent-light/70',
-        speaking && 'motion-safe:animate-speaking',
-        className,
-      )}
-    />
-  );
-}
 
 const WAVE_DELAYS = [
   '[animation-delay:0s]',
