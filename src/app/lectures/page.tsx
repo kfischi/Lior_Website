@@ -70,13 +70,25 @@ export default async function LecturesPage() {
       <JsonLd data={breadcrumbJsonLd([{ name: 'ראשי', path: '/' }, { name: 'הרצאות', path: '/lectures' }])} />
       <Header />
       <main id="main">
-        {/* Opening: the title beside a photo of her on stage */}
-        <section aria-labelledby="lectures-title" className="relative overflow-hidden bg-navy pb-20 pt-32 text-cream md:pb-28 md:pt-36">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -end-40 -top-40 h-[34rem] w-[34rem] rounded-full bg-accent/20 blur-3xl"
-          />
-          <div className="shell relative grid items-center gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+        {/* Opening: her photo from the stage fills the section, the text sits on it */}
+        <section
+          aria-labelledby="lectures-title"
+          className="relative isolate flex min-h-[100svh] items-end overflow-hidden bg-navy pb-14 pt-[46svh] text-cream md:pb-20 lg:min-h-[92svh] lg:items-center lg:pb-24 lg:pt-36"
+        >
+          <div className="absolute inset-x-0 top-0 -z-10 h-[72svh] lg:inset-0 lg:h-auto">
+            <Image
+              src={lectures.photo.src}
+              alt={lectures.photo.alt}
+              fill
+              priority
+              sizes="100vw"
+              className="-scale-x-100 object-cover object-[50%_18%] lg:object-[50%_36%]"
+            />
+            {/* Dark where the text is, clear where she stands: the text always keeps its contrast. */}
+            <div className="absolute inset-0 bg-linear-to-t from-navy via-navy/55 to-navy/0 lg:bg-linear-to-l lg:from-navy/95 lg:via-navy/75 lg:to-navy/5" />
+          </div>
+          <div className="shell relative">
+            <div className="max-w-2xl">
             <Reveal>
               <p className="eyebrow mb-5 inline-flex items-center gap-2 text-accent-light">
                 <Mic className="h-4 w-4" aria-hidden="true" />
@@ -118,33 +130,7 @@ export default async function LecturesPage() {
                 ))}
               </dl>
             </Reveal>
-
-            <Reveal delay={0.1}>
-              <figure className="relative mx-auto w-full max-w-sm lg:max-w-none">
-                <div
-                  aria-hidden="true"
-                  className="absolute -bottom-5 -start-5 h-full w-full rounded-3xl border border-accent-light/50"
-                />
-                <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-2xl ring-1 ring-cream/10">
-                  <Image
-                    src={lectures.photo.src}
-                    alt={lectures.photo.alt}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 80vw, 28rem"
-                    className="object-cover object-[62%_58%]"
-                  />
-                  <div
-                    aria-hidden="true"
-                    className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-navy/85 to-transparent"
-                  />
-                  <figcaption className="absolute inset-x-0 bottom-0 flex items-center gap-2 p-5 text-cream">
-                    <Mic className="h-4 w-4 text-accent-light" aria-hidden="true" />
-                    <span className="font-heading text-lg font-semibold">{lectures.photo.caption}</span>
-                  </figcaption>
-                </div>
-              </figure>
-            </Reveal>
+            </div>
           </div>
         </section>
 
