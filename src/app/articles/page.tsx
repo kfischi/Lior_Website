@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getSiteContent } from "@/lib/sanity/content";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 import { siteUrl } from "@/lib/utils";
+import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 import { Header } from "@/components/sections/Header";
 import { Footer } from "@/components/sections/Footer";
 import { ArticleCard } from "@/components/sections/ArticleCard";
@@ -60,8 +61,9 @@ export default async function ArticlesPage() {
       <main id="main">
         <section
           aria-labelledby="hub-title"
-          className="bg-navy pb-16 pt-36 text-cream md:pb-20"
+          className="relative isolate overflow-hidden bg-navy pb-16 pt-36 text-cream md:pb-20"
         >
+          <HeroBackdrop name="articles" />
           <div className="shell max-w-4xl">
             <p className="eyebrow mb-4 text-accent-light">{brand.firmName}</p>
             <h1

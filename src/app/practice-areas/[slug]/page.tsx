@@ -8,6 +8,7 @@ import { getBrand, getSiteContent } from '@/lib/sanity/content';
 import { approvedPainPages } from '@/lib/pain-pages';
 import { ArticleCard } from '@/components/sections/ArticleCard';
 import { breadcrumbJsonLd, buildMetadata, faqJsonLd, serviceJsonLd } from '@/lib/seo';
+import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
 import { Reveal } from '@/components/motion/Reveal';
@@ -82,7 +83,8 @@ export default async function PracticeAreaPage({ params }: { params: Promise<Par
       <Header />
       <main id="main">
         {/* Intro band */}
-        <section aria-labelledby="area-title" className="bg-navy pb-16 pt-36 text-cream md:pb-24">
+        <section aria-labelledby="area-title" className="relative isolate overflow-hidden bg-navy pb-16 pt-36 text-cream md:pb-24">
+          <HeroBackdrop name={brand.heroBySlug[area.slug] ?? "criminal"} />
           <div className="shell max-w-4xl">
             <nav aria-label="פירורי לחם" className="mb-6 text-sm text-cream/70">
               <ol className="flex flex-wrap items-center gap-1.5">

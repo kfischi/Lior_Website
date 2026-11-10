@@ -17,6 +17,7 @@ import {
 import { getBrand } from '@/lib/sanity/content';
 import { breadcrumbJsonLd, buildMetadata } from '@/lib/seo';
 import { siteUrl } from '@/lib/utils';
+import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
@@ -71,7 +72,8 @@ export default async function LecturesPage() {
       <Header />
       <main id="main">
         {/* Opening: the title beside a photo of her on stage */}
-        <section aria-labelledby="lectures-title" className="relative overflow-hidden bg-navy pb-20 pt-32 text-cream md:pb-28 md:pt-36">
+        <section aria-labelledby="lectures-title" className="relative isolate overflow-hidden bg-navy pb-20 pt-32 text-cream md:pb-28 md:pt-36">
+          <HeroBackdrop name="lectures" />
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -end-40 -top-40 h-[34rem] w-[34rem] rounded-full bg-accent/20 blur-3xl"

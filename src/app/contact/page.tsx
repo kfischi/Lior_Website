@@ -4,6 +4,7 @@ import { Clock, Mail, MapPin, Phone, Video } from 'lucide-react';
 import { getBrand } from '@/lib/sanity/content';
 import { links } from '@/lib/brand';
 import { breadcrumbJsonLd, buildMetadata, contactPageJsonLd } from '@/lib/seo';
+import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
 import { Reveal } from '@/components/motion/Reveal';
@@ -43,7 +44,8 @@ export default async function ContactPage() {
       <JsonLd data={breadcrumbJsonLd([{ name: 'ראשי', path: '/' }, { name: 'יצירת קשר', path: '/contact' }])} />
       <Header />
       <main id="main">
-        <section aria-labelledby="contact-title" className="bg-navy pb-14 pt-36 text-cream md:pb-20">
+        <section aria-labelledby="contact-title" className="relative isolate overflow-hidden bg-navy pb-14 pt-36 text-cream md:pb-20">
+          <HeroBackdrop name="contact" />
           <div className="shell grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-start">
             <Reveal>
               <p className="eyebrow mb-4 text-accent-light">{brand.firmName}</p>
