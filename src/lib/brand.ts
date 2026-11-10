@@ -76,6 +76,9 @@ export interface PainPage {
   faq: FaqItem[];
 }
 
+/** The faded picture behind a page header (see HeroBackdrop). */
+export type HeroImageKey = 'criminal' | 'torts' | 'family' | 'about' | 'lectures' | 'contact' | 'faq' | 'articles';
+
 /** A lecture the attorney gives, for the /lectures page. */
 export interface Lecture {
   title: string;
@@ -361,6 +364,28 @@ export const brand = {
   }[],
 
   // --- About ---
+  // --- Header pictures: one per topic, kept in /public/images/hero (decoration only, no faces) ---
+  heroImages: {
+    criminal: '/images/hero/criminal.webp',
+    torts: '/images/hero/torts.webp',
+    family: '/images/hero/family.webp',
+    about: '/images/hero/about.webp',
+    lectures: '/images/hero/lectures.webp',
+    contact: '/images/hero/contact.webp',
+    faq: '/images/hero/faq.webp',
+    articles: '/images/hero/articles.webp',
+  } as Record<HeroImageKey, string>,
+  /** Which picture a practice area or entry page uses, by its slug. */
+  heroBySlug: {
+    'criminal-law': 'criminal',
+    'police-investigation': 'criminal',
+    torts: 'torts',
+    'dismissal-hearing': 'torts',
+    'workplace-bullying': 'torts',
+    'personal-status': 'family',
+    'will-and-power-of-attorney': 'family',
+  } as Record<string, HeroImageKey>,
+
   // --- Lectures (/lectures) ---
   lectures: {
     eyebrow: 'הרצאות',
