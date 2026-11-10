@@ -28,12 +28,12 @@ export function HeroBackdrop({
         fill
         priority={priority}
         sizes="100vw"
-        className={dark ? 'object-cover opacity-25 mix-blend-luminosity' : 'object-cover opacity-[0.13] grayscale'}
+        className={dark ? 'object-cover opacity-45 mix-blend-luminosity' : 'object-cover opacity-[0.13] grayscale'}
       />
       <div
         className={
           dark
-            ? 'absolute inset-0 bg-linear-to-b from-navy/70 via-navy/40 to-navy/90'
+            ? 'absolute inset-0 bg-linear-to-b from-navy/60 via-navy/45 to-navy/85'
             : 'absolute inset-0 bg-linear-to-b from-cream/70 via-transparent to-cream/80'
         }
       />

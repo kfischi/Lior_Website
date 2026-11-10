@@ -77,7 +77,15 @@ export interface PainPage {
 }
 
 /** The faded picture behind a page header (see HeroBackdrop). */
-export type HeroImageKey = 'criminal' | 'torts' | 'family' | 'about' | 'lectures' | 'contact' | 'faq' | 'articles';
+export type HeroImageKey =
+  | 'criminal'
+  | 'torts'
+  | 'family'
+  | 'about'
+  | 'lectures'
+  | 'contact'
+  | 'faq'
+  | 'articles';
 
 /** A lecture the attorney gives, for the /lectures page. */
 export interface Lecture {

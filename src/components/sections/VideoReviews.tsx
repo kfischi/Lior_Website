@@ -2,7 +2,6 @@ import type { VideoReview } from '@/lib/brand';
 import { getSiteContent } from '@/lib/sanity/content';
 import { VideoCard } from './VideoCard';
 import { YouTubeCard } from './YouTubeCard';
-import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 
 /** One row of cards: swipeable on a phone, centred and wrapping from tablet up. */
 function Row({ items, offset, wide }: { items: VideoReview[]; offset: number; wide?: boolean }) {
@@ -48,8 +47,7 @@ export async function VideoReviews() {
   const wide = items.filter((v) => v.landscape);
 
   return (
-    <section id="video-reviews" aria-labelledby="video-reviews-title" className="section relative isolate overflow-hidden bg-navy text-cream">
-      <HeroBackdrop name="lectures" tone="dark" />
+    <section id="video-reviews" aria-labelledby="video-reviews-title" className="section bg-navy text-cream">
       <div className="shell">
         <div className="mb-12 text-center">
           <h2 id="video-reviews-title" className="text-4xl text-cream md:text-5xl">

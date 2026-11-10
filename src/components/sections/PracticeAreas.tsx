@@ -4,7 +4,6 @@ import { ArrowLeft } from 'lucide-react';
 import { getBrand } from '@/lib/sanity/content';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 import { Icon } from './Icon';
-import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 
 export async function PracticeAreas() {
   const brand = await getBrand();
@@ -12,9 +11,8 @@ export async function PracticeAreas() {
     <section
       id="practice"
       aria-labelledby="practice-title"
-      className="section grain relative isolate overflow-hidden bg-navy text-cream"
+      className="section grain relative overflow-hidden bg-navy text-cream"
     >
-      <HeroBackdrop name="torts" tone="dark" />
       {/* The firm's statue, very large and very faint, as a watermark */}
       <Image
         src={brand.logo.iconLight}

@@ -3,7 +3,6 @@ import { getBrand } from '@/lib/sanity/content';
 import { cn } from '@/lib/utils';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 import { Icon } from './Icon';
-import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 
 /** Grid placement for each card on large screens: one tall feature card and three supporting ones. */
 const PLACEMENT = [
@@ -21,9 +20,8 @@ export async function WhyUs() {
     <section
       id="why"
       aria-labelledby="why-title"
-      className="section relative isolate overflow-hidden bg-cream"
+      className="section relative overflow-hidden bg-cream"
     >
-      <HeroBackdrop name="about" tone="light" />
       {/* Soft light and a fine dot grid give the section depth without noise. */}
       <div
         aria-hidden="true"

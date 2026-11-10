@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { buildMetadata, faqJsonLd } from '@/lib/seo';
 import { getSiteContent } from '@/lib/sanity/content';
+import { SectionBand } from '@/components/ui/SectionBand';
 import { Header } from '@/components/sections/Header';
 import { Hero } from '@/components/sections/Hero';
 import { Marquee } from '@/components/sections/Marquee';
@@ -39,14 +40,23 @@ export default async function HomePage() {
         <Hero />
         <TrustBar />
         <Marquee />
+        <SectionBand name="about" into="cream" focus="max-md:object-[50%_20%]" />
         <WhyUs />
+        <SectionBand name="torts" into="navy" focus="max-md:object-[35%_50%]" />
         <PracticeAreas />
+        <SectionBand name="criminal" into="cream" focus="max-md:object-[60%_50%]" />
         <About />
+        <SectionBand name="family" into="navy" focus="max-md:object-[50%_40%]" />
         <Process />
+        <SectionBand name="articles" into="cream" focus="max-md:object-[30%_50%]" />
         <Reviews />
+        <SectionBand name="lectures" into="navy" focus="max-md:object-[70%_50%]" />
         <VideoReviews />
+        <SectionBand name="contact" into="white" focus="max-md:object-[50%_30%]" />
         <Articles />
+        <SectionBand name="faq" into="cream" focus="max-md:object-[50%_0%]" />
         <Faq items={faq} />
+        <SectionBand name="torts" into="navy" focus="max-md:object-[75%_60%]" />
         <Contact />
       </main>
       <Footer />
