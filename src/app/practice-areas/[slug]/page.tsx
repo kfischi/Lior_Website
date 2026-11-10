@@ -8,6 +8,7 @@ import { getBrand, getSiteContent } from '@/lib/sanity/content';
 import { approvedPainPages } from '@/lib/pain-pages';
 import { ArticleCard } from '@/components/sections/ArticleCard';
 import { breadcrumbJsonLd, buildMetadata, faqJsonLd, serviceJsonLd } from '@/lib/seo';
+import { PhotoHero } from '@/components/ui/PhotoHero';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
 import { Reveal } from '@/components/motion/Reveal';
@@ -81,9 +82,9 @@ export default async function PracticeAreaPage({ params }: { params: Promise<Par
 
       <Header />
       <main id="main">
-        {/* Intro band */}
-        <section aria-labelledby="area-title" className="bg-navy pb-16 pt-36 text-cream md:pb-24">
-          <div className="shell max-w-4xl">
+        {/* Intro band: her photo with the text on it */}
+        <PhotoHero src={brand.about.portraitId} alt={`תמונה של ${brand.attorneyName}`} labelledBy="area-title">
+          <div className="max-w-2xl">
             <nav aria-label="פירורי לחם" className="mb-6 text-sm text-cream/70">
               <ol className="flex flex-wrap items-center gap-1.5">
                 <li>
@@ -117,7 +118,7 @@ export default async function PracticeAreaPage({ params }: { params: Promise<Par
               </p>
             </Reveal>
           </div>
-        </section>
+        </PhotoHero>
 
         {/* Article */}
         <article className="section bg-cream">
