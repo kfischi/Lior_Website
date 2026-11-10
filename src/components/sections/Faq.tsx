@@ -10,13 +10,15 @@ import {
   AccordionContent,
 } from '@/components/ui/accordion';
 import { OpenChatButton } from '@/components/ai/OpenChatButton';
+import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 
 /** The most common questions; the full list lives on /faq. */
 const SHOWN = 7;
 
 export function Faq({ items }: { items: FaqItem[] }) {
   return (
-    <section id="faq" aria-labelledby="faq-title" className="section bg-cream">
+    <section id="faq" aria-labelledby="faq-title" className="section relative isolate overflow-hidden bg-cream">
+      <HeroBackdrop name="faq" tone="light" />
       <div className="shell grid gap-12 lg:grid-cols-[1fr_1.7fr] lg:gap-20">
         <div className="lg:sticky lg:top-28 lg:self-start">
           <p className="eyebrow mb-4">שאלות ותשובות</p>

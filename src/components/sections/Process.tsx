@@ -1,5 +1,6 @@
 import { getBrand } from '@/lib/sanity/content';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
+import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 
 /** Three calm steps that make the first move feel small. */
 export async function Process() {
@@ -10,8 +11,9 @@ export async function Process() {
     <section
       id="process"
       aria-labelledby="process-title"
-      className="section relative overflow-hidden bg-navy text-cream"
+      className="section relative isolate overflow-hidden bg-navy text-cream"
     >
+      <HeroBackdrop name="family" tone="dark" />
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-32 start-1/3 h-96 w-96 rounded-full bg-accent-light/15 blur-3xl"

@@ -3,11 +3,13 @@ import Link from 'next/link';
 import { Check, ChevronLeft, Scale } from 'lucide-react';
 import { getBrand } from '@/lib/sanity/content';
 import { Reveal } from '@/components/motion/Reveal';
+import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 
 export async function About() {
   const brand = await getBrand();
   return (
-    <section id="about" aria-labelledby="about-title" className="section overflow-hidden bg-cream">
+    <section id="about" aria-labelledby="about-title" className="section relative isolate overflow-hidden bg-cream">
+      <HeroBackdrop name="contact" tone="light" />
       <div className="shell">
         <div className="grid items-center gap-16 lg:grid-cols-[1fr_1.15fr] lg:gap-20">
           {/* Portrait with an offset frame */}

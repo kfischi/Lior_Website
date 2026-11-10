@@ -4,6 +4,7 @@ import { brand, type Testimonial, type TestimonialLetter } from '@/lib/brand';
 import { getSiteContent } from '@/lib/sanity/content';
 import { cn } from '@/lib/utils';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
+import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 
 const dateFormat = new Intl.DateTimeFormat('he-IL', {
   day: 'numeric',
@@ -164,8 +165,9 @@ export async function Reviews() {
     <section
       id="reviews"
       aria-labelledby="reviews-title"
-      className="section relative overflow-hidden bg-cream"
+      className="section relative isolate overflow-hidden bg-cream"
     >
+      <HeroBackdrop name="torts" tone="light" />
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -bottom-32 -end-32 h-96 w-96 rounded-full bg-accent/10 blur-3xl"

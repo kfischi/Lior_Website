@@ -7,6 +7,7 @@ import { WhatsAppIcon } from '@/components/ui/whatsapp-icon';
 import { Reveal } from '@/components/motion/Reveal';
 import { BookingBlock } from '@/components/sections/BookingBlock';
 import { CallbackForm } from './CallbackForm';
+import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 
 interface ContactItem {
   label: string;
@@ -41,8 +42,9 @@ export async function Contact() {
     <section
       id="contact"
       aria-labelledby="contact-title"
-      className="section grain relative overflow-hidden bg-navy text-cream"
+      className="section grain relative isolate overflow-hidden bg-navy text-cream"
     >
+      <HeroBackdrop name="contact" tone="dark" />
       <Image
         src={brand.logo.iconLight}
         alt=""
