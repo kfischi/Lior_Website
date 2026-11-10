@@ -721,7 +721,7 @@ export const brand = {
     },
     {
       slug: 'crime-victim',
-      approved: false,
+      approved: true,
       title: 'נפגעתם מעבירה? יש לכם זכויות בהליך',
       lead:
         'מי שנפגע מעבירה מוצא את עצמו לא פעם בתוך הליך שהוא לא תמיד מבין: חקירה, החלטות של התביעה, דיונים בבית המשפט. ' +
@@ -766,7 +766,7 @@ export const brand = {
     },
     {
       slug: 'sexual-harassment-work',
-      approved: false,
+      approved: true,
       title: 'נפגעתם מהטרדה מינית בעבודה?',
       lead:
         'הטרדה מינית בעבודה קשה לדבר עליה, ולא פשוט להחליט מה לעשות. החוק אוסר אותה, ומחייב מעסיקים לטפל בתלונות. ' +
@@ -811,7 +811,7 @@ export const brand = {
     },
     {
       slug: 'medical-negligence',
-      approved: false,
+      approved: true,
       title: 'חשדתם שנפגעתם מרשלנות רפואית?',
       lead:
         'לא כל תוצאה רפואית קשה היא רשלנות, אבל לפעמים נשארת תחושה שמשהו לא נעשה כמו שצריך. ' +
