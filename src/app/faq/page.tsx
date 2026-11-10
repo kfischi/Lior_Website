@@ -3,7 +3,6 @@ import Link from "next/link";
 import { breadcrumbJsonLd, buildMetadata, faqJsonLd } from "@/lib/seo";
 import { getSiteContent } from "@/lib/sanity/content";
 import type { Brand } from "@/lib/sanity/settings";
-import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 import { Header } from "@/components/sections/Header";
 import { Footer } from "@/components/sections/Footer";
 import {
@@ -71,9 +70,8 @@ export default async function FaqPage() {
       <main id="main">
         <section
           aria-labelledby="faq-hub"
-          className="relative isolate overflow-hidden bg-navy pb-14 pt-36 text-cream md:pb-20"
+          className="bg-navy pb-14 pt-36 text-cream md:pb-20"
         >
-          <HeroBackdrop name="faq" />
           <div className="shell max-w-3xl">
             <p className="eyebrow mb-4 text-accent-light">{brand.firmName}</p>
             <h1

@@ -17,7 +17,6 @@ import {
 import { getBrand } from '@/lib/sanity/content';
 import { breadcrumbJsonLd, buildMetadata } from '@/lib/seo';
 import { siteUrl } from '@/lib/utils';
-import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
@@ -72,8 +71,7 @@ export default async function LecturesPage() {
       <Header />
       <main id="main">
         {/* Opening: the title beside a photo of her on stage */}
-        <section aria-labelledby="lectures-title" className="relative isolate overflow-hidden bg-navy pb-20 pt-32 text-cream md:pb-28 md:pt-36">
-          <HeroBackdrop name="lectures" />
+        <section aria-labelledby="lectures-title" className="relative overflow-hidden bg-navy pb-20 pt-32 text-cream md:pb-28 md:pt-36">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -end-40 -top-40 h-[34rem] w-[34rem] rounded-full bg-accent/20 blur-3xl"
@@ -91,9 +89,10 @@ export default async function LecturesPage() {
                 הרצאות על פלילים, צדק והאדם שמאחורי התיק, מפי עורכת דין עם {years} שנות ניסיון בתוך המערכת.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild size="lg" variant="accentOnDark">
-                  <a href="#invite">להזמנת הרצאה</a>
-                </Button>
+                <OpenChatButton lecture size="lg" variant="accentOnDark">
+                  <MessagesSquare className="h-5 w-5" aria-hidden="true" />
+                  להזמנת הרצאה
+                </OpenChatButton>
                 <Button asChild size="lg" variant="onDark">
                   <a href="#menu">לתפריט ההרצאות</a>
                 </Button>
@@ -231,7 +230,11 @@ export default async function LecturesPage() {
               <h2 id="invite-title" className="text-balance text-3xl text-cream md:text-5xl">{lectures.ctaTitle}</h2>
               <p className="mt-5 max-w-lg text-lg leading-relaxed text-cream/85">{lectures.ctaText}</p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild size="lg" variant="accentOnDark">
+                <OpenChatButton lecture size="lg" variant="accentOnDark">
+                  <MessagesSquare className="h-5 w-5" aria-hidden="true" />
+                  להזמנת הרצאה בצ׳אט
+                </OpenChatButton>
+                <Button asChild size="lg" variant="onDark">
                   <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
                     <MessageCircle className="h-5 w-5" aria-hidden="true" />
                     שליחת הודעה בוואטסאפ
@@ -253,7 +256,7 @@ export default async function LecturesPage() {
               <div className="rounded-3xl border border-cream/15 bg-cream/5 p-6 backdrop-blur-sm md:p-8">
                 <h3 className="text-2xl text-cream">או השאירו טלפון ונחזור אליכם</h3>
                 <div className="mt-5">
-                  <CallbackForm />
+                  <CallbackForm channel="lecture" matter="הזמנת הרצאה" />
                 </div>
               </div>
             </Reveal>

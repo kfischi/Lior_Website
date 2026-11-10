@@ -4,7 +4,6 @@ import { ArrowLeft, MessageCircle, Phone } from "lucide-react";
 import { links } from "@/lib/brand";
 import { buildMetadata, faqJsonLd } from "@/lib/seo";
 import { getSiteContent } from "@/lib/sanity/content";
-import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 import { Header } from "@/components/sections/Header";
 import { TrustBar } from "@/components/sections/TrustBar";
 import { Process } from "@/components/sections/Process";
@@ -46,9 +45,8 @@ export default async function ConsultationPage() {
       <main id="main">
         <section
           aria-labelledby="lp-title"
-          className="relative isolate overflow-hidden bg-navy pb-16 pt-32 text-cream md:pb-24 md:pt-40"
+          className="relative overflow-hidden bg-navy pb-16 pt-32 text-cream md:pb-24 md:pt-40"
         >
-          <HeroBackdrop name="contact" />
           <div className="shell grid items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
             <div>
               <p className="eyebrow mb-4 text-accent-light">

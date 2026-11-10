@@ -76,17 +76,6 @@ export interface PainPage {
   faq: FaqItem[];
 }
 
-/** The faded picture behind a page header (see HeroBackdrop). */
-export type HeroImageKey =
-  | 'criminal'
-  | 'torts'
-  | 'family'
-  | 'about'
-  | 'lectures'
-  | 'contact'
-  | 'faq'
-  | 'articles';
-
 /** A lecture the attorney gives, for the /lectures page. */
 export interface Lecture {
   title: string;
@@ -338,7 +327,7 @@ export const brand = {
       'הטרדה מינית: מה האפשרויות?',
       'כמה עולה ייעוץ ראשוני?',
       'איך קובעים פגישה?',
-      'אפשר להזמין הרצאה?',
+      'הזמנת הרצאה',
       'אני רוצה לדבר עם ליאור',
       'לא בטוח לאיזה תחום זה שייך',
     ],
@@ -372,28 +361,6 @@ export const brand = {
   }[],
 
   // --- About ---
-  // --- Header pictures: one per topic, kept in /public/images/hero (decoration only, no faces) ---
-  heroImages: {
-    criminal: '/images/hero/criminal.webp',
-    torts: '/images/hero/torts.webp',
-    family: '/images/hero/family.webp',
-    about: '/images/hero/about.webp',
-    lectures: '/images/hero/lectures.webp',
-    contact: '/images/hero/contact.webp',
-    faq: '/images/hero/faq.webp',
-    articles: '/images/hero/articles.webp',
-  } as Record<HeroImageKey, string>,
-  /** Which picture a practice area or entry page uses, by its slug. */
-  heroBySlug: {
-    'criminal-law': 'criminal',
-    'police-investigation': 'criminal',
-    torts: 'torts',
-    'dismissal-hearing': 'torts',
-    'workplace-bullying': 'torts',
-    'personal-status': 'family',
-    'will-and-power-of-attorney': 'family',
-  } as Record<string, HeroImageKey>,
-
   // --- Lectures (/lectures) ---
   lectures: {
     eyebrow: 'הרצאות',
@@ -456,6 +423,8 @@ export const brand = {
       alt: 'עו״ד ליאור-קלואי ארז מדברת עם מיקרופון ליד דוכן, באולם עם דגל ישראל',
       caption: 'על הבמה',
     },
+    bannerText: 'מזמינים הרצאה לארגון, לכנס או לקהילה?',
+    bannerCta: 'להזמנת הרצאה',
     ctaTitle: 'רוצים להביא הרצאה לארגון או לקהילה?',
     ctaText: 'אשמח להתאים את התוכן לקהל ולזמן שיש לכם. כתבו בוואטסאפ, התקשרו או השאירו טלפון, ונתאם שיחה קצרה.',
     whatsappText: 'שלום, אשמח לשמוע על הרצאה לארגון או לקהילה שלנו.',
