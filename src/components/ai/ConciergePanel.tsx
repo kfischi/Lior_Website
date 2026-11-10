@@ -114,10 +114,10 @@ function ActionLink({
 
 /** Questions worth tapping while reading the lectures page. */
 const LECTURE_STARTERS = [
+  'הזמנת הרצאה',
   'אפשר להזמין הרצאה לארגון שלנו?',
   'איזו הרצאה מתאימה לצוות עובדים?',
   'כמה זמן נמשכת הרצאה?',
-  'איך מתאמים הרצאה?',
   'מי עורכת הדין?',
 ];
 

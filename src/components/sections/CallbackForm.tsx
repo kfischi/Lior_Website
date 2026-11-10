@@ -18,7 +18,7 @@ const field =
  * It uses the same Server Action as the chat's intake (validation, rate limit, delivery to the office),
  * and says honestly whether the details reached the office or must be sent through WhatsApp.
  */
-export function CallbackForm() {
+export function CallbackForm({ channel = 'form', matter }: { channel?: 'form' | 'lecture'; matter?: string }) {
   const [state, action, pending] = React.useActionState(submitLead, INITIAL);
 
   if (state.status === 'sent') {
@@ -46,7 +46,8 @@ export function CallbackForm() {
 
   return (
     <form action={action} noValidate className="grid gap-4 sm:grid-cols-2" aria-describedby="callback-note">
-      <input type="hidden" name="channel" value="form" />
+      <input type="hidden" name="channel" value={channel} />
+      {matter && <input type="hidden" name="matter" value={matter} />}
       <AttributionFields />
       <div>
         <label htmlFor="cb-name" className="mb-1.5 block text-sm font-medium text-cream/90">

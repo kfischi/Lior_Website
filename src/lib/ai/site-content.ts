@@ -43,6 +43,7 @@ function lecturesText(brand: Brand): string {
   const l = brand.lectures;
   return [
     `### ${l.title} (/lectures)`,
+    'להזמנה: אפשר ללחוץ בצ׳אט על "הזמנת הרצאה" או להשאיר פרטים, והבקשה מגיעה ישירות לליאור בוואטסאפ.',
     ...l.about,
     ...l.items.map((i) => `- ${i.title}: ${i.about} מתאים ל: ${i.audience}`),
   ].join('\n');

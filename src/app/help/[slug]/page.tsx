@@ -5,7 +5,6 @@ import { ChevronLeft } from 'lucide-react';
 import { getBrand } from '@/lib/sanity/content';
 import { pageVisible, visiblePainPages } from '@/lib/pain-pages';
 import { breadcrumbJsonLd, buildMetadata, faqJsonLd } from '@/lib/seo';
-import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
 import { Reveal } from '@/components/motion/Reveal';
@@ -85,8 +84,7 @@ export default async function PainPageRoute({ params }: { params: Promise<Params
 
       <Header />
       <main id="main">
-        <section aria-labelledby="help-title" className="relative isolate overflow-hidden bg-navy pb-14 pt-36 text-cream md:pb-20">
-          <HeroBackdrop name={brand.heroBySlug[page.slug] ?? "criminal"} />
+        <section aria-labelledby="help-title" className="bg-navy pb-14 pt-36 text-cream md:pb-20">
           <div className="shell grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-start">
             <Reveal>
               {!page.approved && (

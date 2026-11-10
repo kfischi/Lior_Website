@@ -43,9 +43,24 @@ interface IntakeData {
   meeting: string;
   time: string;
   note: string;
+  /** 'lecture' when the visitor is booking a talk rather than a consultation. */
+  kind: 'consult' | 'lecture';
+  /** Lecture bookings: who the talk is for and roughly when. */
+  audience: string;
 }
 
-const EMPTY: IntakeData = { name: '', matter: '', urgency: '', phone: '', meeting: '', time: '', note: '' };
+const EMPTY: IntakeData = {
+  name: '',
+  matter: '',
+  urgency: '',
+  phone: '',
+  meeting: '',
+  time: '',
+  note: '',
+  kind: 'consult',
+  audience: '',
+};
+const EMPTY_LECTURE: IntakeData = { ...EMPTY, kind: 'lecture', matter: 'הזמנת הרצאה' };
 
 /** Where and when the visitor would like to talk: the office is in Harish and also meets over Zoom. */
 const MEETING: Chip[] = [
@@ -73,6 +88,7 @@ const RESTART = '__restart';
 const INTAKE_PREFIX = 'intake-';
 const STORAGE_KEY = 'concierge-chat-v1';
 const BOOK_LABEL = 'קביעת ייעוץ';
+const LECTURE_LABEL = 'הזמנת הרצאה';
 
 /** The AI part of the conversation survives a refresh (this tab only). */
 function loadSaved(): UIMessage[] {
@@ -116,6 +132,8 @@ export interface Concierge {
   send: (text: string) => void;
   choose: (chip: Chip) => void;
   startIntake: () => void;
+  /** Starts the short guided booking of a lecture; the request ends in the office's WhatsApp. */
+  startLectureIntake: () => void;
   cancelIntake: () => void;
   /** Clears the conversation, the intake and the saved copy, and starts again from the greeting. */
   reset: () => void;
@@ -206,18 +224,21 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
         fd.set('matter', data.matter);
         fd.set(
           'message',
-          [
-            `דחיפות: ${URGENCY.find((u) => u.value === data.urgency)?.label ?? ''}`,
-            data.meeting ? `פגישה: ${MEETING.find((m) => m.value === data.meeting)?.label ?? ''}` : '',
-            data.time ? `זמן נוח: ${TIME.find((t) => t.value === data.time)?.label ?? ''}` : '',
-            data.note,
-          ]
+          (data.kind === 'lecture'
+            ? [data.audience ? `קהל ומועד: ${data.audience}` : '', data.note ? `הרצאה/הערה: ${data.note}` : '']
+            : [
+                `דחיפות: ${URGENCY.find((u) => u.value === data.urgency)?.label ?? ''}`,
+                data.meeting ? `פגישה: ${MEETING.find((m) => m.value === data.meeting)?.label ?? ''}` : '',
+                data.time ? `זמן נוח: ${TIME.find((t) => t.value === data.time)?.label ?? ''}` : '',
+                data.note,
+              ]
+          )
             .filter(Boolean)
             .join(' | ')
             .slice(0, 1000),
         );
         const attr = readAttribution();
-        fd.set('channel', 'chat');
+        fd.set('channel', data.kind === 'lecture' ? 'lecture' : 'chat');
         fd.set('src', attr.source);
         fd.set('landing', attr.landing);
         const result = await submitLead({ status: 'idle' }, fd);
@@ -264,7 +285,7 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
       if (value === RESTART) {
         say('user', shown ?? 'להתחיל מחדש');
         say('assistant', 'בשמחה, מתחילים מחדש. איך קוראים לך?');
-        setIntake({ step: 'name', data: EMPTY });
+        setIntake({ step: 'name', data: data.kind === 'lecture' ? EMPTY_LECTURE : EMPTY });
         return;
       }
 
@@ -274,8 +295,24 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
           say('assistant', 'אשמח לשם שאפשר לפנות אליו, לפחות שתי אותיות.');
           return;
         }
+        if (data.kind === 'lecture') {
+          say('assistant', `נעים להכיר, ${text}. עבור איזה ארגון או קהל ההרצאה, ובאיזה מועד בערך?`);
+          setIntake({ step: 'topic', data: { ...data, name: text } });
+          return;
+        }
         say('assistant', `נעים להכיר, ${text}. באיזה תחום מדובר?`, { chips: topicChips });
         setIntake({ step: 'topic', data: { ...data, name: text } });
+        return;
+      }
+
+      if (step === 'topic' && data.kind === 'lecture') {
+        say('user', shown ?? text);
+        if (text.length < 2) {
+          say('assistant', 'אשמח לכמה מילים על הקהל ועל המועד המשוער, למשל: צוות של 40 עובדים, בחודש הבא.');
+          return;
+        }
+        say('assistant', 'מה מספר הטלפון שלך? ליאור תחזור אליך בוואטסאפ או בטלפון.');
+        setIntake({ step: 'phone', data: { ...data, audience: text.slice(0, 200) } });
         return;
       }
 
@@ -308,6 +345,13 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
           say('assistant', 'המספר לא נראה לי תקין. אפשר לכתוב אותו שוב, למשל 050-0000000?');
           return;
         }
+        if (data.kind === 'lecture') {
+          say('assistant', 'איזו הרצאה מהתפריט מעניינת אתכם? אפשר גם לכתוב נושא אחר או לדלג.', {
+            chips: [{ value: SKIP, label: 'דלג' }],
+          });
+          setIntake({ step: 'note', data: { ...data, phone: text.trim() } });
+          return;
+        }
         say('assistant', 'איך נוח לך לדבר עם עורכת הדין, במשרד בחריש או בזום?', { chips: MEETING });
         setIntake({ step: 'meeting', data: { ...data, phone: text.trim() } });
         return;
@@ -337,6 +381,30 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
         const note = value === SKIP ? '' : text.slice(0, 300);
         say('user', shown ?? (note || 'דלג'));
         const urgencyLabel = URGENCY.find((u) => u.value === data.urgency)?.label ?? '';
+        if (data.kind === 'lecture') {
+          say(
+            'assistant',
+            [
+              'בואו נוודא שהכול נכון:',
+              `שם: ${data.name}`,
+              `קהל ומועד: ${data.audience}`,
+              `טלפון: ${data.phone}`,
+              note ? `הרצאה: ${note}` : '',
+              '',
+              'מאשר/ת שאעביר את הבקשה לליאור, והיא תחזור אליך בוואטסאפ?',
+            ]
+              .filter((line, i, arr) => line !== '' || arr[i - 1] !== '')
+              .join('\n'),
+            {
+              chips: [
+                { value: YES, label: 'כן, שלחו' },
+                { value: RESTART, label: 'להתחיל מחדש' },
+              ],
+            },
+          );
+          setIntake({ step: 'confirm', data: { ...data, note } });
+          return;
+        }
         say(
           'assistant',
           [
@@ -388,6 +456,16 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
     say(
       'assistant',
       'בשמחה. אשאל כמה שאלות קצרות כדי שהמשרד יחזור אליך, בלי צורך לפרט את המקרה. איך קוראים לך?',
+    );
+  }, [intake, submitting, say]);
+
+  const startLectureIntake = React.useCallback(() => {
+    setPanelOpen(true);
+    if (intake || submitting) return;
+    setIntake({ step: 'name', data: EMPTY_LECTURE });
+    say(
+      'assistant',
+      'בשמחה. אשאל כמה שאלות קצרות ואעביר את בקשת ההרצאה לליאור, והיא תחזור אליך בוואטסאפ. איך קוראים לך?',
     );
   }, [intake, submitting, say]);
 
@@ -446,9 +524,10 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
       if (busy) return;
       if (intake) answer(chip.value, chip.label);
       else if (chip.label === BOOK_LABEL) startIntake();
+      else if (chip.label === LECTURE_LABEL) startLectureIntake();
       else send(chip.label);
     },
-    [busy, intake, answer, send, startIntake],
+    [busy, intake, answer, send, startIntake, startLectureIntake],
   );
 
   const value = React.useMemo<Concierge>(
@@ -468,11 +547,12 @@ export function ConciergeProvider({ children }: { children: React.ReactNode }) {
       send,
       choose,
       startIntake,
+      startLectureIntake,
       cancelIntake,
       reset,
       stop: () => void chat.stop(),
     }),
-    [chat, extras, busy, intake, panelOpen, send, choose, startIntake, cancelIntake, reset],
+    [chat, extras, busy, intake, panelOpen, send, choose, startIntake, startLectureIntake, cancelIntake, reset],
   );
 
   return <ConciergeContext.Provider value={value}>{children}</ConciergeContext.Provider>;

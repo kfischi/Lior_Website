@@ -6,7 +6,6 @@ import { getSiteContent } from '@/lib/sanity/content';
 import { brand as staticBrand } from '@/lib/brand';
 import { attorneyJsonLd, breadcrumbJsonLd, buildMetadata } from '@/lib/seo';
 import { siteUrl } from '@/lib/utils';
-import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
 import { Reveal } from '@/components/motion/Reveal';
@@ -51,8 +50,7 @@ export default async function AboutPage() {
 
       <Header />
       <main id="main">
-        <section aria-labelledby="about-title" className="relative isolate overflow-hidden bg-navy pb-16 pt-36 text-cream md:pb-24">
-          <HeroBackdrop name="about" />
+        <section aria-labelledby="about-title" className="bg-navy pb-16 pt-36 text-cream md:pb-24">
           <div className="shell grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
             <Reveal>
               <p className="eyebrow mb-4 text-accent-light">עורכת דין</p>

@@ -24,6 +24,7 @@ export const CHANNELS = {
   form: 'השארת טלפון',
   chat: 'צ׳אט',
   booking: 'בקשת פגישה',
+  lecture: 'הזמנת הרצאה',
 } as const;
 export type Channel = keyof typeof CHANNELS;
 
