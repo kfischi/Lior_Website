@@ -1044,6 +1044,16 @@ export const brand = {
       outlet: 'דבר ראשון',
       url: 'https://www.davar1.co.il/218421/',
     },
+    {
+      title: 'כתבה על עו״ד ליאור-קלואי ארז',
+      outlet: 'N12 מגזין',
+      url: 'https://www.mako.co.il/news-n12_magazine/2022_q2/Article-6bee8be2e09a181027.htm',
+    },
+    {
+      title: 'ראיון עם עו״ד ליאור-קלואי ארז',
+      outlet: 'YouTube',
+      url: 'https://www.youtube.com/live/unjojjqO5BY',
+    },
   ] as PressArticle[],
 
   // --- FAQ (also rendered as FAQPage JSON-LD) ---
