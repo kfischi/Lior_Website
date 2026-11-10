@@ -21,7 +21,7 @@ function navItems(hasReviews: boolean) {
     { href: "/#why", label: "למה אנחנו" },
     ...(hasReviews ? [{ href: "/#reviews", label: "המלצות" }] : []),
     { href: "/articles", label: "מדריכים" },
-    { href: "/lectures", label: "הרצאות" },
+    { href: "/lectures", label: "הרצאות", badge: "חדש" },
     { href: "/#faq", label: "שאלות" },
     { href: "/#contact", label: "יצירת קשר" },
   ];
@@ -102,6 +102,11 @@ export function Header() {
                 )}
               >
                 {item.label}
+                {"badge" in item && (
+                  <span className="ms-1.5 rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+                    {item.badge}
+                  </span>
+                )}
                 <span
                   className={cn(
                     "absolute -bottom-1 start-0 h-px w-0 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-full",
@@ -125,9 +130,9 @@ export function Header() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <Button asChild variant={scrolled ? "outline" : "onDark"} size="sm">
-            <a href={telHref}>
+            <a href={telHref} aria-label={`התקשרו: ${brand.phone}`}>
               <Phone className="h-4 w-4" />
-              {brand.phone}
+              <span className="hidden xl:inline">{brand.phone}</span>
             </a>
           </Button>
         </div>
@@ -167,6 +172,11 @@ export function Header() {
                   className="block rounded-md px-2 py-2.5 text-base font-medium text-ink/80 hover:bg-navy/5"
                 >
                   {item.label}
+                  {"badge" in item && (
+                    <span className="ms-2 rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-white">
+                      {item.badge}
+                    </span>
+                  )}
                 </a>
               </li>
             ))}
