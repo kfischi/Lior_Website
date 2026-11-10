@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronLeft, Check, ExternalLink } from 'lucide-react';
 import { getSiteContent } from '@/lib/sanity/content';
+import { brand as staticBrand } from '@/lib/brand';
 import { attorneyJsonLd, breadcrumbJsonLd, buildMetadata } from '@/lib/seo';
 import { siteUrl } from '@/lib/utils';
 import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
@@ -28,6 +29,8 @@ function JsonLd({ data }: { data: unknown }) {
 
 export default async function AboutPage() {
   const { brand, press } = await getSiteContent();
+  // Cover pictures live in brand.ts, matched by link, so pieces edited in the CMS keep theirs.
+  const covers = new Map(staticBrand.press.map((x) => [x.url, x.image]));
   const years = new Date().getFullYear() - brand.about.practisingSince;
   const base = siteUrl();
 
@@ -164,14 +167,26 @@ export default async function AboutPage() {
                         href={p.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between gap-4 rounded-xl border border-navy/10 bg-white p-5 transition-colors hover:border-accent"
+                        className="flex flex-col overflow-hidden rounded-xl border border-navy/10 bg-white transition-colors hover:border-accent"
                       >
+                        {covers.get(p.url) && (
+                          <Image
+                            src={covers.get(p.url) as string}
+                            alt=""
+                            width={1200}
+                            height={630}
+                            sizes="(min-width: 1024px) 40rem, 100vw"
+                            className="w-full"
+                          />
+                        )}
+                        <span className="flex items-center justify-between gap-4 p-5">
                         <span>
                           <span className="block font-semibold text-navy">{p.title}</span>
                           <span className="mt-1 block text-sm text-ink/75">{p.outlet}</span>
                         </span>
                         <ExternalLink className="h-5 w-5 shrink-0 text-accent" aria-hidden="true" />
                         <span className="sr-only"> (נפתח בחלון חדש)</span>
+                        </span>
                       </a>
                     </li>
                   ))}
