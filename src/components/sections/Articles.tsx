@@ -4,7 +4,6 @@ import { newestArticles, type Article } from '@/lib/articles';
 import { getSiteContent } from '@/lib/sanity/content';
 import { ArticleCard } from './ArticleCard';
 import { PressList } from './PressList';
-import { HeroBackdrop } from '@/components/ui/HeroBackdrop';
 
 /** Home page teaser for the guides hub. */
 export async function Articles() {
@@ -23,8 +22,7 @@ export async function Articles() {
   }
   items.splice(3);
   return (
-    <section id="articles" aria-labelledby="articles-title" className="section relative isolate overflow-hidden bg-white">
-      <HeroBackdrop name="articles" tone="light" />
+    <section id="articles" aria-labelledby="articles-title" className="section bg-white">
       <div className="shell">
         <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
           <div>
