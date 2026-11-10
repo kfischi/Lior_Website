@@ -1056,6 +1056,8 @@ export const brand = {
       title: 'נרקיסיזם במקום העבודה: ד״ר עדה מיכל ויינשטיין ועו״ד ליאור ארז',
       outlet: 'YouTube',
       url: 'https://www.youtube.com/live/unjojjqO5BY',
+      date: '2022-11-14',
+      excerpt: 'נדבר על זיהוי מאפיינים של נרקיסיזם ומה אפשר לעשות עם זה.',
       image: '/images/press-interview.webp',
     },
   ] as PressArticle[],
