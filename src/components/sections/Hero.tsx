@@ -11,7 +11,6 @@ import { OpenChatButton } from '@/components/ai/OpenChatButton';
 import { videoSources } from '@/lib/media';
 import { HeroVideo } from './HeroVideo';
 
-const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function Hero() {
   const live = useBrand();
@@ -25,11 +24,6 @@ export function Hero() {
   const mediaScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
   const words = live.hero.title.split(' ');
-  const fade = (delay: number) => ({
-    initial: reduced ? false : { opacity: 0, y: 24 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.8, ease: EASE, delay },
-  });
 
   return (
     <section
@@ -82,39 +76,33 @@ export function Hero() {
 
       <div className="shell relative z-10 pb-72 pt-32 md:pb-28">
         <div className="max-w-4xl">
-          <motion.p
-            {...fade(0.1)}
-            className="eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance max-sm:before:hidden max-sm:after:hidden md:text-4xl"
-          >
+          {/* The entrance of the copy is plain CSS (see .hero-up in globals.css), so it plays from the
+              first paint and is not held back until the page's scripts have loaded. */}
+          <p className="hero-up eyebrow mb-5 font-heading text-2xl font-semibold tracking-normal text-cream text-balance [animation-delay:100ms] max-sm:before:hidden max-sm:after:hidden md:text-4xl">
             {live.hero.eyebrow}
-          </motion.p>
+          </p>
 
           <h1 className="text-[clamp(2.3rem,5.2vw,4.5rem)] font-semibold leading-[1.04] tracking-tight text-cream">
             {words.map((w, i) => (
               <React.Fragment key={`${w}-${i}`}>
                 <span className="inline-block overflow-hidden pb-[0.14em] align-bottom">
-                  <motion.span
-                    className="inline-block"
-                    initial={reduced ? false : { y: '110%' }}
-                    animate={{ y: 0 }}
-                    transition={{ duration: 0.95, ease: EASE, delay: 0.25 + i * 0.1 }}
+                  <span
+                    className="hero-word inline-block"
+                    style={{ animationDelay: `${250 + i * 100}ms` }}
                   >
                     {w}
-                  </motion.span>
+                  </span>
                 </span>{' '}
               </React.Fragment>
             ))}
           </h1>
 
-          <motion.p
-            {...fade(0.8)}
-            className="mt-5 max-w-xl text-base leading-relaxed text-cream/95 md:text-lg"
-          >
+          <p className="hero-up mt-5 max-w-xl text-base leading-relaxed text-cream/95 [animation-delay:800ms] md:text-lg">
             {live.hero.subtitle}
-          </motion.p>
+          </p>
 
           {/* The first screen must say what to do next: talk to the assistant, or call. */}
-          <motion.div {...fade(0.95)} className="mt-7 flex flex-wrap gap-3">
+          <div className="hero-up mt-7 flex flex-wrap gap-3 [animation-delay:950ms]">
             <OpenChatButton size="lg" variant="accentOnDark">
               <MessagesSquare className="h-5 w-5" />
               {live.hero.primaryCta}
@@ -125,7 +113,7 @@ export function Hero() {
                 <span dir="ltr">{live.phone}</span>
               </a>
             </Button>
-          </motion.div>
+          </div>
         </div>
       </div>
 
